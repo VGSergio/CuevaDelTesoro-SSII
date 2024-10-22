@@ -7,24 +7,21 @@ import javax.swing.*;
 
 public class View extends javax.swing.JFrame {
 
-    private final int WIDTH = 800;
-
-    private final Controller CONTROLLER;
-
     private final Controls CONTROLS;
     private final Maze MAZE;
 
     public View(Controller controller, int mazeSideSquares) {
-        this.CONTROLLER = controller;
-        this.CONTROLS = new Controls(controller , WIDTH);
-        this.MAZE = new Maze(controller, WIDTH, mazeSideSquares);
+        int width = 800;
+
+        this.CONTROLS = new Controls(controller, width);
+        this.MAZE = new Maze(controller, width, mazeSideSquares);
 
         configure();
         initComponents();
         showView();
     }
 
-    private void configure(){
+    private void configure() {
         setLayout(new BoxLayout(getContentPane(), BoxLayout.PAGE_AXIS));
     }
 
@@ -33,7 +30,7 @@ public class View extends javax.swing.JFrame {
         add(MAZE);
     }
 
-    private void showView(){
+    private void showView() {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
         setTitle("Cave");
@@ -46,7 +43,7 @@ public class View extends javax.swing.JFrame {
         return MAZE;
     }
 
-    public void mazeSizeChanged(int mazeSideSquares){
+    public void mazeSizeChanged(int mazeSideSquares) {
         MAZE.setMazeSide(mazeSideSquares);
     }
 

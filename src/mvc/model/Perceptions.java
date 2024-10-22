@@ -16,7 +16,7 @@ public class Perceptions {
         return perceptions;
     }
 
-    public boolean hasStink(){
+    public boolean hasStink() {
         return perceptions[MONSTER];
     }
 
@@ -24,7 +24,7 @@ public class Perceptions {
         perceptions[MONSTER] = stink;
     }
 
-    public boolean hasWind(){
+    public boolean hasWind() {
         return perceptions[HOLE];
     }
 
@@ -32,7 +32,7 @@ public class Perceptions {
         perceptions[HOLE] = wind;
     }
 
-    public boolean hasRadiance(){
+    public boolean hasRadiance() {
         return perceptions[TREASURE];
     }
 
@@ -40,7 +40,7 @@ public class Perceptions {
         perceptions[TREASURE] = radiance;
     }
 
-    public boolean hasBang(){
+    public boolean hasBang() {
         return perceptions[WALL];
     }
 

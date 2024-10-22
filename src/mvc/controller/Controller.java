@@ -25,9 +25,7 @@ public class Controller extends Thread {
     }
 
     private void createThread() {
-        thread = new Thread(() -> {
-            view = new View(this, MODEL.getMazeSide());
-        });
+        thread = new Thread(() -> view = new View(this, MODEL.getMazeSide()));
     }
 
     private void startThread() {
