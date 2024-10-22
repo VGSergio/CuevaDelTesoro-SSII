@@ -3,8 +3,7 @@ package mvc.controller;
 import mvc.model.Model;
 import mvc.view.View;
 
-import static mvc.model.Global.MAZE_SIDE_CHANGED;
-import static mvc.model.Global.SQUARE_CLICKED;
+import static mvc.model.Global.*;
 
 public class Controller extends Thread {
 
@@ -12,6 +11,8 @@ public class Controller extends Thread {
 
     private final Model MODEL = new Model();
     private View view;
+
+    private int selectedItem = -1;
 
     public static void main(String[] args) {
         new Controller().start();
@@ -41,20 +42,6 @@ public class Controller extends Thread {
         }
     }
 
-    public void notify(String event){
-        switch (event){
-            case MAZE_SIDE_CHANGED:
-                System.out.println(MAZE_SIDE_CHANGED);
-                break;
-            case SQUARE_CLICKED:
-                System.out.println(SQUARE_CLICKED);
-                break;
-            default:
-                System.out.println("Default");
-                break;
-        }
-    }
-
     public void notify(String event, int size){
         if (!event.equals(MAZE_SIDE_CHANGED)){
             return;
@@ -68,6 +55,20 @@ public class Controller extends Thread {
             return;
         }
 
-        view.getMaze().placeElement(1, row, column);
+        view.getMaze().placeElement(selectedItem, row, column);
+    }
+
+    public void notify(String event, String element) {
+        if (!event.equals(ELEMENT_CHANGED)) {
+            return;
+        }
+
+        selectedItem = switch (element) {
+            case MONSTER_IMAGE -> MONSTER;
+            case HOLE_IMAGE -> HOLE;
+            case TREASURE_IMAGE -> TREASURE;
+            case CLEAN_IMAGE -> -1;
+            default -> throw new IllegalStateException("Unexpected value: " + element);
+        };
     }
 }

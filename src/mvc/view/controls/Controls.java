@@ -7,26 +7,21 @@ import java.awt.*;
 
 public class Controls extends JPanel {
 
-    private final int WINDOW_WIDTH;
+    public Controls(Controller controller, int windowWidth) {
 
-    public Controls(Controller controller, int windowsWidth) {
-        this.WINDOW_WIDTH = windowsWidth;
-
-        configure();
+        configure(windowWidth);
         initComponents(controller);
     }
 
-    private void configure(){
+    private void configure(int width) {
+        setPreferredSize(new Dimension(width, 100));
         setLayout(new GridBagLayout());
     }
 
     private void initComponents(Controller controller) {
         add(new JLabel("N"));
         add(new SizeSelector(controller));
-    }
-
-    public Dimension getPreferredSize() {
-        return new Dimension(WINDOW_WIDTH, 100);
+        add(new ElementSelector(controller));
     }
 
 }

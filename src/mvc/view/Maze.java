@@ -34,7 +34,7 @@ public class Maze extends JPanel {
         squares = new int[mazeSide * mazeSide];
         Arrays.fill(squares, -1);
 
-        mouseListener();
+        configure();
     }
 
     public void paint(Graphics g) {
@@ -62,10 +62,6 @@ public class Maze extends JPanel {
         }
     }
 
-    public Dimension getPreferredSize() {
-        return new Dimension(WINDOW_SIZE, WINDOW_SIZE);
-    }
-
     public void setMazeSide(int mazeSide) {
         this.mazeSide = mazeSide;
         this.squareSize = WINDOW_SIZE / mazeSide;
@@ -80,6 +76,11 @@ public class Maze extends JPanel {
         squares[row * mazeSide + column] = element;
         revalidate();
         repaint();
+    }
+
+    private void configure() {
+        setPreferredSize(new Dimension(WINDOW_SIZE, WINDOW_SIZE));
+        mouseListener();
     }
 
     private void mouseListener() {

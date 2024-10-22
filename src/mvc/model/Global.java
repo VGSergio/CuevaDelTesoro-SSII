@@ -16,10 +16,12 @@ public class Global {
     // Events
     public static final String MAZE_SIDE_CHANGED = "MAZE_SIDE_CHANGED";
     public static final String SQUARE_CLICKED = "SQUARE_CLICKED";
+    public static final String ELEMENT_CHANGED = "ELEMENT_CHANGED";
 
     // Image paths
     public static final String MONSTER_IMAGE = "resources/monster.png";
     public static final String HOLE_IMAGE = "resources/hole.png";
     public static final String TREASURE_IMAGE = "resources/treasure.png";
     public static final String CLEAN_IMAGE = "resources/clean.png";
+    public static final String PLAYER_IMAGE = "resources/player.png";
 }
