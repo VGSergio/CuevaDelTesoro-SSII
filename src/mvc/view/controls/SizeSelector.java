@@ -22,8 +22,6 @@ public class SizeSelector extends JSpinner {
     }
 
     private void changeListener() {
-        addChangeListener(e -> {
-            controller.notify(MAZE_SIDE_CHANGED, (Integer) getValue());
-        });
+        addChangeListener(e -> controller.notify(MAZE_SIDE_CHANGED, (Integer) getValue()));
     }
 }
