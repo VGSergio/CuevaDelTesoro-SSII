@@ -1,13 +1,18 @@
 package mvc.model;
 
-import static mvc.model.Global.NUMBER_OF_PERCEPTIONS;
-
 public class Square {
 
     private final Perceptions PERCEPTIONS = new Perceptions();
-    private final boolean[] STATUS = new boolean[NUMBER_OF_PERCEPTIONS];
+    private int STATUS = -1;
 
     public Square() {
     }
 
+    public int getStatus() {
+        return STATUS;
+    }
+
+    public void setStatus(int status) {
+        this.STATUS = status;
+    }
 }

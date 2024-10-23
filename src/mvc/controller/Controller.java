@@ -1,6 +1,7 @@
 package mvc.controller;
 
 import mvc.model.Model;
+import mvc.model.Square;
 import mvc.view.View;
 
 import static mvc.model.Global.*;
@@ -44,6 +45,7 @@ public class Controller extends Thread {
 
     public void notify(String event, int size){
         if (!event.equals(MAZE_SIDE_CHANGED)){
+            System.err.println("Unexpected event");
             return;
         }
 
@@ -52,12 +54,23 @@ public class Controller extends Thread {
     }
 
     public void notify(String event, int row, int column){
-        if (!event.equals(SQUARE_CLICKED) ||                        // Not the expected event
-                (row == MODEL.getMazeSide() - 1 && column == 0)     // Tries to place selectedItem onto the user square
-        ) {
+        if (!event.equals(SQUARE_CLICKED)) {
+            System.err.println("Unexpected event");
+            return;
+        }
+        if (row == MODEL.getMazeSide() - 1 && column == 0) {
+            System.err.println("Square reserved to place the player");
+            return;
+        }
+        if (!canPlaceItem()) {
             return;
         }
 
+        // Update the square's status
+        Square square = MODEL.getMaze()[row * MODEL.getMazeSide() + column];
+        updateModelCounts(square.getStatus(), selectedItem);
+
+        square.setStatus(selectedItem);
         view.getMaze().placeElement(selectedItem, row, column);
     }
 
@@ -80,6 +93,55 @@ public class Controller extends Thread {
                 default -> throw new IllegalStateException("Unexpected value: " + element);
             };
             System.out.println("Speed changed to " + speed);
+        } else {
+            System.err.println("Unexpected event");
+        }
+    }
+
+    private boolean canPlaceItem() {
+        if (selectedItem == MONSTER && MODEL.getAmountOfMonsters() == MAX_MONSTERS) {
+            System.err.println("Can only place a maximum of " + MAX_MONSTERS + " monster(s)");
+            return false;
+        }
+        if (selectedItem == TREASURE && MODEL.getAmountOTreasures() == MAX_TREASURES) {
+            System.err.println("Can only place a maximum of " + MAX_TREASURES + " treasure(s)");
+            return false;
+        }
+        return true;
+    }
+
+    private void updateModelCounts(int currentStatus, int newStatus) {
+        // currentStatus == -1, newStatus == -1 -> Do nothing
+        // currentStatus == -1. newStatus != -1 -> Increase newStatus
+        // currentStatus != -1. newStatus == -1 -> Decrease currentStatus
+        // currentStatus != -1. newStatus != -1 -> Decrease currentStatus, increase newStatus
+
+        switch (currentStatus) {
+            case MONSTER:
+                MODEL.decreaseAmountOfMonsters();
+                break;
+            case HOLE:
+                MODEL.decreaseAmountOfHoles();
+                break;
+            case TREASURE:
+                MODEL.decreaseAmountOfTreasures();
+                break;
+            default:
+                break; // Do nothing for status -1 or unrecognized values
+        }
+
+        switch (newStatus) {
+            case MONSTER:
+                MODEL.increaseAmountOfMonsters();
+                break;
+            case HOLE:
+                MODEL.increaseAmountOfHoles();
+                break;
+            case TREASURE:
+                MODEL.increaseAmountOTreasures();
+                break;
+            default:
+                break; // Do nothing for selectedItem -1 or unrecognized values
         }
     }
 }
