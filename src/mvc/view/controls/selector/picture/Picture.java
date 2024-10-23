@@ -9,7 +9,7 @@ import java.util.Map;
 
 public abstract class Picture extends JPanel {
 
-    protected static final int IMG_SIZE = 80;
+    protected static final byte IMG_SIZE = 80;
     private static final Map<String, ImageIcon> imageCache = new HashMap<>();
     private final JLabel pictureLabel; // JLabel to display the picture
     protected final Controller controller;

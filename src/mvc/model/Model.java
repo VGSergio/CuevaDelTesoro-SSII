@@ -4,10 +4,10 @@ import static mvc.model.Global.MIN_MAZE_SIDE;
 
 public class Model {
 
-    private int mazeSide;
-    private int amountOfMonsters;
-    private int amountOfHoles;
-    private int amountOTreasures;
+    private byte mazeSide;
+    private byte amountOfMonsters;
+    private byte amountOfHoles;
+    private byte amountOfTreasures;
     private Square[] maze;
 
     public Model() {
@@ -25,19 +25,19 @@ public class Model {
 
         this.amountOfMonsters = 0;
         this.amountOfHoles = 0;
-        this.amountOTreasures = 0;
+        this.amountOfTreasures = 0;
     }
 
-    public int getMazeSide() {
+    public byte getMazeSide() {
         return mazeSide;
     }
 
-    public void setMazeSide(int mazeSide) {
+    public void setMazeSide(byte mazeSide) {
         this.mazeSide = mazeSide;
         initializeMaze();
     }
 
-    public int getAmountOfMonsters() {
+    public byte getAmountOfMonsters() {
         return amountOfMonsters;
     }
 
@@ -49,7 +49,7 @@ public class Model {
         this.amountOfMonsters += 1;
     }
 
-    public int getAmountOfHoles() {
+    public byte getAmountOfHoles() {
         return amountOfHoles;
     }
 
@@ -61,16 +61,16 @@ public class Model {
         this.amountOfHoles += 1;
     }
 
-    public int getAmountOTreasures() {
-        return amountOTreasures;
+    public byte getAmountOfTreasures() {
+        return amountOfTreasures;
     }
 
     public void decreaseAmountOfTreasures() {
-        this.amountOTreasures -= 1;
+        this.amountOfTreasures -= 1;
     }
 
     public void increaseAmountOTreasures() {
-        this.amountOTreasures += 1;
+        this.amountOfTreasures += 1;
     }
 
     public Square[] getMaze() {

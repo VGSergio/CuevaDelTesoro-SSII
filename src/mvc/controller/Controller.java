@@ -86,7 +86,7 @@ public class Controller extends Thread {
             System.err.println("Can only place a maximum of " + MAX_MONSTERS + " monster(s)");
             return false;
         }
-        if (selectedItem == TREASURE && MODEL.getAmountOTreasures() == MAX_TREASURES) {
+        if (selectedItem == TREASURE && MODEL.getAmountOfTreasures() == MAX_TREASURES) {
             System.err.println("Can only place a maximum of " + MAX_TREASURES + " treasure(s)");
             return false;
         }

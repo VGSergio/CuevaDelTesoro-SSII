@@ -10,7 +10,7 @@ public class View extends javax.swing.JFrame {
     private final Controls CONTROLS;
     private final Maze MAZE;
 
-    public View(Controller controller, int mazeSideSquares) {
+    public View(Controller controller, byte mazeSideSquares) {
         int width = 800;
 
         this.CONTROLS = new Controls(controller, width);
@@ -43,7 +43,7 @@ public class View extends javax.swing.JFrame {
         return MAZE;
     }
 
-    public void mazeSizeChanged(int mazeSideSquares) {
+    public void mazeSizeChanged(byte mazeSideSquares) {
         MAZE.setMazeSide(mazeSideSquares);
     }
 

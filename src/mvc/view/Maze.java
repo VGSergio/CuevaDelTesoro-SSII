@@ -21,15 +21,15 @@ public class Maze extends JPanel {
     private final Controller CONTROLLER;
 
     private final int WINDOW_SIZE;
-    private int mazeSide;
+    private byte mazeSide;
     private int squareSize;
-    private int[] squares;
+    private byte[] squares;
 
     private static final Color SQUARE_COLOR = Color.WHITE;
     private static final Color BORDER_COLOR = Color.BLACK;
     private final Map<Integer, BufferedImage> imageCache = new HashMap<>();
 
-    public Maze(Controller controller, int windowSize, int mazeSide) {
+    public Maze(Controller controller, int windowSize, byte mazeSide) {
         this.CONTROLLER = controller;
         this.WINDOW_SIZE = windowSize;
 
@@ -38,11 +38,11 @@ public class Maze extends JPanel {
         configure();
     }
 
-    public void setMazeSide(int mazeSide) {
+    public void setMazeSide(byte mazeSide) {
         this.mazeSide = mazeSide;
         this.squareSize = WINDOW_SIZE / mazeSide;
 
-        this.squares = new int[mazeSide * mazeSide]; // Reinitialize squares array
+        this.squares = new byte[mazeSide * mazeSide]; // Reinitialize squares array
         Arrays.fill(squares, CLEAN);
 
         revalidate();
@@ -72,11 +72,11 @@ public class Maze extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        for (int row = 0; row < mazeSide; row++) {
-            for (int column = 0; column < mazeSide; column++) {
+        for (byte row = 0; row < mazeSide; row++) {
+            for (byte column = 0; column < mazeSide; column++) {
                 int x = column * squareSize;
                 int y = row * squareSize;
-                int element = squares[row * mazeSide + column];
+                byte element = squares[row * mazeSide + column];
 
                 drawSquare(g, x, y);
                 drawElement(g, element, x, y);
@@ -91,16 +91,16 @@ public class Maze extends JPanel {
         g.drawRect(x, y, squareSize, squareSize);
     }
 
-    private void drawElement(Graphics g, int element, int x, int y) {
+    private void drawElement(Graphics g, byte element, int x, int y) {
         if (element != CLEAN) {
-            BufferedImage image = imageCache.get(element);
+            BufferedImage image = imageCache.get((int) element);
             if (image != null) {
                 g.drawImage(image, x, y, squareSize, squareSize, null);
             }
         }
     }
 
-    public void placeElement(int element, int row, int column) {
+    public void placeElement(byte element, byte row, byte column) {
         squares[row * mazeSide + column] = element;
         repaint(column * squareSize, row * squareSize, squareSize, squareSize); // Repaint the specific square
     }
