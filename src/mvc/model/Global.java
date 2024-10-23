@@ -3,6 +3,7 @@ package mvc.model;
 public class Global {
 
     // Perceptions global values
+    public static final int CLEAN = -1;
     public static final int MONSTER = 0;
     public static final int HOLE = 1;
     public static final int TREASURE = 2;

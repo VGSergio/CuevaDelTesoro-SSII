@@ -13,7 +13,7 @@ public class Controller extends Thread {
     private final Model MODEL = new Model();
     private View view;
 
-    private int selectedItem = -1;
+    private int selectedItem = CLEAN;
     private int selectedSpeed = NORMAL_SPEED_VALUE;
 
     public static void main(String[] args) {
@@ -72,8 +72,8 @@ public class Controller extends Thread {
         Square square = MODEL.getMaze()[row * MODEL.getMazeSide() + column];
         int status = square.getStatus();
 
-        if (status == -1 && selectedItem == -1) {
-            return; // Do nothing if both are -1
+        if (status == selectedItem) {
+            return; // Do nothing if both are equal
         }
 
         updateModelCounts(status, selectedItem);
@@ -129,10 +129,10 @@ public class Controller extends Thread {
 
     private void handleElementChanged(String element) {
         selectedItem = switch (element) {
+            case CLEAN_IMAGE -> CLEAN;
             case MONSTER_IMAGE -> MONSTER;
             case HOLE_IMAGE -> HOLE;
             case TREASURE_IMAGE -> TREASURE;
-            case CLEAN_IMAGE -> -1;
             default -> throw new IllegalStateException("Unexpected value: " + element);
         };
         view.getControls().getElementSelector().getPicture().setPicture(element);

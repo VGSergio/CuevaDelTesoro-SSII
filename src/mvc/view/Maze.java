@@ -43,7 +43,7 @@ public class Maze extends JPanel {
         this.squareSize = WINDOW_SIZE / mazeSide;
 
         this.squares = new int[mazeSide * mazeSide]; // Reinitialize squares array
-        Arrays.fill(squares, -1);
+        Arrays.fill(squares, CLEAN);
 
         revalidate();
         repaint();
@@ -92,7 +92,7 @@ public class Maze extends JPanel {
     }
 
     private void drawElement(Graphics g, int element, int x, int y) {
-        if (element != -1) {
+        if (element != CLEAN) {
             BufferedImage image = imageCache.get(element);
             if (image != null) {
                 g.drawImage(image, x, y, squareSize, squareSize, null);

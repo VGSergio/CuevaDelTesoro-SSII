@@ -12,7 +12,7 @@ public abstract class Picture extends JPanel {
     protected static final int IMG_SIZE = 80;
     private static final Map<String, ImageIcon> imageCache = new HashMap<>();
     private final JLabel pictureLabel; // JLabel to display the picture
-    protected Controller controller;
+    protected final Controller controller;
 
     public Picture(Controller controller, String defaultImage) {
         this.controller = controller;

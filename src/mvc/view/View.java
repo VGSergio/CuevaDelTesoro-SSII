@@ -33,7 +33,7 @@ public class View extends javax.swing.JFrame {
     private void showView() {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
-        setTitle("Cave");
+        setTitle("Cave of the treasure");
         pack();
         setLocationRelativeTo(null);
         setVisible(true);

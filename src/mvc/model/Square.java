@@ -1,9 +1,11 @@
 package mvc.model;
 
+import static mvc.model.Global.CLEAN;
+
 public class Square {
 
     private final Perceptions PERCEPTIONS = new Perceptions();
-    private int STATUS = -1;
+    private int STATUS = CLEAN;
 
     public Square() {
     }

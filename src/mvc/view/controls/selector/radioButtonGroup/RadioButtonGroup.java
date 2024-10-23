@@ -10,7 +10,7 @@ import java.util.List;
 public abstract class RadioButtonGroup extends JPanel implements ActionListener {
 
     private final ButtonGroup buttonGroup;
-    protected Controller controller;
+    protected final Controller controller;
 
     public RadioButtonGroup(Controller controller) {
         this.controller = controller;
