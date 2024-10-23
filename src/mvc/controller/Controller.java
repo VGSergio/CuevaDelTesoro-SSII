@@ -135,6 +135,7 @@ public class Controller extends Thread {
             case CLEAN_IMAGE -> -1;
             default -> throw new IllegalStateException("Unexpected value: " + element);
         };
+        view.getControls().getElementSelector().getPicture().setPicture(element);
     }
 
     private void handleSpeedChanged(String element) {

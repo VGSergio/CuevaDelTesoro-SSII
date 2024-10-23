@@ -47,4 +47,7 @@ public class View extends javax.swing.JFrame {
         MAZE.setMazeSide(mazeSideSquares);
     }
 
+    public Controls getControls() {
+        return CONTROLS;
+    }
 }

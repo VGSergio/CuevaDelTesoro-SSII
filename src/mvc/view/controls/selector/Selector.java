@@ -4,29 +4,26 @@ import mvc.controller.Controller;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 
-public abstract class Selector extends JPanel implements ActionListener {
+public class Selector<T extends JPanel, U extends JPanel> extends JPanel {
 
-    protected final Controller controller;
+    private final T radioButtons;
+    private final U picture;
 
-    protected final int IMG_SIZE = 80;
-    protected JLabel picture;
+    public Selector(Controller controller, T radioButtons, U picture) {
+        this.radioButtons = radioButtons;
+        this.picture = picture;
 
-    public Selector(Controller controller) {
-        this.controller = controller;
-        initComponents();
+        setLayout(new BorderLayout());
+        add(radioButtons, BorderLayout.LINE_START);
+        add(picture, BorderLayout.CENTER);
     }
 
-    protected void initComponents() {
+    public T getRadioButtons() {
+        return radioButtons;
     }
 
-    protected ImageIcon loadImage(String path) {
-        return new ImageIcon(
-                new ImageIcon(path).                                                // load the image
-                        getImage().                                                 // transform it
-                        getScaledInstance(IMG_SIZE, IMG_SIZE, Image.SCALE_SMOOTH)   // scale it
-        );                                                                          // transform it back
+    public U getPicture() {
+        return picture;
     }
-
 }

@@ -28,7 +28,7 @@ public class Global {
     public static final String TREASURE_IMAGE = "resources/treasure.png";
     public static final String CLEAN_IMAGE = "resources/clean.png";
     public static final String PLAYER_IMAGE = "resources/player.png";
-    public static final String NEXT_IMAGE = "resources/next.png";
+    public static final String NEXT_STEP_IMAGE = "resources/next_step.png";
 
     // Execution speeds labels
     public static final String SLOW_SPEED = "SLOW_SPEED";
