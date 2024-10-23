@@ -14,6 +14,7 @@ public class Controller extends Thread {
     private View view;
 
     private int selectedItem = -1;
+    private int selectedSpeed = NORMAL_SPEED_VALUE;
 
     public static void main(String[] args) {
         new Controller().start();
@@ -49,6 +50,7 @@ public class Controller extends Thread {
             case SQUARE_CLICKED -> handleSquareClicked((int) params[0], (int) params[1]);
             case ELEMENT_CHANGED -> handleElementChanged((String) params[0]);
             case SPEED_CHANGED -> handleSpeedChanged((String) params[0]);
+            case NEXT_STEP_CLICKED -> handleNextStepClicked();
             default -> System.err.println("Unexpected event");
         }
     }
@@ -136,13 +138,22 @@ public class Controller extends Thread {
     }
 
     private void handleSpeedChanged(String element) {
-        int speed = switch (element) {
-            case SLOW_SPEED -> 1_000;
-            case NORMAL_SPEED -> 500;
-            case FAST_SPEED -> 250;
-            case MANUAL_SPEED -> -1;
+        selectedSpeed = switch (element) {
+            case SLOW_SPEED -> SLOW_SPEED_VALUE;
+            case NORMAL_SPEED -> NORMAL_SPEED_VALUE;
+            case FAST_SPEED -> FAST_SPEED_VALUE;
+            case MANUAL_SPEED -> MANUAL_SPEED_VALUE;
             default -> throw new IllegalStateException("Unexpected value: " + element);
         };
-        System.out.println("Speed changed to " + speed);
+        System.out.println("Speed changed to " + selectedSpeed);
+    }
+
+    private void handleNextStepClicked() {
+        if (selectedSpeed != MANUAL_SPEED_VALUE) {
+            System.err.println("No manual step in this speed");
+            return;
+        }
+
+        System.out.println("Next step");
     }
 }

@@ -5,6 +5,8 @@ import mvc.controller.Controller;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import static mvc.model.Global.*;
 
@@ -47,6 +49,12 @@ public class SpeedSelector extends Selector {
 
         // Size for the picture
         picture.setPreferredSize(new Dimension(IMG_SIZE, IMG_SIZE));
+        picture.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                controller.notify(NEXT_STEP_CLICKED);
+            }
+        });
 
         // Places the radio buttons in a 2x2 matrix
         JPanel radioPanel = new JPanel(new GridLayout(2, 2));
@@ -58,7 +66,6 @@ public class SpeedSelector extends Selector {
         add(radioPanel, BorderLayout.LINE_START);
         add(picture, BorderLayout.CENTER);
     }
-
 
     @Override
     public void actionPerformed(ActionEvent e) {
