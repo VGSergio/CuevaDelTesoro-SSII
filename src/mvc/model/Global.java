@@ -3,18 +3,18 @@ package mvc.model;
 public class Global {
 
     // Perceptions global values
-    public static final int CLEAN = -1;
-    public static final int MONSTER = 0;
-    public static final int HOLE = 1;
-    public static final int TREASURE = 2;
-    public static final int WALL = 3;
-    public static final int NUMBER_OF_PERCEPTIONS = 4;
+    public static final byte CLEAN = -1;
+    public static final byte MONSTER = 0;
+    public static final byte HOLE = 1;
+    public static final byte TREASURE = 2;
+    public static final byte WALL = 3;
+    public static final byte NUMBER_OF_PERCEPTIONS = 4;
 
     // Maze global values
-    public static final int MIN_MAZE_SIDE = 4;
-    public static final int MAX_MAZE_SIDE = 16;
-    public static final int MAX_MONSTERS = 1;
-    public static final int MAX_TREASURES = 1;
+    public static final byte MIN_MAZE_SIDE = 4;
+    public static final byte MAX_MAZE_SIDE = 16;
+    public static final byte MAX_MONSTERS = 1;
+    public static final byte MAX_TREASURES = 1;
 
     // Events
     public static final String MAZE_SIDE_CHANGED = "MAZE_SIDE_CHANGED";

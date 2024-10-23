@@ -13,7 +13,7 @@ public class Controller extends Thread {
     private final Model MODEL = new Model();
     private View view;
 
-    private int selectedItem = CLEAN;
+    private byte selectedItem = CLEAN;
     private int selectedSpeed = NORMAL_SPEED_VALUE;
 
     public static void main(String[] args) {
@@ -46,8 +46,8 @@ public class Controller extends Thread {
 
     public void notify(String event, Object... params) {
         switch (event) {
-            case MAZE_SIDE_CHANGED -> handleMazeSideChanged((int) params[0]);
-            case SQUARE_CLICKED -> handleSquareClicked((int) params[0], (int) params[1]);
+            case MAZE_SIDE_CHANGED -> handleMazeSideChanged((byte) params[0]);
+            case SQUARE_CLICKED -> handleSquareClicked((byte) params[0], (byte) params[1]);
             case ELEMENT_CHANGED -> handleElementChanged((String) params[0]);
             case SPEED_CHANGED -> handleSpeedChanged((String) params[0]);
             case NEXT_STEP_CLICKED -> handleNextStepClicked();
@@ -55,12 +55,12 @@ public class Controller extends Thread {
         }
     }
 
-    private void handleMazeSideChanged(int size) {
+    private void handleMazeSideChanged(byte size) {
         MODEL.setMazeSide(size);
         view.mazeSizeChanged(size);
     }
 
-    private void handleSquareClicked(int row, int column) {
+    private void handleSquareClicked(byte row, byte column) {
         if (row == MODEL.getMazeSide() - 1 && column == 0) {
             System.err.println("Square reserved to place the player");
             return;
@@ -70,7 +70,7 @@ public class Controller extends Thread {
         }
 
         Square square = MODEL.getMaze()[row * MODEL.getMazeSide() + column];
-        int status = square.getStatus();
+        byte status = square.getStatus();
 
         if (status == selectedItem) {
             return; // Do nothing if both are equal
@@ -93,7 +93,7 @@ public class Controller extends Thread {
         return true;
     }
 
-    private void updateModelCounts(int currentStatus, int newStatus) {
+    private void updateModelCounts(byte currentStatus, byte newStatus) {
         // currentStatus == -1. newStatus != -1 -> Increase newStatus
         // currentStatus != -1. newStatus == -1 -> Decrease currentStatus
         // currentStatus != -1. newStatus != -1 -> Decrease currentStatus, increase newStatus

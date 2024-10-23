@@ -5,16 +5,16 @@ import static mvc.model.Global.CLEAN;
 public class Square {
 
     private final Perceptions PERCEPTIONS = new Perceptions();
-    private int STATUS = CLEAN;
+    private byte STATUS = CLEAN;
 
     public Square() {
     }
 
-    public int getStatus() {
+    public byte getStatus() {
         return STATUS;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(byte status) {
         this.STATUS = status;
     }
 }

@@ -50,9 +50,9 @@ public class Maze extends JPanel {
     }
 
     private void initializeImages() {
-        imageCache.put(MONSTER, loadImage(MONSTER_IMAGE));
-        imageCache.put(HOLE, loadImage(HOLE_IMAGE));
-        imageCache.put(TREASURE, loadImage(TREASURE_IMAGE));
+        imageCache.put((int) MONSTER, loadImage(MONSTER_IMAGE));
+        imageCache.put((int) HOLE, loadImage(HOLE_IMAGE));
+        imageCache.put((int) TREASURE, loadImage(TREASURE_IMAGE));
     }
 
     private void configure() {
@@ -109,8 +109,8 @@ public class Maze extends JPanel {
         @Override
         public void mouseClicked(MouseEvent e) {
             e.consume();
-            int row = e.getY() / squareSize;
-            int column = e.getX() / squareSize;
+            byte row = (byte) (e.getY() / squareSize);
+            byte column = (byte) (e.getX() / squareSize);
             CONTROLLER.notify(SQUARE_CLICKED, row, column);
         }
     }
