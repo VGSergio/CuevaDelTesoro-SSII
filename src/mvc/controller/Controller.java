@@ -47,11 +47,14 @@ public class Controller extends Thread {
             return;
         }
 
+        MODEL.setMazeSide(size);
         view.mazeSizeChanged(size);
     }
 
     public void notify(String event, int row, int column){
-        if (!event.equals(SQUARE_CLICKED)){
+        if (!event.equals(SQUARE_CLICKED) ||                        // Not the expected event
+                (row == MODEL.getMazeSide() - 1 && column == 0)     // Tries to place selectedItem onto the user square
+        ) {
             return;
         }
 
@@ -59,16 +62,24 @@ public class Controller extends Thread {
     }
 
     public void notify(String event, String element) {
-        if (!event.equals(ELEMENT_CHANGED)) {
-            return;
+        if (event.equals(ELEMENT_CHANGED)) {
+            selectedItem = switch (element) {
+                case MONSTER_IMAGE -> MONSTER;
+                case HOLE_IMAGE -> HOLE;
+                case TREASURE_IMAGE -> TREASURE;
+                case CLEAN_IMAGE -> -1;
+                default -> throw new IllegalStateException("Unexpected value: " + element);
+            };
+        } else if (event.equals(SPEED_CHANGED)) {
+            System.out.println("Speed changed to " + element);
+            int speed = switch (element) {
+                case SLOW_SPEED -> 1_000;
+                case NORMAL_SPEED -> 500;
+                case FAST_SPEED -> 250;
+                case MANUAL_SPEED -> -1;
+                default -> throw new IllegalStateException("Unexpected value: " + element);
+            };
+            System.out.println("Speed changed to " + speed);
         }
-
-        selectedItem = switch (element) {
-            case MONSTER_IMAGE -> MONSTER;
-            case HOLE_IMAGE -> HOLE;
-            case TREASURE_IMAGE -> TREASURE;
-            case CLEAN_IMAGE -> -1;
-            default -> throw new IllegalStateException("Unexpected value: " + element);
-        };
     }
 }

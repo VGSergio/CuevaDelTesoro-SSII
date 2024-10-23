@@ -1,29 +1,21 @@
-package mvc.view.controls;
+package mvc.view.controls.selector;
 
 import mvc.controller.Controller;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import static mvc.model.Global.*;
 
-public class ElementSelector extends JPanel implements ActionListener {
-
-    private final Controller controller;
-
-    private final int IMG_SIZE = 80;
-    private JLabel picture;
+public class ElementSelector extends Selector {
 
 
     public ElementSelector(Controller controller) {
-        this.controller = controller;
-
-        initComponents();
+        super(controller);
     }
 
-    private void initComponents() {
+    protected void initComponents() {
         // Configure the radio buttons
         JRadioButton monsterButton = new JRadioButton("Monster");
         monsterButton.setActionCommand(MONSTER_IMAGE);
@@ -71,13 +63,6 @@ public class ElementSelector extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         controller.notify(ELEMENT_CHANGED, e.getActionCommand());
         picture.setIcon(loadImage(e.getActionCommand()));
-    }
-
-    private ImageIcon loadImage(String path) {
-        Image image = new ImageIcon(path).                                      // load the image
-                getImage().                                                     // transform it
-                getScaledInstance(IMG_SIZE, IMG_SIZE, Image.SCALE_SMOOTH);     // scale it
-        return new ImageIcon(image);  // transform it back
     }
 
 }

@@ -1,6 +1,8 @@
 package mvc.view.controls;
 
 import mvc.controller.Controller;
+import mvc.view.controls.selector.ElementSelector;
+import mvc.view.controls.selector.SpeedSelector;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,6 +24,7 @@ public class Controls extends JPanel {
         add(new JLabel("N"));
         add(new SizeSelector(controller));
         add(new ElementSelector(controller));
+        add(new SpeedSelector(controller));
     }
 
 }
