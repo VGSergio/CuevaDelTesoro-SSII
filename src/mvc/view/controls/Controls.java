@@ -10,7 +10,6 @@ import java.awt.*;
 public class Controls extends JPanel {
 
     public Controls(Controller controller, int windowWidth) {
-
         configure(windowWidth);
         initComponents(controller);
     }
