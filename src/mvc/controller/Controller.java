@@ -43,21 +43,22 @@ public class Controller extends Thread {
         }
     }
 
-    public void notify(String event, int size){
-        if (!event.equals(MAZE_SIDE_CHANGED)){
-            System.err.println("Unexpected event");
-            return;
+    public void notify(String event, Object... params) {
+        switch (event) {
+            case MAZE_SIDE_CHANGED -> handleMazeSideChanged((int) params[0]);
+            case SQUARE_CLICKED -> handleSquareClicked((int) params[0], (int) params[1]);
+            case ELEMENT_CHANGED -> handleElementChanged((String) params[0]);
+            case SPEED_CHANGED -> handleSpeedChanged((String) params[0]);
+            default -> System.err.println("Unexpected event");
         }
+    }
 
+    private void handleMazeSideChanged(int size) {
         MODEL.setMazeSide(size);
         view.mazeSizeChanged(size);
     }
 
-    public void notify(String event, int row, int column){
-        if (!event.equals(SQUARE_CLICKED)) {
-            System.err.println("Unexpected event");
-            return;
-        }
+    private void handleSquareClicked(int row, int column) {
         if (row == MODEL.getMazeSide() - 1 && column == 0) {
             System.err.println("Square reserved to place the player");
             return;
@@ -66,27 +67,16 @@ public class Controller extends Thread {
             return;
         }
 
-        // Update the square's status
         Square square = MODEL.getMaze()[row * MODEL.getMazeSide() + column];
         int status = square.getStatus();
 
-        // status == -1, selectedItem == -1 -> Do nothing
         if (status == -1 && selectedItem == -1) {
-            return;
+            return; // Do nothing if both are -1
         }
 
         updateModelCounts(status, selectedItem);
-
         square.setStatus(selectedItem);
         view.getMaze().placeElement(selectedItem, row, column);
-    }
-
-    public void notify(String event, String element) {
-        switch (event) {
-            case ELEMENT_CHANGED -> handleElementChanged(element);
-            case SPEED_CHANGED -> handleSpeedChanged(element);
-            default -> System.err.println("Unexpected event");
-        }
     }
 
     private boolean canPlaceItem() {
