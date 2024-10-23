@@ -68,33 +68,24 @@ public class Controller extends Thread {
 
         // Update the square's status
         Square square = MODEL.getMaze()[row * MODEL.getMazeSide() + column];
-        updateModelCounts(square.getStatus(), selectedItem);
+        int status = square.getStatus();
+
+        // status == -1, selectedItem == -1 -> Do nothing
+        if (status == -1 && selectedItem == -1) {
+            return;
+        }
+
+        updateModelCounts(status, selectedItem);
 
         square.setStatus(selectedItem);
         view.getMaze().placeElement(selectedItem, row, column);
     }
 
     public void notify(String event, String element) {
-        if (event.equals(ELEMENT_CHANGED)) {
-            selectedItem = switch (element) {
-                case MONSTER_IMAGE -> MONSTER;
-                case HOLE_IMAGE -> HOLE;
-                case TREASURE_IMAGE -> TREASURE;
-                case CLEAN_IMAGE -> -1;
-                default -> throw new IllegalStateException("Unexpected value: " + element);
-            };
-        } else if (event.equals(SPEED_CHANGED)) {
-            System.out.println("Speed changed to " + element);
-            int speed = switch (element) {
-                case SLOW_SPEED -> 1_000;
-                case NORMAL_SPEED -> 500;
-                case FAST_SPEED -> 250;
-                case MANUAL_SPEED -> -1;
-                default -> throw new IllegalStateException("Unexpected value: " + element);
-            };
-            System.out.println("Speed changed to " + speed);
-        } else {
-            System.err.println("Unexpected event");
+        switch (event) {
+            case ELEMENT_CHANGED -> handleElementChanged(element);
+            case SPEED_CHANGED -> handleSpeedChanged(element);
+            default -> System.err.println("Unexpected event");
         }
     }
 
@@ -111,7 +102,6 @@ public class Controller extends Thread {
     }
 
     private void updateModelCounts(int currentStatus, int newStatus) {
-        // currentStatus == -1, newStatus == -1 -> Do nothing
         // currentStatus == -1. newStatus != -1 -> Increase newStatus
         // currentStatus != -1. newStatus == -1 -> Decrease currentStatus
         // currentStatus != -1. newStatus != -1 -> Decrease currentStatus, increase newStatus
@@ -143,5 +133,26 @@ public class Controller extends Thread {
             default:
                 break; // Do nothing for selectedItem -1 or unrecognized values
         }
+    }
+
+    private void handleElementChanged(String element) {
+        selectedItem = switch (element) {
+            case MONSTER_IMAGE -> MONSTER;
+            case HOLE_IMAGE -> HOLE;
+            case TREASURE_IMAGE -> TREASURE;
+            case CLEAN_IMAGE -> -1;
+            default -> throw new IllegalStateException("Unexpected value: " + element);
+        };
+    }
+
+    private void handleSpeedChanged(String element) {
+        int speed = switch (element) {
+            case SLOW_SPEED -> 1_000;
+            case NORMAL_SPEED -> 500;
+            case FAST_SPEED -> 250;
+            case MANUAL_SPEED -> -1;
+            default -> throw new IllegalStateException("Unexpected value: " + element);
+        };
+        System.out.println("Speed changed to " + speed);
     }
 }
