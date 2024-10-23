@@ -10,7 +10,6 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,21 +28,19 @@ public class Maze extends JPanel {
     private static final Color BORDER_COLOR = Color.BLACK;
     private final Map<Integer, BufferedImage> imageCache = new HashMap<>();
 
-    public Maze(Controller controller, int windowSize, byte mazeSide) {
+    public Maze(Controller controller, int windowSize, byte mazeSide, byte[] squares) {
         this.CONTROLLER = controller;
         this.WINDOW_SIZE = windowSize;
 
-        setMazeSide(mazeSide);
+        setMaze(mazeSide, squares);
         initializeImages();
         configure();
     }
 
-    public void setMazeSide(byte mazeSide) {
+    public void setMaze(byte mazeSide, byte[] squares) {
         this.mazeSide = mazeSide;
         this.squareSize = WINDOW_SIZE / mazeSide;
-
-        this.squares = new byte[mazeSide * mazeSide]; // Reinitialize squares array
-        Arrays.fill(squares, CLEAN);
+        this.squares = squares;
 
         revalidate();
         repaint();
@@ -53,6 +50,7 @@ public class Maze extends JPanel {
         imageCache.put((int) MONSTER, loadImage(MONSTER_IMAGE));
         imageCache.put((int) HOLE, loadImage(HOLE_IMAGE));
         imageCache.put((int) TREASURE, loadImage(TREASURE_IMAGE));
+        imageCache.put((int) PLAYER, loadImage(PLAYER_IMAGE));
     }
 
     private void configure() {

@@ -9,6 +9,7 @@ public class Global {
     public static final byte TREASURE = 2;
     public static final byte WALL = 3;
     public static final byte NUMBER_OF_PERCEPTIONS = 4;
+    public static final byte PLAYER = 4;
 
     // Maze global values
     public static final byte MIN_MAZE_SIDE = 4;

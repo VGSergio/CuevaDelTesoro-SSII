@@ -9,40 +9,25 @@ import java.awt.*;
 
 public class Controls extends JPanel {
 
-    private final JLabel mazeSide;
-    private final SizeSelector sizeSelector;
-    private final ElementSelector elementSelector;
-    private final SpeedSelector speedSelector;
+    private final ElementSelector ELEMENT_SELECTOR;
 
     public Controls(Controller controller, int windowWidth) {
-        this.mazeSide = new JLabel("N");
-        this.sizeSelector = new SizeSelector(controller);
-        this.elementSelector = new ElementSelector(controller);
-        this.speedSelector = new SpeedSelector(controller);
+        this.ELEMENT_SELECTOR = new ElementSelector(controller);
 
+        JLabel nLabel = new JLabel("N");
+        SizeSpinner sizeSpinner = new SizeSpinner(controller);
+        SpeedSelector speedSelector = new SpeedSelector(controller);
 
         setPreferredSize(new Dimension(windowWidth, 100));
         setLayout(new GridBagLayout());
 
-        add(mazeSide);
-        add(sizeSelector);
-        add(elementSelector);
+        add(nLabel);
+        add(sizeSpinner);
+        add(ELEMENT_SELECTOR);
         add(speedSelector);
     }
 
-    public JLabel getMazeSide() {
-        return mazeSide;
-    }
-
-    public SizeSelector getSizeSelector() {
-        return sizeSelector;
-    }
-
     public ElementSelector getElementSelector() {
-        return elementSelector;
-    }
-
-    public SpeedSelector getSpeedSelector() {
-        return speedSelector;
+        return ELEMENT_SELECTOR;
     }
 }

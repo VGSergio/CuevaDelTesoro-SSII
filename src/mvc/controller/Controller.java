@@ -28,7 +28,7 @@ public class Controller extends Thread {
     }
 
     private void createThread() {
-        thread = new Thread(() -> view = new View(this, MODEL.getMazeSide()));
+        thread = new Thread(() -> view = new View(this, MODEL.getMazeSide(), MODEL.getMazeSquares()));
     }
 
     private void startThread() {
@@ -46,7 +46,7 @@ public class Controller extends Thread {
 
     public void notify(String event, Object... params) {
         switch (event) {
-            case MAZE_SIDE_CHANGED -> handleMazeSideChanged((byte) params[0]);
+            case MAZE_SIDE_CHANGED -> handleMazeSideChanged((int) params[0]);
             case SQUARE_CLICKED -> handleSquareClicked((byte) params[0], (byte) params[1]);
             case ELEMENT_CHANGED -> handleElementChanged((String) params[0]);
             case SPEED_CHANGED -> handleSpeedChanged((String) params[0]);
@@ -55,16 +55,12 @@ public class Controller extends Thread {
         }
     }
 
-    private void handleMazeSideChanged(byte size) {
-        MODEL.setMazeSide(size);
-        view.mazeSizeChanged(size);
+    private void handleMazeSideChanged(int size) {
+        MODEL.setMazeSide((byte) size);
+        view.mazeSizeChanged(MODEL.getMazeSide(), MODEL.getMazeSquares());
     }
 
     private void handleSquareClicked(byte row, byte column) {
-        if (row == MODEL.getMazeSide() - 1 && column == 0) {
-            System.err.println("Square reserved to place the player");
-            return;
-        }
         if (!canPlaceItem()) {
             return;
         }
@@ -74,6 +70,10 @@ public class Controller extends Thread {
 
         if (status == selectedItem) {
             return; // Do nothing if both are equal
+        }
+        if (status == PLAYER){
+            System.err.println("Square reserved to place the player");
+            return;
         }
 
         updateModelCounts(status, selectedItem);
@@ -101,29 +101,25 @@ public class Controller extends Thread {
         switch (currentStatus) {
             case MONSTER:
                 MODEL.decreaseAmountOfMonsters();
-                break;
-            case HOLE:
-                MODEL.decreaseAmountOfHoles();
-                break;
+            break;
             case TREASURE:
                 MODEL.decreaseAmountOfTreasures();
                 break;
-            default:
-                break; // Do nothing for status -1 or unrecognized values
+            case HOLE:  // Do nothing, we don't care about holes tracking
+            default:    // Do nothing for status -1 or unrecognized values
+                break;
         }
 
         switch (newStatus) {
             case MONSTER:
                 MODEL.increaseAmountOfMonsters();
                 break;
-            case HOLE:
-                MODEL.increaseAmountOfHoles();
-                break;
             case TREASURE:
                 MODEL.increaseAmountOTreasures();
                 break;
-            default:
-                break; // Do nothing for selectedItem -1 or unrecognized values
+            case HOLE:  // Do nothing, we don't care about holes tracking
+            default:    // Do nothing for status -1 or unrecognized values
+                break;
         }
     }
 

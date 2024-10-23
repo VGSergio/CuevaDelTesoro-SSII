@@ -10,11 +10,11 @@ public class View extends javax.swing.JFrame {
     private final Controls CONTROLS;
     private final Maze MAZE;
 
-    public View(Controller controller, byte mazeSideSquares) {
+    public View(Controller controller, byte mazeSideSquares, byte[] squares) {
         int width = 800;
 
         this.CONTROLS = new Controls(controller, width);
-        this.MAZE = new Maze(controller, width, mazeSideSquares);
+        this.MAZE = new Maze(controller, width, mazeSideSquares, squares);
 
         configure();
         initComponents();
@@ -43,8 +43,8 @@ public class View extends javax.swing.JFrame {
         return MAZE;
     }
 
-    public void mazeSizeChanged(byte mazeSideSquares) {
-        MAZE.setMazeSide(mazeSideSquares);
+    public void mazeSizeChanged(byte mazeSideSquares, byte[] squares) {
+        MAZE.setMaze(mazeSideSquares, squares);
     }
 
     public Controls getControls() {

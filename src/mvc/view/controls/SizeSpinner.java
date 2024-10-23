@@ -6,11 +6,11 @@ import javax.swing.*;
 
 import static mvc.model.Global.*;
 
-public class SizeSelector extends JSpinner {
+public class SizeSpinner extends JSpinner {
 
     private final Controller controller;
 
-    public SizeSelector(Controller controller) {
+    public SizeSpinner(Controller controller) {
         this.controller = controller;
         configure();
     }

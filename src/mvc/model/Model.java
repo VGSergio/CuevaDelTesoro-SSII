@@ -1,12 +1,12 @@
 package mvc.model;
 
 import static mvc.model.Global.MIN_MAZE_SIDE;
+import static mvc.model.Global.PLAYER;
 
 public class Model {
 
     private byte mazeSide;
     private byte amountOfMonsters;
-    private byte amountOfHoles;
     private byte amountOfTreasures;
     private Square[] maze;
 
@@ -23,8 +23,10 @@ public class Model {
             this.maze[i] = new Square();
         }
 
+        // Set bottom left corner status to have a player "(1, 1)"
+        maze[(mazeSide - 1) * mazeSide].setStatus(PLAYER);
+
         this.amountOfMonsters = 0;
-        this.amountOfHoles = 0;
         this.amountOfTreasures = 0;
     }
 
@@ -49,18 +51,6 @@ public class Model {
         this.amountOfMonsters += 1;
     }
 
-    public byte getAmountOfHoles() {
-        return amountOfHoles;
-    }
-
-    public void decreaseAmountOfHoles() {
-        this.amountOfHoles -= 1;
-    }
-
-    public void increaseAmountOfHoles() {
-        this.amountOfHoles += 1;
-    }
-
     public byte getAmountOfTreasures() {
         return amountOfTreasures;
     }
@@ -77,8 +67,12 @@ public class Model {
         return maze;
     }
 
-    public void setMaze(Square[] maze) {
-        this.maze = maze;
+    public byte[] getMazeSquares(){
+        byte[] squares = new byte[maze.length];
+        for (int i = 0; i < maze.length; i++) {
+            squares[i] = maze[i].getStatus();
+        }
+        return squares;
     }
 
 }
