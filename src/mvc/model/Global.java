@@ -3,6 +3,7 @@ package mvc.model;
 public class Global {
 
     // Perceptions global values
+    public static final byte UNKNOWN = -2;
     public static final byte CLEAN = -1;
     public static final byte MONSTER = 0;
     public static final byte HOLE = 1;

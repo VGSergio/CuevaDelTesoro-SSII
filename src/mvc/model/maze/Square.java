@@ -1,20 +1,20 @@
-package mvc.model;
+package mvc.model.maze;
 
 import static mvc.model.Global.CLEAN;
 
 public class Square {
 
-    private final Perceptions PERCEPTIONS = new Perceptions();
-    private byte STATUS = CLEAN;
+    private byte status;
 
     public Square() {
+        this.status = CLEAN;
     }
 
     public byte getStatus() {
-        return STATUS;
+        return status;
     }
 
     public void setStatus(byte status) {
-        this.STATUS = status;
+        this.status = status;
     }
 }

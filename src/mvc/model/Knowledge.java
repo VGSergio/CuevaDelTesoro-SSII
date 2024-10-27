@@ -4,19 +4,22 @@ import java.util.Arrays;
 
 import static mvc.model.Global.*;
 
-public class Perceptions {
-    private final boolean[] perceptions;
+public class Knowledge {
 
-    public Perceptions() {
-        perceptions = new boolean[4];
+    private final boolean[] perceptions;
+    private byte status;
+
+    public Knowledge() {
+        perceptions = new boolean[NUMBER_OF_PERCEPTIONS];
         Arrays.fill(perceptions, false);
+        this.status = UNKNOWN;
     }
 
     public boolean[] getPerceptions() {
         return perceptions;
     }
 
-    public boolean hasStink() {
+    public boolean isStink() {
         return perceptions[MONSTER];
     }
 
@@ -24,7 +27,7 @@ public class Perceptions {
         perceptions[MONSTER] = stink;
     }
 
-    public boolean hasWind() {
+    public boolean isWind() {
         return perceptions[HOLE];
     }
 
@@ -32,7 +35,7 @@ public class Perceptions {
         perceptions[HOLE] = wind;
     }
 
-    public boolean hasRadiance() {
+    public boolean isRadiance() {
         return perceptions[TREASURE];
     }
 
@@ -40,11 +43,19 @@ public class Perceptions {
         perceptions[TREASURE] = radiance;
     }
 
-    public boolean hasBang() {
+    public boolean issBang() {
         return perceptions[WALL];
     }
 
     public void setBang(boolean bang) {
         perceptions[WALL] = bang;
+    }
+
+    public byte getStatus() {
+        return status;
+    }
+
+    public void setStatus(byte status) {
+        this.status = status;
     }
 }
