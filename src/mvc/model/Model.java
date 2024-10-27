@@ -5,17 +5,18 @@ import static mvc.model.Global.PLAYER;
 
 public class Model {
 
+    private boolean isRunning;
     private byte mazeSide;
     private byte amountOfMonsters;
     private byte amountOfTreasures;
     private Square[] maze;
 
     public Model() {
+        this.isRunning = false;
         this.mazeSide = MIN_MAZE_SIDE;
 
         initializeMaze();
     }
-
 
     private void initializeMaze() {
         this.maze = new Square[mazeSide * mazeSide];
@@ -28,6 +29,14 @@ public class Model {
 
         this.amountOfMonsters = 0;
         this.amountOfTreasures = 0;
+    }
+
+    public boolean isRunning() {
+        return isRunning;
+    }
+
+    public void setRunning(boolean isRunning) {
+        this.isRunning = isRunning;
     }
 
     public byte getMazeSide() {

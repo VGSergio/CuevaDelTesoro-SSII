@@ -7,6 +7,6 @@ import mvc.view.controls.selector.radioButtonGroup.ElementRadioButtons;
 public class ElementSelector extends Selector<ElementRadioButtons, ElementPicture> {
 
     public ElementSelector(Controller controller) {
-        super(controller, new ElementRadioButtons(controller), new ElementPicture(controller));
+        super(new ElementRadioButtons(controller), new ElementPicture(controller));
     }
 }

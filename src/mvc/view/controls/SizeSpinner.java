@@ -4,23 +4,23 @@ import mvc.controller.Controller;
 
 import javax.swing.*;
 
+import java.awt.*;
+
 import static mvc.model.Global.*;
 
-public class SizeSpinner extends JSpinner {
-
-    private final Controller controller;
+public class SizeSpinner extends JPanel {
 
     public SizeSpinner(Controller controller) {
-        this.controller = controller;
-        configure();
-    }
+        // Initialize components
+        JLabel nLabel = new JLabel("N");
+        JSpinner spinner = new JSpinner(new SpinnerNumberModel(MIN_MAZE_SIDE, MIN_MAZE_SIDE, MAX_MAZE_SIDE, 1));
+        spinner.addChangeListener(e -> controller.notify(MAZE_SIDE_CHANGED, spinner.getValue()));
 
-    private void configure() {
-        setModel(new SpinnerNumberModel(MIN_MAZE_SIDE, MIN_MAZE_SIDE, MAX_MAZE_SIDE, 1));
-        changeListener();
-    }
+        // Configure layout
+        setLayout(new BorderLayout());
 
-    private void changeListener() {
-        addChangeListener(e -> controller.notify(MAZE_SIDE_CHANGED, getValue()));
+        // Add components
+        add(nLabel, BorderLayout.LINE_START);
+        add(spinner, BorderLayout.CENTER);
     }
 }

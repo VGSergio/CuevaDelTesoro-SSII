@@ -23,6 +23,7 @@ public class Global {
     public static final String ELEMENT_CHANGED = "ELEMENT_CHANGED";
     public static final String SPEED_CHANGED = "SPEED_CHANGED";
     public static final String NEXT_STEP_CLICKED = "NEXT_STEP_CLICKED";
+    public static final String START_CLICKED = "START_CLICKED";
 
     // Image paths
     public static final String MONSTER_IMAGE = "resources/monster.png";
@@ -31,6 +32,7 @@ public class Global {
     public static final String CLEAN_IMAGE = "resources/clean.png";
     public static final String PLAYER_IMAGE = "resources/player.png";
     public static final String NEXT_STEP_IMAGE = "resources/next_step.png";
+    public static final String START_IMAGE = "resources/start.png";
 
     // Execution speeds labels
     public static final String SLOW_SPEED = "SLOW_SPEED";

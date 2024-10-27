@@ -7,6 +7,6 @@ import mvc.view.controls.selector.radioButtonGroup.SpeedRadioButtons;
 public class SpeedSelector extends Selector<SpeedRadioButtons, SpeedPicture> {
 
     public SpeedSelector(Controller controller) {
-        super(controller, new SpeedRadioButtons(controller), new SpeedPicture(controller));
+        super(new SpeedRadioButtons(controller), new SpeedPicture(controller));
     }
 }

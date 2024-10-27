@@ -51,11 +51,16 @@ public class Controller extends Thread {
             case ELEMENT_CHANGED -> handleElementChanged((String) params[0]);
             case SPEED_CHANGED -> handleSpeedChanged((String) params[0]);
             case NEXT_STEP_CLICKED -> handleNextStepClicked();
+            case START_CLICKED -> handleStartClicked();
             default -> System.err.println("Unexpected event");
         }
     }
 
     private void handleMazeSideChanged(int size) {
+        if (MODEL.isRunning()) {
+            System.err.println("Maze size can not be longer changed");
+            return;
+        }
         MODEL.setMazeSide((byte) size);
         view.mazeSizeChanged(MODEL.getMazeSide(), MODEL.getMazeSquares());
     }
@@ -82,6 +87,10 @@ public class Controller extends Thread {
     }
 
     private boolean canPlaceItem() {
+        if (MODEL.isRunning()) {
+            System.err.println("Maze can not be edited while execution");
+            return false;
+        }
         if (selectedItem == MONSTER && MODEL.getAmountOfMonsters() == MAX_MONSTERS) {
             System.err.println("Can only place a maximum of " + MAX_MONSTERS + " monster(s)");
             return false;
@@ -152,5 +161,35 @@ public class Controller extends Thread {
         }
 
         System.out.println("Next step");
+    }
+
+    private void handleStartClicked() {
+        if (!canStart()) return;
+
+        MODEL.setRunning(true);
+    }
+
+    private boolean canStart() {
+        if (MODEL.isRunning()) {
+            System.err.println("Maze is already running");
+            return false;
+        }
+
+        int monsters = MODEL.getAmountOfMonsters();
+        int treasures = MODEL.getAmountOfTreasures();
+        if (monsters == 0 || treasures == 0) {
+            if (monsters == 0 && treasures == 0) {
+                System.err.println("You have to place a monster and a treasure before starting");
+            } else {
+                System.err.println(
+                        monsters == 0
+                                ? "You have to place a monster before starting"
+                                : "You have to place a treasure before starting"
+                );
+            }
+            return false;
+        }
+
+        return true;
     }
 }
