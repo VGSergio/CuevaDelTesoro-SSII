@@ -46,4 +46,8 @@ public class Global {
     public static final int NORMAL_SPEED_VALUE = 500;
     public static final int FAST_SPEED_VALUE = 250;
     public static final int MANUAL_SPEED_VALUE = -1;
+
+    public static int getSquarePositionInMaze(byte row, byte column, byte sideSize) {
+        return row * sideSize + column;
+    }
 }

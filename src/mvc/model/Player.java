@@ -10,32 +10,52 @@ public class Player {
     private final Maze MAZE;
     private Knowledge[] BC;
 
+    private final byte STARTING_ROW;
+    private final byte STARTING_COL;
+    private byte actualRow;
+    private byte actualCol;
+    private boolean foundTreasure;
     private int arrows;
 
     public Player(Maze maze, byte row, byte column) {
+        // Maze
         this.MAZE = maze;
+
+        // Player data
+        this.STARTING_ROW = row;
+        this.STARTING_COL = column;
+        this.actualRow = STARTING_ROW;
+        this.actualCol = STARTING_COL;
+        this.foundTreasure = false;
         this.arrows = maze.getAmountOfMonsters();
 
-        this.BC = new Knowledge[maze.getSquares().length];
+        this.BC = new Knowledge[maze.getMazeLength()];
         for (int i = 0; i < BC.length; i++) {
             this.BC[i] = new Knowledge();
         }
-        BC[row * maze.getMazeSide() + column].setStatus(CLEAN); // The starting position is safe
-        updatePerceptions(row, column);
+        BC[getSquarePositionInMaze(actualRow, actualCol, maze.getMazeSide())].setStatus(CLEAN); // The starting position is safe
+        updatePerceptions();
     }
 
-    private void updatePerceptions(byte row, byte column) {
+    private void updatePerceptions() {
         byte mazeSide = MAZE.getMazeSide();
-        int mazeLength = mazeSide * mazeSide;
+        int mazeLength = MAZE.getMazeLength();
         Square[] squares = MAZE.getSquares();
 
+        int playerPosition = getSquarePositionInMaze(actualRow, actualCol, mazeSide);
         int[] positions = {
-                (row - 1) * mazeSide + column, // up
-                (row + 1) * mazeSide + column, // down
-                row * mazeSide + column - 1,   // left
-                row * mazeSide + column + 1    // right
+                (actualRow - 1) * mazeSide + actualCol, // up
+                (actualRow + 1) * mazeSide + actualCol, // down
+                playerPosition - 1,                     // left
+                playerPosition + 1                      // right
         };
 
+        Knowledge perceptions = getKnowledge(positions, mazeLength, squares);
+
+        BC[playerPosition] = perceptions;
+    }
+
+    private static Knowledge getKnowledge(int[] positions, int mazeLength, Square[] squares) {
         Knowledge perceptions = new Knowledge();
         boolean stink = false;
         boolean wind = false;
@@ -66,8 +86,7 @@ public class Player {
         perceptions.setStink(stink);
         perceptions.setWind(wind);
         perceptions.setRadiance(radiance);
-
-        BC[row * mazeSide + column] = perceptions;
+        return perceptions;
     }
 
     private void throwArrow(String direction) {
@@ -94,4 +113,26 @@ public class Player {
         // update maze
     }
 
+    private void exploreMaze(){
+        // find treasure
+        while (!foundTreasure) {
+            updatePerceptions();
+            makeDecision();
+            updateKnowledge();
+        }
+        // return to the starting position to exit the maze
+
+    }
+
+    private void makeDecision() {
+
+    }
+
+    private void updateKnowledge(){
+
+    }
+
+    private boolean hasFinished(){
+        return foundTreasure && actualRow == STARTING_ROW && actualCol == STARTING_COL;
+    }
 }

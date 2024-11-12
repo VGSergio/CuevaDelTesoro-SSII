@@ -9,6 +9,7 @@ public class Model {
     private boolean isRunning;
 
     private final Maze MAZE = new Maze(MIN_MAZE_SIDE);
+    private Player player;
 
     public Model() {
         this.isRunning = false;
@@ -26,4 +27,11 @@ public class Model {
         return MAZE;
     }
 
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
 }

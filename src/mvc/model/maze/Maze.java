@@ -1,6 +1,7 @@
 package mvc.model.maze;
 
 import static mvc.model.Global.PLAYER;
+import static mvc.model.Global.getSquarePositionInMaze;
 
 public class Maze {
 
@@ -32,8 +33,12 @@ public class Maze {
         return squares;
     }
 
+    public Square getSquare(byte row, byte column) {
+        return squares[getSquarePositionInMaze(row, column, mazeSide)];
+    }
+
     public byte[] getSquaresStatus() {
-        int totalSquares = squares.length;
+        int totalSquares = getMazeLength();
         byte[] status = new byte[totalSquares];
         for (int i = 0; i < totalSquares; i++) {
             status[i] = squares[i].getStatus();
@@ -48,6 +53,10 @@ public class Maze {
     public void setMazeSide(byte mazeSide) {
         this.mazeSide = mazeSide;
         initializeMaze();
+    }
+
+    public int getMazeLength(){
+        return squares.length;
     }
 
     public byte getAmountOfMonsters() {

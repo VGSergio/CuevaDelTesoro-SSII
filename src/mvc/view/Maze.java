@@ -74,7 +74,7 @@ public class Maze extends JPanel {
             for (byte column = 0; column < mazeSide; column++) {
                 int x = column * squareSize;
                 int y = row * squareSize;
-                byte element = squares[row * mazeSide + column];
+                byte element = squares[getSquarePositionInMaze(row, column, mazeSide)];
 
                 drawSquare(g, x, y);
                 drawElement(g, element, x, y);
@@ -99,7 +99,7 @@ public class Maze extends JPanel {
     }
 
     public void placeElement(byte element, byte row, byte column) {
-        squares[row * mazeSide + column] = element;
+        squares[getSquarePositionInMaze(row, column, mazeSide)] = element;
         repaint(column * squareSize, row * squareSize, squareSize, squareSize); // Repaint the specific square
     }
 
