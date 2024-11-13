@@ -4,32 +4,49 @@ import mvc.controller.Controller;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import java.util.List;
 
-public abstract class RadioButtonGroup extends JPanel implements ActionListener {
+public abstract class RadioButtonGroup extends JPanel {
 
-    private final ButtonGroup buttonGroup;
     protected final Controller controller;
+    private final ButtonGroup buttonGroup;
+    private final String actionType;
 
-    public RadioButtonGroup(Controller controller) {
+    public RadioButtonGroup(Controller controller, String actionType) {
         this.controller = controller;
         this.buttonGroup = new ButtonGroup();
-        setLayout(new GridLayout(2, 2));
+        this.actionType = actionType;
+
+        setLayout(new GridLayout(0, 2)); // Optionally customizable layout
         initComponents();
     }
 
     protected void createRadioButtons(List<RadioButtonOption> options, String defaultCommand) {
+        boolean defaultSet = false;
         for (RadioButtonOption option : options) {
             JRadioButton button = new JRadioButton(option.label());
             button.setActionCommand(option.actionCommand());
             buttonGroup.add(button);
-            button.addActionListener(this);
+            button.addActionListener(this::handleActionEvent);
             add(button);
+
+            // Select default button if command matches
             if (option.actionCommand().equals(defaultCommand)) {
                 button.setSelected(true);
+                defaultSet = true;
             }
         }
+
+        // Log if the default selection was not found
+        if (!defaultSet) {
+            System.err.println("Default command not found in options: " + defaultCommand);
+        }
+    }
+
+    private void handleActionEvent(ActionEvent e) {
+        // Notify the controller with the action type and command of the selected radio button
+        controller.notify(actionType, e.getActionCommand());
     }
 
     protected abstract void initComponents();

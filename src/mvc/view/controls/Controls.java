@@ -3,35 +3,40 @@ package mvc.view.controls;
 import mvc.controller.Controller;
 import mvc.view.controls.selector.ElementSelector;
 import mvc.view.controls.selector.SpeedSelector;
+import mvc.view.controls.selector.picture.StartPicture;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class Controls extends JPanel {
 
-    private final ElementSelector ELEMENT_SELECTOR;
+    private final ElementSelector elementSelector;
+    private final SizeSpinner sizeSpinner;
+    private final SpeedSelector speedSelector;
+    private final StartPicture startPicture;
 
     public Controls(Controller controller, int windowWidth) {
-        this.ELEMENT_SELECTOR = new ElementSelector(controller);
-
         // Initialize components
-        SizeSpinner sizeSpinner = new SizeSpinner(controller);
-        SpeedSelector speedSelector = new SpeedSelector(controller);
-        StartPicture startPicture = new StartPicture(controller);
+        this.elementSelector = new ElementSelector(controller);
+        this.sizeSpinner = new SizeSpinner(controller);
+        this.speedSelector = new SpeedSelector(controller);
+        this.startPicture = new StartPicture(controller);
 
-        // Configure panel
+        // Configure panel and add components
         configurePanel(windowWidth);
-
-        // Add components
-        addComponent(sizeSpinner, 0);
-        addComponent(ELEMENT_SELECTOR, 1);
-        addComponent(speedSelector, 2);
-        addComponent(startPicture, 3);
+        initComponents();
     }
 
     private void configurePanel(int windowWidth) {
         setPreferredSize(new Dimension(windowWidth, 100));
         setLayout(new GridBagLayout());
+    }
+
+    private void initComponents() {
+        addComponent(sizeSpinner, 0);
+        addComponent(elementSelector, 1);
+        addComponent(speedSelector, 2);
+        addComponent(startPicture, 3);
     }
 
     private void addComponent(Component component, int gridX) {
@@ -44,6 +49,6 @@ public class Controls extends JPanel {
     }
 
     public ElementSelector getElementSelector() {
-        return ELEMENT_SELECTOR;
+        return elementSelector;
     }
 }

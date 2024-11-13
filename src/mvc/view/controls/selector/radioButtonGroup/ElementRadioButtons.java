@@ -2,7 +2,6 @@ package mvc.view.controls.selector.radioButtonGroup;
 
 import mvc.controller.Controller;
 
-import java.awt.event.ActionEvent;
 import java.util.Arrays;
 
 import static mvc.model.Global.*;
@@ -10,7 +9,7 @@ import static mvc.model.Global.*;
 public class ElementRadioButtons extends RadioButtonGroup {
 
     public ElementRadioButtons(Controller controller) {
-        super(controller);
+        super(controller, ELEMENT_CHANGED);
     }
 
     @Override
@@ -22,10 +21,5 @@ public class ElementRadioButtons extends RadioButtonGroup {
                 new RadioButtonOption("Treasure", TREASURE_IMAGE),
                 new RadioButtonOption("Clean", CLEAN_IMAGE)
         ), CLEAN_IMAGE);
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        controller.notify(ELEMENT_CHANGED, e.getActionCommand());
     }
 }

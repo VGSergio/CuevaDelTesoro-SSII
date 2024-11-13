@@ -1,9 +1,8 @@
 package mvc.view.controls.selector.picture;
 
-import mvc.controller.Controller;
-
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,10 +11,8 @@ public abstract class Picture extends JPanel {
     protected static final byte IMG_SIZE = 80;
     private static final Map<String, ImageIcon> imageCache = new HashMap<>();
     private final JLabel pictureLabel; // JLabel to display the picture
-    protected final Controller controller;
 
-    public Picture(Controller controller, String defaultImage) {
-        this.controller = controller;
+    public Picture(String defaultImage) {
         this.pictureLabel = new JLabel();
 
         setLayout(new BorderLayout());
@@ -25,14 +22,34 @@ public abstract class Picture extends JPanel {
         setPicture(defaultImage);
     }
 
+    /**
+     * Loads an image from the cache or creates a new scaled instance if not cached.
+     * @param path the path to the image file
+     * @return the scaled ImageIcon or a default error icon if file not found
+     */
     private ImageIcon loadCachedImage(String path) {
+        if (path == null || path.isEmpty()) {
+            System.err.println("Image path is invalid: " + path);
+            return null;
+        }
+
+        File imageFile = new File(path);
+        if (!imageFile.exists()) {
+            System.err.println("Image file not found: " + path);
+            return null;
+        }
+
         return imageCache.computeIfAbsent(path, p -> {
             Image image = new ImageIcon(p).getImage().getScaledInstance(IMG_SIZE, IMG_SIZE, Image.SCALE_SMOOTH);
             return new ImageIcon(image);
         });
     }
 
-    public void setPicture(String image) {
-        pictureLabel.setIcon(loadCachedImage(image)); // Set the icon on the internal JLabel
+    /**
+     * Sets the picture for the label.
+     * @param imagePath the path to the image file
+     */
+    public void setPicture(String imagePath) {
+        pictureLabel.setIcon(loadCachedImage(imagePath)); // Set the icon on the internal JLabel
     }
 }

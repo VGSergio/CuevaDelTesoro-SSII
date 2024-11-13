@@ -9,8 +9,9 @@ import static mvc.model.Global.NEXT_STEP_CLICKED;
 import static mvc.model.Global.NEXT_STEP_IMAGE;
 
 public class SpeedPicture extends Picture {
+
     public SpeedPicture(Controller controller) {
-        super(controller, NEXT_STEP_IMAGE);
+        super(NEXT_STEP_IMAGE);
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {

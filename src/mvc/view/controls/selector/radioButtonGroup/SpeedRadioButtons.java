@@ -2,7 +2,6 @@ package mvc.view.controls.selector.radioButtonGroup;
 
 import mvc.controller.Controller;
 
-import java.awt.event.ActionEvent;
 import java.util.Arrays;
 
 import static mvc.model.Global.*;
@@ -10,7 +9,7 @@ import static mvc.model.Global.*;
 public class SpeedRadioButtons extends RadioButtonGroup {
 
     public SpeedRadioButtons(Controller controller) {
-        super(controller);
+        super(controller, SPEED_CHANGED);
     }
 
     @Override
@@ -22,10 +21,5 @@ public class SpeedRadioButtons extends RadioButtonGroup {
                 new RadioButtonOption("Fast", FAST_SPEED),
                 new RadioButtonOption("Manual", MANUAL_SPEED)
         ), NORMAL_SPEED);
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        controller.notify(SPEED_CHANGED, e.getActionCommand());
     }
 }
