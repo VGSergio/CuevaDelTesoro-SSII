@@ -24,6 +24,7 @@ public abstract class Picture extends JPanel {
 
     /**
      * Loads an image from the cache or creates a new scaled instance if not cached.
+     *
      * @param path the path to the image file
      * @return the scaled ImageIcon or a default error icon if file not found
      */
@@ -47,6 +48,7 @@ public abstract class Picture extends JPanel {
 
     /**
      * Sets the picture for the label.
+     *
      * @param imagePath the path to the image file
      */
     public void setPicture(String imagePath) {

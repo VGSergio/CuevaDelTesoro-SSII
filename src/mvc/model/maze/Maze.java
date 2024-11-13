@@ -55,7 +55,7 @@ public class Maze {
         initializeMaze();
     }
 
-    public int getMazeLength(){
+    public int getMazeLength() {
         return squares.length;
     }
 

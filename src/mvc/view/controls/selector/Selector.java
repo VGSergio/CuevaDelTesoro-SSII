@@ -1,9 +1,10 @@
 package mvc.view.controls.selector;
 
+import mvc.view.controls.selector.picture.Picture;
+import mvc.view.controls.selector.radioButtonGroup.RadioButtonGroup;
+
 import javax.swing.*;
 import java.awt.*;
-import mvc.view.controls.selector.radioButtonGroup.RadioButtonGroup;
-import mvc.view.controls.selector.picture.Picture;
 
 public class Selector<T extends RadioButtonGroup, U extends Picture> extends JPanel {
 

@@ -8,13 +8,12 @@ import static mvc.model.Global.*;
 public class Player {
 
     private final Maze MAZE;
-    private Knowledge[] BC;
-
     private final byte STARTING_ROW;
     private final byte STARTING_COL;
-    private byte actualRow;
-    private byte actualCol;
-    private boolean foundTreasure;
+    private final Knowledge[] BC;
+    private final byte actualRow;
+    private final byte actualCol;
+    private final boolean foundTreasure;
     private int arrows;
 
     public Player(Maze maze, byte row, byte column) {
@@ -35,24 +34,6 @@ public class Player {
         }
         BC[getSquarePositionInMaze(actualRow, actualCol, maze.getMazeSide())].setStatus(CLEAN); // The starting position is safe
         updatePerceptions();
-    }
-
-    private void updatePerceptions() {
-        byte mazeSide = MAZE.getMazeSide();
-        int mazeLength = MAZE.getMazeLength();
-        Square[] squares = MAZE.getSquares();
-
-        int playerPosition = getSquarePositionInMaze(actualRow, actualCol, mazeSide);
-        int[] positions = {
-                (actualRow - 1) * mazeSide + actualCol, // up
-                (actualRow + 1) * mazeSide + actualCol, // down
-                playerPosition - 1,                     // left
-                playerPosition + 1                      // right
-        };
-
-        Knowledge perceptions = getKnowledge(positions, mazeLength, squares);
-
-        BC[playerPosition] = perceptions;
     }
 
     private static Knowledge getKnowledge(int[] positions, int mazeLength, Square[] squares) {
@@ -89,6 +70,24 @@ public class Player {
         return perceptions;
     }
 
+    private void updatePerceptions() {
+        byte mazeSide = MAZE.getMazeSide();
+        int mazeLength = MAZE.getMazeLength();
+        Square[] squares = MAZE.getSquares();
+
+        int playerPosition = getSquarePositionInMaze(actualRow, actualCol, mazeSide);
+        int[] positions = {
+                (actualRow - 1) * mazeSide + actualCol, // up
+                (actualRow + 1) * mazeSide + actualCol, // down
+                playerPosition - 1,                     // left
+                playerPosition + 1                      // right
+        };
+
+        Knowledge perceptions = getKnowledge(positions, mazeLength, squares);
+
+        BC[playerPosition] = perceptions;
+    }
+
     private void throwArrow(String direction) {
         arrows--;
         switch (direction) {
@@ -113,7 +112,7 @@ public class Player {
         // update maze
     }
 
-    private void exploreMaze(){
+    private void exploreMaze() {
         // find treasure
         while (!foundTreasure) {
             updatePerceptions();
@@ -128,11 +127,11 @@ public class Player {
 
     }
 
-    private void updateKnowledge(){
+    private void updateKnowledge() {
 
     }
 
-    private boolean hasFinished(){
+    private boolean hasFinished() {
         return foundTreasure && actualRow == STARTING_ROW && actualCol == STARTING_COL;
     }
 }

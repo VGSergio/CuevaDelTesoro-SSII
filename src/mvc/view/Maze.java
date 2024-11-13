@@ -17,16 +17,14 @@ import static mvc.model.Global.*;
 
 public class Maze extends JPanel {
 
+    private static final Color SQUARE_COLOR = Color.WHITE;
+    private static final Color BORDER_COLOR = Color.BLACK;
     private final Controller CONTROLLER;
-
     private final int WINDOW_SIZE;
+    private final Map<Integer, BufferedImage> imageCache = new HashMap<>();
     private byte mazeSide;
     private int squareSize;
     private byte[] squares;
-
-    private static final Color SQUARE_COLOR = Color.WHITE;
-    private static final Color BORDER_COLOR = Color.BLACK;
-    private final Map<Integer, BufferedImage> imageCache = new HashMap<>();
 
     public Maze(Controller controller, int windowSize, byte mazeSide, byte[] squares) {
         this.CONTROLLER = controller;

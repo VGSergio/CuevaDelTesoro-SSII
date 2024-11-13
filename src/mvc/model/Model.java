@@ -6,9 +6,8 @@ import static mvc.model.Global.MIN_MAZE_SIDE;
 
 public class Model {
 
-    private boolean isRunning;
-
     private final Maze MAZE = new Maze(MIN_MAZE_SIDE);
+    private boolean isRunning;
     private Player player;
 
     public Model() {
@@ -27,11 +26,11 @@ public class Model {
         return MAZE;
     }
 
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
-
     public Player getPlayer() {
         return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
     }
 }
