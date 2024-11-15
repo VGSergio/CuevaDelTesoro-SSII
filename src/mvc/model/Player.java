@@ -1,6 +1,6 @@
 package mvc.model;
 
-import mvc.model.maze.Maze;
+import mvc.model.maze.MazeModel;
 import mvc.model.maze.Square;
 
 import static mvc.model.Global.Perception_Constants;
@@ -8,7 +8,7 @@ import static mvc.model.Global.getSquarePositionInMaze;
 
 public class Player {
 
-    private final Maze MAZE;
+    private final MazeModel MAZEModel;
     private final byte STARTING_ROW;
     private final byte STARTING_COL;
     private final Knowledge[] BC;
@@ -17,9 +17,9 @@ public class Player {
     private final boolean foundTreasure;
     private int arrows;
 
-    public Player(Maze maze, byte row, byte column) {
+    public Player(MazeModel mazeModel, byte row, byte column) {
         // Maze
-        this.MAZE = maze;
+        this.MAZEModel = mazeModel;
 
         // Player data
         this.STARTING_ROW = row;
@@ -27,13 +27,13 @@ public class Player {
         this.actualRow = STARTING_ROW;
         this.actualCol = STARTING_COL;
         this.foundTreasure = false;
-        this.arrows = maze.getAmountOfMonsters();
+        this.arrows = mazeModel.getAmountOfMonsters();
 
-        this.BC = new Knowledge[maze.getMazeLength()];
+        this.BC = new Knowledge[mazeModel.getMazeLength()];
         for (int i = 0; i < BC.length; i++) {
             this.BC[i] = new Knowledge();
         }
-        BC[getSquarePositionInMaze(actualRow, actualCol, maze.getMazeSide())].setStatus(Perception_Constants.CLEAN); // The starting position is safe
+        BC[getSquarePositionInMaze(actualRow, actualCol, mazeModel.getMazeSide())].setStatus(Perception_Constants.CLEAN); // The starting position is safe
         updatePerceptions();
     }
 
@@ -74,9 +74,9 @@ public class Player {
     }
 
     private void updatePerceptions() {
-        byte mazeSide = MAZE.getMazeSide();
-        int mazeLength = MAZE.getMazeLength();
-        Square[] squares = MAZE.getSquares();
+        byte mazeSide = MAZEModel.getMazeSide();
+        int mazeLength = MAZEModel.getMazeLength();
+        Square[] squares = MAZEModel.getSquares();
 
         int playerPosition = getSquarePositionInMaze(actualRow, actualCol, mazeSide);
         int[] positions = {

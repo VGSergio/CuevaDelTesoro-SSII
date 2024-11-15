@@ -5,7 +5,7 @@ import mvc.model.Perceptions;
 import static mvc.model.Global.Perception_Constants;
 import static mvc.model.Global.getSquarePositionInMaze;
 
-public class Maze {
+public class MazeModel {
 
     private Square[] squares;
 
@@ -14,7 +14,7 @@ public class Maze {
     private byte amountOfTreasures;
     private byte amountOfPlayers;
 
-    public Maze(byte mazeSide) {
+    public MazeModel(byte mazeSide) {
         setMazeSide(mazeSide);
     }
 

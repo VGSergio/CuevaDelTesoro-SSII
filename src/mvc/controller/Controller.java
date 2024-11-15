@@ -1,7 +1,7 @@
 package mvc.controller;
 
 import mvc.model.Model;
-import mvc.model.maze.Maze;
+import mvc.model.maze.MazeModel;
 import mvc.model.maze.Square;
 import mvc.view.View;
 
@@ -95,20 +95,20 @@ public class Controller extends Thread {
     }
 
     private void updateModelCounts(byte currentStatus, byte newStatus) {
-        Maze maze = MODEL.getMaze();
+        MazeModel mazeModel = MODEL.getMaze();
 
         // Adjust the count for current status (decrease)
-        adjustMazeCount(maze, currentStatus, -1);
+        adjustMazeCount(mazeModel, currentStatus, -1);
 
         // Adjust the count for new status (increase)
-        adjustMazeCount(maze, newStatus, 1);
+        adjustMazeCount(mazeModel, newStatus, 1);
     }
 
-    private void adjustMazeCount(Maze maze, byte status, int delta) {
+    private void adjustMazeCount(MazeModel mazeModel, byte status, int delta) {
         switch (status) {
-            case Perception_Constants.MONSTER -> maze.adjustAmountOfMonsters(delta);
-            case Perception_Constants.TREASURE -> maze.adjustAmountOfTreasures(delta);
-            case Perception_Constants.PLAYER -> maze.adjustAmountOfPlayers(delta);
+            case Perception_Constants.MONSTER -> mazeModel.adjustAmountOfMonsters(delta);
+            case Perception_Constants.TREASURE -> mazeModel.adjustAmountOfTreasures(delta);
+            case Perception_Constants.PLAYER -> mazeModel.adjustAmountOfPlayers(delta);
         }
     }
 
@@ -158,13 +158,13 @@ public class Controller extends Thread {
             return false;
         }
 
-        Maze maze = MODEL.getMaze();
-        if (maze.getAmountOfMonsters() == 0 || maze.getAmountOfTreasures() == 0) {
+        MazeModel mazeModel = MODEL.getMaze();
+        if (mazeModel.getAmountOfMonsters() == 0 || mazeModel.getAmountOfTreasures() == 0) {
             System.err.println("A monster and treasure are required to start.");
             return false;
         }
 
-        if (maze.getAmountOfTreasures() != maze.getAmountOfPlayers()) {
+        if (mazeModel.getAmountOfTreasures() != mazeModel.getAmountOfPlayers()) {
             System.err.println("Each player has to be able to get a treasure.");
             return false;
         }

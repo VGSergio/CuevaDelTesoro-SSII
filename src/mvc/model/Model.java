@@ -1,12 +1,12 @@
 package mvc.model;
 
-import mvc.model.maze.Maze;
+import mvc.model.maze.MazeModel;
 
 import static mvc.model.Global.Maze_Constants;
 
 public class Model {
 
-    private final Maze maze = new Maze(Maze_Constants.MIN_SIDE);
+    private final MazeModel mazeModel = new MazeModel(Maze_Constants.MIN_SIDE);
     private boolean started;
 
     public Model() {
@@ -21,8 +21,8 @@ public class Model {
         this.started = value;
     }
 
-    public Maze getMaze() {
-        return maze;
+    public MazeModel getMaze() {
+        return mazeModel;
     }
 
     public void updateMaze() {
