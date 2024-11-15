@@ -30,7 +30,7 @@ public class Controller extends Thread {
 
     private void initializeView() {
         try {
-            view = new View(this, MODEL.getMaze().getMazeSide(), MODEL.getMaze().getSquaresStatus());
+            view = new View(this, MODEL.getMaze());
         } catch (Exception e) {
             System.err.println("Error initializing view: " + e.getMessage());
         }
@@ -54,7 +54,7 @@ public class Controller extends Thread {
             return;
         }
         MODEL.getMaze().setMazeSide((byte) size);
-        view.mazeSizeChanged(MODEL.getMaze().getMazeSide(), MODEL.getMaze().getSquaresStatus());
+        view.updateView();
     }
 
     private void handleSquareClicked(byte row, byte column) {
@@ -67,7 +67,7 @@ public class Controller extends Thread {
 
         updateModelCounts(status, selectedItem);
         square.setStatus(selectedItem);
-        view.getMaze().placeElement(selectedItem, row, column);
+        view.updateView();
     }
 
     private boolean canPlaceItem(byte row, byte column) {

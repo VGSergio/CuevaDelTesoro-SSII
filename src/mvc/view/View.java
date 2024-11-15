@@ -1,6 +1,7 @@
 package mvc.view;
 
 import mvc.controller.Controller;
+import mvc.model.maze.MazeModel;
 import mvc.view.controls.Controls;
 
 import javax.swing.*;
@@ -10,11 +11,11 @@ public class View extends javax.swing.JFrame {
     private final Controls controls;
     private final MazeView mazeView;
 
-    public View(Controller controller, byte mazeSideSquares, byte[] squares) {
+    public View(Controller controller, MazeModel mazeModel) {
         int width = 800;
 
         controls = new Controls(controller, width);
-        mazeView = new MazeView(controller, width, mazeSideSquares, squares);
+        mazeView = new MazeView(controller, width, mazeModel);
 
         configure();
         initComponents();
@@ -39,19 +40,11 @@ public class View extends javax.swing.JFrame {
         setVisible(true);
     }
 
-    public MazeView getMaze() {
-        return mazeView;
-    }
-
-    public void mazeSizeChanged(byte mazeSideSquares, byte[] squares) {
-        mazeView.setMaze(mazeSideSquares, squares);
-    }
-
     public Controls getControls() {
         return controls;
     }
 
-    public void updateMaze() {
-
+    public void updateView() {
+        mazeView.updateMaze();
     }
 }

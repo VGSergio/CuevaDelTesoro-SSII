@@ -1,6 +1,8 @@
 package mvc.view;
 
 import mvc.controller.Controller;
+import mvc.model.maze.MazeModel;
+import mvc.model.maze.Square;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -22,26 +24,17 @@ public class MazeView extends JPanel {
     private final Controller controller;
     private final int windowSize;
     private final Map<Integer, BufferedImage> imageCache = new HashMap<>();
-    private byte mazeSide;
     private int squareSize;
-    private byte[] squares;
+    private final MazeModel mazeModel;
 
-    public MazeView(Controller controller, int windowSize, byte mazeSide, byte[] squares) {
+    public MazeView(Controller controller, int windowSize, MazeModel mazeModel) {
         this.controller = controller;
         this.windowSize = windowSize;
+        this.mazeModel = mazeModel;
 
-        setMaze(mazeSide, squares);
         initializeImages();
         configure();
-    }
-
-    public void setMaze(byte mazeSide, byte[] squares) {
-        this.mazeSide = mazeSide;
-        this.squares = squares;
-        squareSize = windowSize / mazeSide;
-
-        revalidate();
-        repaint();
+        updateMaze();
     }
 
     private void initializeImages() {
@@ -68,14 +61,17 @@ public class MazeView extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        byte mazeSide = mazeModel.getMazeSide();
+        Square[] squares = mazeModel.getSquares();
+
         for (byte row = 0; row < mazeSide; row++) {
             for (byte column = 0; column < mazeSide; column++) {
                 int x = column * squareSize;
                 int y = row * squareSize;
-                byte element = squares[getSquarePositionInMaze(row, column, mazeSide)];
+                Square square = squares[getSquarePositionInMaze(row, column, mazeSide)];
 
                 drawSquare(g, x, y);
-                drawElement(g, element, x, y);
+                drawElement(g, square.getStatus(), x, y);
             }
         }
     }
@@ -96,11 +92,6 @@ public class MazeView extends JPanel {
         }
     }
 
-    public void placeElement(byte element, byte row, byte column) {
-        squares[getSquarePositionInMaze(row, column, mazeSide)] = element;
-        repaint(column * squareSize, row * squareSize, squareSize, squareSize); // Repaint the specific square
-    }
-
     private class MazeMouseListener extends MouseAdapter {
         @Override
         public void mouseClicked(MouseEvent e) {
@@ -109,6 +100,11 @@ public class MazeView extends JPanel {
             byte column = (byte) (e.getX() / squareSize);
             controller.notify(Events_Constants.SQUARE_CLICKED, row, column);
         }
+    }
+
+    public void updateMaze() {
+        squareSize = windowSize / mazeModel.getMazeSide();
+        repaint();
     }
 
 }
