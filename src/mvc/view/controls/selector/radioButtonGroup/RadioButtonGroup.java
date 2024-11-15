@@ -15,8 +15,8 @@ public abstract class RadioButtonGroup extends JPanel {
 
     public RadioButtonGroup(Controller controller, String actionType) {
         this.controller = controller;
-        this.buttonGroup = new ButtonGroup();
         this.actionType = actionType;
+        buttonGroup = new ButtonGroup();
 
         setLayout(new GridLayout(0, 2)); // Optionally customizable layout
         initComponents();

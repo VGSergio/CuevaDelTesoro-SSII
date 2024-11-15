@@ -7,14 +7,14 @@ import javax.swing.*;
 
 public class View extends javax.swing.JFrame {
 
-    private final Controls CONTROLS;
-    private final Maze MAZE;
+    private final Controls controls;
+    private final Maze maze;
 
     public View(Controller controller, byte mazeSideSquares, byte[] squares) {
         int width = 800;
 
-        this.CONTROLS = new Controls(controller, width);
-        this.MAZE = new Maze(controller, width, mazeSideSquares, squares);
+        controls = new Controls(controller, width);
+        maze = new Maze(controller, width, mazeSideSquares, squares);
 
         configure();
         initComponents();
@@ -26,8 +26,8 @@ public class View extends javax.swing.JFrame {
     }
 
     private void initComponents() {
-        add(CONTROLS);
-        add(MAZE);
+        add(controls);
+        add(maze);
     }
 
     private void showView() {
@@ -40,14 +40,18 @@ public class View extends javax.swing.JFrame {
     }
 
     public Maze getMaze() {
-        return MAZE;
+        return maze;
     }
 
     public void mazeSizeChanged(byte mazeSideSquares, byte[] squares) {
-        MAZE.setMaze(mazeSideSquares, squares);
+        maze.setMaze(mazeSideSquares, squares);
     }
 
     public Controls getControls() {
-        return CONTROLS;
+        return controls;
+    }
+
+    public void updateMaze() {
+
     }
 }

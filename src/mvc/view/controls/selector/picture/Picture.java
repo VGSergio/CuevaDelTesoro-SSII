@@ -9,11 +9,11 @@ import java.util.Map;
 public abstract class Picture extends JPanel {
 
     protected static final byte IMG_SIZE = 80;
-    private static final Map<String, ImageIcon> imageCache = new HashMap<>();
+    private static final Map<String, ImageIcon> IMAGE_CACHE = new HashMap<>();
     private final JLabel pictureLabel; // JLabel to display the picture
 
     public Picture(String defaultImage) {
-        this.pictureLabel = new JLabel();
+        pictureLabel = new JLabel();
 
         setLayout(new BorderLayout());
         setPreferredSize(new Dimension(IMG_SIZE, IMG_SIZE));
@@ -40,7 +40,7 @@ public abstract class Picture extends JPanel {
             return null;
         }
 
-        return imageCache.computeIfAbsent(path, p -> {
+        return IMAGE_CACHE.computeIfAbsent(path, p -> {
             Image image = new ImageIcon(p).getImage().getScaledInstance(IMG_SIZE, IMG_SIZE, Image.SCALE_SMOOTH);
             return new ImageIcon(image);
         });

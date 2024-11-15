@@ -17,10 +17,10 @@ public class Controls extends JPanel {
 
     public Controls(Controller controller, int windowWidth) {
         // Initialize components
-        this.elementSelector = new ElementSelector(controller);
-        this.sizeSpinner = new SizeSpinner(controller);
-        this.speedSelector = new SpeedSelector(controller);
-        this.startPicture = new StartPicture(controller);
+        elementSelector = new ElementSelector(controller);
+        sizeSpinner = new SizeSpinner(controller);
+        speedSelector = new SpeedSelector(controller);
+        startPicture = new StartPicture(controller);
 
         // Configure panel and add components
         configurePanel(windowWidth);

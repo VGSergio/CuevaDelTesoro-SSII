@@ -19,16 +19,16 @@ public class Maze extends JPanel {
 
     private static final Color SQUARE_COLOR = Color.WHITE;
     private static final Color BORDER_COLOR = Color.BLACK;
-    private final Controller CONTROLLER;
-    private final int WINDOW_SIZE;
+    private final Controller controller;
+    private final int windowSize;
     private final Map<Integer, BufferedImage> imageCache = new HashMap<>();
     private byte mazeSide;
     private int squareSize;
     private byte[] squares;
 
     public Maze(Controller controller, int windowSize, byte mazeSide, byte[] squares) {
-        this.CONTROLLER = controller;
-        this.WINDOW_SIZE = windowSize;
+        this.controller = controller;
+        this.windowSize = windowSize;
 
         setMaze(mazeSide, squares);
         initializeImages();
@@ -37,8 +37,8 @@ public class Maze extends JPanel {
 
     public void setMaze(byte mazeSide, byte[] squares) {
         this.mazeSide = mazeSide;
-        this.squareSize = WINDOW_SIZE / mazeSide;
         this.squares = squares;
+        squareSize = windowSize / mazeSide;
 
         revalidate();
         repaint();
@@ -52,7 +52,7 @@ public class Maze extends JPanel {
     }
 
     private void configure() {
-        setPreferredSize(new Dimension(WINDOW_SIZE, WINDOW_SIZE));
+        setPreferredSize(new Dimension(windowSize, windowSize));
         addMouseListener(new MazeMouseListener());
     }
 
@@ -107,7 +107,7 @@ public class Maze extends JPanel {
             e.consume();
             byte row = (byte) (e.getY() / squareSize);
             byte column = (byte) (e.getX() / squareSize);
-            CONTROLLER.notify(Events_Constants.SQUARE_CLICKED, row, column);
+            controller.notify(Events_Constants.SQUARE_CLICKED, row, column);
         }
     }
 
