@@ -24,8 +24,8 @@ public class MazeView extends JPanel {
     private final Controller controller;
     private final int windowSize;
     private final Map<Integer, BufferedImage> imageCache = new HashMap<>();
-    private int squareSize;
     private final MazeModel mazeModel;
+    private int squareSize;
 
     public MazeView(Controller controller, int windowSize, MazeModel mazeModel) {
         this.controller = controller;
@@ -47,6 +47,11 @@ public class MazeView extends JPanel {
     private void configure() {
         setPreferredSize(new Dimension(windowSize, windowSize));
         addMouseListener(new MazeMouseListener());
+    }
+
+    public void updateMaze() {
+        squareSize = windowSize / mazeModel.getMazeSide();
+        repaint();
     }
 
     private BufferedImage loadImage(String path) {
@@ -101,10 +106,4 @@ public class MazeView extends JPanel {
             controller.notify(Events_Constants.SQUARE_CLICKED, row, column);
         }
     }
-
-    public void updateMaze() {
-        squareSize = windowSize / mazeModel.getMazeSide();
-        repaint();
-    }
-
 }
