@@ -45,10 +45,10 @@ public class Maze extends JPanel {
     }
 
     private void initializeImages() {
-        imageCache.put((int) MONSTER, loadImage(MONSTER_IMAGE));
-        imageCache.put((int) HOLE, loadImage(HOLE_IMAGE));
-        imageCache.put((int) TREASURE, loadImage(TREASURE_IMAGE));
-        imageCache.put((int) PLAYER, loadImage(PLAYER_IMAGE));
+        imageCache.put((int) Perception_Constants.MONSTER, loadImage(Images_Constants.MONSTER));
+        imageCache.put((int) Perception_Constants.HOLE, loadImage(Images_Constants.HOLE));
+        imageCache.put((int) Perception_Constants.TREASURE, loadImage(Images_Constants.TREASURE));
+        imageCache.put((int) Perception_Constants.PLAYER, loadImage(Images_Constants.PLAYER));
     }
 
     private void configure() {
@@ -88,7 +88,7 @@ public class Maze extends JPanel {
     }
 
     private void drawElement(Graphics g, byte element, int x, int y) {
-        if (element != CLEAN) {
+        if (element != Perception_Constants.CLEAN) {
             BufferedImage image = imageCache.get((int) element);
             if (image != null) {
                 g.drawImage(image, x, y, squareSize, squareSize, null);
@@ -107,7 +107,7 @@ public class Maze extends JPanel {
             e.consume();
             byte row = (byte) (e.getY() / squareSize);
             byte column = (byte) (e.getX() / squareSize);
-            CONTROLLER.notify(SQUARE_CLICKED, row, column);
+            CONTROLLER.notify(Events_Constants.SQUARE_CLICKED, row, column);
         }
     }
 

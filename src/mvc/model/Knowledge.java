@@ -1,54 +1,19 @@
 package mvc.model;
 
-import java.util.Arrays;
-
-import static mvc.model.Global.*;
+import static mvc.model.Global.Perception_Constants;
 
 public class Knowledge {
 
-    private final boolean[] perceptions;
+    private final Perceptions perceptions;
     private byte status;
 
     public Knowledge() {
-        perceptions = new boolean[NUMBER_OF_PERCEPTIONS];
-        Arrays.fill(perceptions, false);
-        this.status = UNKNOWN;
+        perceptions = new Perceptions();
+        this.status = Perception_Constants.UNKNOWN;
     }
 
-    public boolean[] getPerceptions() {
+    public Perceptions getPerceptions() {
         return perceptions;
-    }
-
-    public boolean isStink() {
-        return perceptions[MONSTER];
-    }
-
-    public void setStink(boolean stink) {
-        perceptions[MONSTER] = stink;
-    }
-
-    public boolean isWind() {
-        return perceptions[HOLE];
-    }
-
-    public void setWind(boolean wind) {
-        perceptions[HOLE] = wind;
-    }
-
-    public boolean isRadiance() {
-        return perceptions[TREASURE];
-    }
-
-    public void setRadiance(boolean radiance) {
-        perceptions[TREASURE] = radiance;
-    }
-
-    public boolean issBang() {
-        return perceptions[WALL];
-    }
-
-    public void setBang(boolean bang) {
-        perceptions[WALL] = bang;
     }
 
     public byte getStatus() {

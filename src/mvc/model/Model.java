@@ -2,35 +2,30 @@ package mvc.model;
 
 import mvc.model.maze.Maze;
 
-import static mvc.model.Global.MIN_MAZE_SIDE;
+import static mvc.model.Global.Maze_Constants;
 
 public class Model {
 
-    private final Maze MAZE = new Maze(MIN_MAZE_SIDE);
-    private boolean isRunning;
-    private Player player;
+    private final Maze maze = new Maze(Maze_Constants.MIN_SIDE);
+    private boolean started;
 
     public Model() {
-        this.isRunning = false;
+        this.started = false;
     }
 
-    public boolean isRunning() {
-        return isRunning;
+    public boolean isStarted() {
+        return started;
     }
 
-    public void setRunning(boolean isRunning) {
-        this.isRunning = isRunning;
+    public void setStarted(boolean value) {
+        this.started = value;
     }
 
     public Maze getMaze() {
-        return MAZE;
+        return maze;
     }
 
-    public Player getPlayer() {
-        return player;
-    }
+    public void updateMaze() {
 
-    public void setPlayer(Player player) {
-        this.player = player;
     }
 }

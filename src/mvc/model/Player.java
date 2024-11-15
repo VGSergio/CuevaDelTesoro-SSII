@@ -3,7 +3,8 @@ package mvc.model;
 import mvc.model.maze.Maze;
 import mvc.model.maze.Square;
 
-import static mvc.model.Global.*;
+import static mvc.model.Global.Perception_Constants;
+import static mvc.model.Global.getSquarePositionInMaze;
 
 public class Player {
 
@@ -32,15 +33,15 @@ public class Player {
         for (int i = 0; i < BC.length; i++) {
             this.BC[i] = new Knowledge();
         }
-        BC[getSquarePositionInMaze(actualRow, actualCol, maze.getMazeSide())].setStatus(CLEAN); // The starting position is safe
+        BC[getSquarePositionInMaze(actualRow, actualCol, maze.getMazeSide())].setStatus(Perception_Constants.CLEAN); // The starting position is safe
         updatePerceptions();
     }
 
     private static Knowledge getKnowledge(int[] positions, int mazeLength, Square[] squares) {
-        Knowledge perceptions = new Knowledge();
-        boolean stink = false;
-        boolean wind = false;
-        boolean radiance = false;
+        Knowledge knowledge = new Knowledge();
+        boolean monster = false;
+        boolean hole = false;
+        boolean treasure = false;
 
         for (int pos : positions) {
             if (pos < 0 || pos >= mazeLength) {
@@ -50,24 +51,26 @@ public class Player {
             byte status = squares[pos].getStatus();
 
             switch (status) {
-                case MONSTER:
-                    stink = true;
+                case Perception_Constants.MONSTER:
+                    monster = true;
                     break;
-                case HOLE:
-                    wind = true;
+                case Perception_Constants.HOLE:
+                    hole = true;
                     break;
-                case TREASURE:
-                    radiance = true;
+                case Perception_Constants.TREASURE:
+                    treasure = true;
                     break;
                 default:
                     break;
             }
         }
 
-        perceptions.setStink(stink);
-        perceptions.setWind(wind);
-        perceptions.setRadiance(radiance);
-        return perceptions;
+        Perceptions perceptions = knowledge.getPerceptions();
+
+        perceptions.setMonsterPerception(monster);
+        perceptions.setHolePerception(hole);
+        perceptions.setHolePerception(treasure);
+        return knowledge;
     }
 
     private void updatePerceptions() {
@@ -112,7 +115,7 @@ public class Player {
         // update maze
     }
 
-    private void exploreMaze() {
+    public void exploreMaze() {
         // find treasure
         while (!foundTreasure) {
             updatePerceptions();
@@ -131,7 +134,7 @@ public class Player {
 
     }
 
-    private boolean hasFinished() {
+    public boolean hasFinished() {
         return foundTreasure && actualRow == STARTING_ROW && actualCol == STARTING_COL;
     }
 }

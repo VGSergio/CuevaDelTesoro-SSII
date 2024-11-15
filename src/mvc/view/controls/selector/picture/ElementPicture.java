@@ -1,11 +1,11 @@
 package mvc.view.controls.selector.picture;
 
-import static mvc.model.Global.CLEAN_IMAGE;
+import static mvc.model.Global.Images_Constants;
 
 public class ElementPicture extends Picture {
 
     public ElementPicture() {
-        super(CLEAN_IMAGE);
+        super(Images_Constants.CLEAN);
     }
 
 }

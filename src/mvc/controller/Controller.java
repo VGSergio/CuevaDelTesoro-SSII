@@ -1,6 +1,7 @@
 package mvc.controller;
 
 import mvc.model.Model;
+import mvc.model.maze.Maze;
 import mvc.model.maze.Square;
 import mvc.view.View;
 
@@ -8,57 +9,48 @@ import static mvc.model.Global.*;
 
 public class Controller extends Thread {
 
-    private Thread thread;
-
     private final Model MODEL = new Model();
     private View view;
 
-    private byte selectedItem = CLEAN;
-    private int selectedSpeed = NORMAL_SPEED_VALUE;
+    private byte selectedItem = Perception_Constants.CLEAN;
+    private int selectedSpeed = Speed_Constants.NORMAL_VALUE;
 
     public static void main(String[] args) {
         new Controller().start();
     }
 
     @Override
-    public void run(){
-        createThread();
-        startThread();
-        stopThread();
+    public void run() {
+        initializeView();
+
+        while (MODEL.isStarted()) {
+            MODEL.updateMaze();
+        }
     }
 
-    private void createThread() {
-        thread = new Thread(() -> view = new View(this, MODEL.getMaze().getMazeSide(), MODEL.getMaze().getSquaresStatus()));
-    }
-
-    private void startThread() {
-        thread.start();
-    }
-
-    private void stopThread() {
+    private void initializeView() {
         try {
-            thread.join();
-            thread = null;
-        } catch (InterruptedException ex) {
-            System.err.println(ex.getMessage());
+            view = new View(this, MODEL.getMaze().getMazeSide(), MODEL.getMaze().getSquaresStatus());
+        } catch (Exception e) {
+            System.err.println("Error initializing view: " + e.getMessage());
         }
     }
 
     public void notify(String event, Object... params) {
         switch (event) {
-            case MAZE_SIDE_CHANGED -> handleMazeSideChanged((int) params[0]);
-            case SQUARE_CLICKED -> handleSquareClicked((byte) params[0], (byte) params[1]);
-            case ELEMENT_CHANGED -> handleElementChanged((String) params[0]);
-            case SPEED_CHANGED -> handleSpeedChanged((String) params[0]);
-            case NEXT_STEP_CLICKED -> handleNextStepClicked();
-            case START_CLICKED -> handleStartClicked();
-            default -> System.err.println("Unexpected event");
+            case Events_Constants.MAZE_SIDE_CHANGED -> handleMazeSideChanged(castToInt(params[0]));
+            case Events_Constants.SQUARE_CLICKED -> handleSquareClicked(castToByte(params[0]), castToByte(params[1]));
+            case Events_Constants.ELEMENT_CHANGED -> handleElementChanged((String) params[0]);
+            case Events_Constants.SPEED_CHANGED -> handleSpeedChanged((String) params[0]);
+            case Events_Constants.NEXT_STEP_CLICKED -> handleNextStepClicked();
+            case Events_Constants.START_CLICKED -> handleStartClicked();
+            default -> System.err.println("Unexpected event: " + event);
         }
     }
 
     private void handleMazeSideChanged(int size) {
-        if (MODEL.isRunning()) {
-            System.err.println("Maze size can not be longer changed");
+        if (MODEL.isStarted()) {
+            System.err.println("Maze size can not be changed once started.");
             return;
         }
         MODEL.getMaze().setMazeSide((byte) size);
@@ -66,78 +58,67 @@ public class Controller extends Thread {
     }
 
     private void handleSquareClicked(byte row, byte column) {
-        if (!canPlaceItem()) {
-            return;
-        }
+        if (!canPlaceItem(row, column)) return;
 
-        Square square = MODEL.getMaze().getSquares()[row * MODEL.getMaze().getMazeSide() + column];
+        Square square = MODEL.getMaze().getSquare(row, column);
         byte status = square.getStatus();
 
-        if (status == selectedItem) {
-            return; // Do nothing if both are equal
-        }
-        if (status == PLAYER){
-            System.err.println("Square reserved to place the player");
-            return;
-        }
+        if (status == selectedItem) return; // Do nothing if already set to selected item
 
         updateModelCounts(status, selectedItem);
         square.setStatus(selectedItem);
         view.getMaze().placeElement(selectedItem, row, column);
     }
 
-    private boolean canPlaceItem() {
-        if (MODEL.isRunning()) {
-            System.err.println("Maze can not be edited while execution");
+    private boolean canPlaceItem(byte row, byte column) {
+        if (MODEL.isStarted()) {
+            System.err.println("Maze cannot be edited once started.");
             return false;
         }
-        if (selectedItem == MONSTER && MODEL.getMaze().getAmountOfMonsters() == MAX_MONSTERS) {
-            System.err.println("Can only place a maximum of " + MAX_MONSTERS + " monster(s)");
+        if (selectedItem == Perception_Constants.CLEAN) {
+            return true;
+        }
+        if (selectedItem == Perception_Constants.MONSTER && MODEL.getMaze().getAmountOfMonsters() >= Maze_Constants.MAX_MONSTERS) {
+            System.err.println("Maximum number of monsters reached.");
             return false;
         }
-        if (selectedItem == TREASURE && MODEL.getMaze().getAmountOfTreasures() == MAX_TREASURES) {
-            System.err.println("Can only place a maximum of " + MAX_TREASURES + " treasure(s)");
+        if (selectedItem == Perception_Constants.TREASURE && MODEL.getMaze().getAmountOfTreasures() >= Maze_Constants.MAX_TREASURES) {
+            System.err.println("Maximum number of treasures reached.");
             return false;
         }
+        if (selectedItem != Perception_Constants.PLAYER && row == MODEL.getMaze().getMazeSide() - 1 && column == 0) {
+            System.err.println("Position reserved for a player.");
+            return false;
+        }
+
         return true;
     }
 
     private void updateModelCounts(byte currentStatus, byte newStatus) {
-        // currentStatus == -1. newStatus != -1 -> Increase newStatus
-        // currentStatus != -1. newStatus == -1 -> Decrease currentStatus
-        // currentStatus != -1. newStatus != -1 -> Decrease currentStatus, increase newStatus
+        Maze maze = MODEL.getMaze();
 
-        switch (currentStatus) {
-            case MONSTER:
-                MODEL.getMaze().adjustAmountOfMonsters(-1);
-            break;
-            case TREASURE:
-                MODEL.getMaze().adjustAmountOfTreasures(-1);
-                break;
-            case HOLE:  // Do nothing, we don't care about holes tracking
-            default:    // Do nothing for status -1 or unrecognized values
-                break;
-        }
+        // Adjust the count for current status (decrease)
+        adjustMazeCount(maze, currentStatus, -1);
 
-        switch (newStatus) {
-            case MONSTER:
-                MODEL.getMaze().adjustAmountOfMonsters(1);
-                break;
-            case TREASURE:
-                MODEL.getMaze().adjustAmountOfTreasures(1);
-                break;
-            case HOLE:  // Do nothing, we don't care about holes tracking
-            default:    // Do nothing for status -1 or unrecognized values
-                break;
+        // Adjust the count for new status (increase)
+        adjustMazeCount(maze, newStatus, 1);
+    }
+
+    private void adjustMazeCount(Maze maze, byte status, int delta) {
+        switch (status) {
+            case Perception_Constants.MONSTER -> maze.adjustAmountOfMonsters(delta);
+            case Perception_Constants.TREASURE -> maze.adjustAmountOfTreasures(delta);
+            case Perception_Constants.PLAYER -> maze.adjustAmountOfPlayers(delta);
         }
     }
 
     private void handleElementChanged(String element) {
         selectedItem = switch (element) {
-            case CLEAN_IMAGE -> CLEAN;
-            case MONSTER_IMAGE -> MONSTER;
-            case HOLE_IMAGE -> HOLE;
-            case TREASURE_IMAGE -> TREASURE;
+            case Images_Constants.CLEAN -> Perception_Constants.CLEAN;
+            case Images_Constants.MONSTER -> Perception_Constants.MONSTER;
+            case Images_Constants.HOLE -> Perception_Constants.HOLE;
+            case Images_Constants.TREASURE -> Perception_Constants.TREASURE;
+            case Images_Constants.PLAYER -> Perception_Constants.PLAYER;
             default -> throw new IllegalStateException("Unexpected value: " + element);
         };
         view.getControls().getElementSelector().getPicture().setPicture(element);
@@ -145,51 +126,56 @@ public class Controller extends Thread {
 
     private void handleSpeedChanged(String element) {
         selectedSpeed = switch (element) {
-            case SLOW_SPEED -> SLOW_SPEED_VALUE;
-            case NORMAL_SPEED -> NORMAL_SPEED_VALUE;
-            case FAST_SPEED -> FAST_SPEED_VALUE;
-            case MANUAL_SPEED -> MANUAL_SPEED_VALUE;
+            case Speed_Constants.SLOW -> Speed_Constants.SLOW_VALUE;
+            case Speed_Constants.NORMAL -> Speed_Constants.NORMAL_VALUE;
+            case Speed_Constants.FAST -> Speed_Constants.FAST_VALUE;
+            case Speed_Constants.MANUAL -> Speed_Constants.MANUAL_VALUE;
             default -> throw new IllegalStateException("Unexpected value: " + element);
         };
         System.out.println("Speed changed to " + selectedSpeed);
     }
 
     private void handleNextStepClicked() {
-        if (selectedSpeed != MANUAL_SPEED_VALUE) {
-            System.err.println("No manual step in this speed");
+        if (selectedSpeed != Speed_Constants.MANUAL_VALUE) {
+            System.err.println("Manual steps only allowed at manual speed.");
             return;
         }
-
-        System.out.println("Next step");
+        System.out.println("Next step executed.");
     }
 
     private void handleStartClicked() {
         if (!canStart()) return;
 
-        MODEL.setRunning(true);
+        MODEL.getMaze().updateAllPerceptions();
+        MODEL.setStarted(true);
+
+        System.out.println("Maze started.");
     }
 
     private boolean canStart() {
-        if (MODEL.isRunning()) {
-            System.err.println("Maze is already running");
+        if (MODEL.isStarted()) {
+            System.err.println("Maze has already started.");
             return false;
         }
 
-        int monsters = MODEL.getMaze().getAmountOfMonsters();
-        int treasures = MODEL.getMaze().getAmountOfTreasures();
-        if (monsters == 0 || treasures == 0) {
-            if (monsters == 0 && treasures == 0) {
-                System.err.println("You have to place a monster and a treasure before starting");
-            } else {
-                System.err.println(
-                        monsters == 0
-                                ? "You have to place a monster before starting"
-                                : "You have to place a treasure before starting"
-                );
-            }
+        Maze maze = MODEL.getMaze();
+        if (maze.getAmountOfMonsters() == 0 || maze.getAmountOfTreasures() == 0) {
+            System.err.println("A monster and treasure are required to start.");
             return false;
         }
 
+        if (maze.getAmountOfTreasures() != maze.getAmountOfPlayers()) {
+            System.err.println("Each player has to be able to get a treasure.");
+            return false;
+        }
         return true;
+    }
+
+    private int castToInt(Object param) {
+        return param instanceof Integer ? (Integer) param : 0;
+    }
+
+    private byte castToByte(Object param) {
+        return param instanceof Byte ? (Byte) param : 0;
     }
 }
