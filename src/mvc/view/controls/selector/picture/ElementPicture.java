@@ -5,7 +5,7 @@ import static mvc.model.Global.Images_Constants;
 public class ElementPicture extends Picture {
 
     public ElementPicture() {
-        super(Images_Constants.CLEAN);
+        super(Images_Constants.DEFAULT);
     }
 
 }

@@ -21,6 +21,6 @@ public class SpeedRadioButtons extends RadioButtonGroup {
                 new RadioButtonOption("Normal", Speed_Constants.NORMAL),
                 new RadioButtonOption("Fast", Speed_Constants.FAST),
                 new RadioButtonOption("Manual", Speed_Constants.MANUAL)
-        ), Speed_Constants.NORMAL);
+        ), Speed_Constants.DEFAULT);
     }
 }

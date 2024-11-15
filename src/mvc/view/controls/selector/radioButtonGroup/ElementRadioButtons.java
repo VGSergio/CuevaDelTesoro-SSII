@@ -22,6 +22,6 @@ public class ElementRadioButtons extends RadioButtonGroup {
                 new RadioButtonOption("Treasure", Images_Constants.TREASURE),
                 new RadioButtonOption("Clean", Images_Constants.CLEAN),
                 new RadioButtonOption("Player", Images_Constants.PLAYER)
-        ), Images_Constants.CLEAN);
+        ), Images_Constants.DEFAULT);
     }
 }

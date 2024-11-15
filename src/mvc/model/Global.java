@@ -4,14 +4,18 @@ public class Global {
 
     // Perception-related constants
     public static class Perception_Constants {
-        public static final byte UNKNOWN = -2;
-        public static final byte CLEAN = -1;
+        // Perceptions and Status
         public static final byte MONSTER = 0;
         public static final byte HOLE = 1;
         public static final byte TREASURE = 2;
         public static final byte WALL = 3;
-        public static final byte NUMBER_OF_PERCEPTIONS = 4;
-        public static final byte PLAYER = 4;
+        public static final byte MOAN = 4;
+        public static final byte NUMBER_OF_PERCEPTIONS = 5;
+        public static final byte DEFAULT = MONSTER;
+        // Status
+        public static final byte PLAYER = 6;
+        public static final byte CLEAN = 7;
+        public static final byte UNKNOWN = 8;
     }
 
     // Maze-related constants
@@ -42,6 +46,7 @@ public class Global {
         public static final String PLAYER = "resources/player.png";
         public static final String NEXT_STEP = "resources/next_step.png";
         public static final String START = "resources/start.png";
+        public static final String DEFAULT = MONSTER;
     }
 
     // Speed-related constants
@@ -50,11 +55,13 @@ public class Global {
         public static final String NORMAL = "NORMAL_SPEED";
         public static final String FAST = "FAST_SPEED";
         public static final String MANUAL = "MANUAL_SPEED";
+        public static final String DEFAULT = NORMAL;
 
         public static final int SLOW_VALUE = 1_000;
         public static final int NORMAL_VALUE = 500;
         public static final int FAST_VALUE = 250;
         public static final int MANUAL_VALUE = -1;
+        public static final int DEFAULT_VALUE = NORMAL_VALUE;
     }
 
     // Utility method
