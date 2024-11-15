@@ -15,7 +15,7 @@ import java.util.Map;
 
 import static mvc.model.Global.*;
 
-public class Maze extends JPanel {
+public class MazeView extends JPanel {
 
     private static final Color SQUARE_COLOR = Color.WHITE;
     private static final Color BORDER_COLOR = Color.BLACK;
@@ -26,7 +26,7 @@ public class Maze extends JPanel {
     private int squareSize;
     private byte[] squares;
 
-    public Maze(Controller controller, int windowSize, byte mazeSide, byte[] squares) {
+    public MazeView(Controller controller, int windowSize, byte mazeSide, byte[] squares) {
         this.controller = controller;
         this.windowSize = windowSize;
 
