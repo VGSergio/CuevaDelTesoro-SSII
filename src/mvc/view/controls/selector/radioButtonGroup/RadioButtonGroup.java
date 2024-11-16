@@ -22,11 +22,10 @@ import java.util.List;
  *       group with radio buttons.</li>
  * </ul>
  *
+ * @author Sergio Vega García
  * @see JPanel
  * @see Controller
  * @see ButtonGroup
- *
- * @author Sergio Vega García
  */
 public abstract class RadioButtonGroup extends JPanel {
 

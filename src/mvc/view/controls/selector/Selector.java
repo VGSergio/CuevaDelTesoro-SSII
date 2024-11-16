@@ -27,11 +27,10 @@ import java.awt.*;
  *
  * @param <T> the type of {@link RadioButtonGroup} to be used
  * @param <U> the type of {@link Picture} to be used
- *
  * @see RadioButtonGroup
  * @see Picture
  * @see javax.swing.JPanel
- *
+ * <p>
  * author Sergio Vega García
  */
 public class Selector<T extends RadioButtonGroup, U extends Picture> extends JPanel {
@@ -48,7 +47,7 @@ public class Selector<T extends RadioButtonGroup, U extends Picture> extends JPa
      * at the start (LINE_START) and the picture placed in the center (CENTER).
      *
      * @param radioButtons the {@link RadioButtonGroup} component to display
-     * @param picture the {@link Picture} component to display
+     * @param picture      the {@link Picture} component to display
      */
     public Selector(T radioButtons, U picture) {
         this.picture = picture;

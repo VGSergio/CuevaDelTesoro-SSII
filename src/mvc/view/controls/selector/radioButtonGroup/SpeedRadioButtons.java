@@ -22,13 +22,12 @@ import static mvc.model.Global.Speed_Constants;
  *       {@link mvc.model.Global.Events_Constants#SPEED_CHANGED} action type.</li>
  * </ul>
  *
+ * @author Sergio Vega García
  * @see RadioButtonGroup
  * @see RadioButtonOption
  * @see Controller
  * @see Speed_Constants
  * @see Events_Constants
- *
- * @author Sergio Vega García
  */
 public class SpeedRadioButtons extends RadioButtonGroup {
 

@@ -13,12 +13,11 @@ import java.util.Map;
  * and resizing. Images are cached for improved performance, and they are scaled to a fixed size.
  * Subclasses can extend this class to add more functionality or customize its behavior.
  *
+ * @author Sergio Vega García
  * @see javax.swing.JPanel
  * @see javax.swing.ImageIcon
  * @see java.util.Map
  * @see java.awt.Image
- *
- * @author Sergio Vega García
  */
 public abstract class Picture extends JPanel {
 

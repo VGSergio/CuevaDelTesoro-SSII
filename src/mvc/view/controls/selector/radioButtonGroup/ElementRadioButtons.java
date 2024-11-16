@@ -15,12 +15,11 @@ import static mvc.model.Global.Images_Constants;
  * such as Monster, Hole, and Player, using constants defined in the {@link mvc.model.Global} class.
  * It notifies the controller when the selected element changes.
  *
+ * @author Sergio Vega García
  * @see RadioButtonGroup
  * @see Events_Constants
  * @see Images_Constants
  * @see Controller
- *
- * @author Sergio Vega García
  */
 public class ElementRadioButtons extends RadioButtonGroup {
 

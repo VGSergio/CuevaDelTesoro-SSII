@@ -20,12 +20,11 @@ import java.awt.event.MouseEvent;
  *   <li>The displayed image is initially set to {@link mvc.model.Global.Images_Constants#NEXT_STEP}.</li>
  * </ul>
  *
+ * @author Sergio Vega García
  * @see Picture
  * @see mvc.controller.Controller
  * @see mvc.model.Global.Events_Constants
  * @see mvc.model.Global.Images_Constants
- *
- * @author Sergio Vega García
  */
 public class SpeedPicture extends Picture {
 

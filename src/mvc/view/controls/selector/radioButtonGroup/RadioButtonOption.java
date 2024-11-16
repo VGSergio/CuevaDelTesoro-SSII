@@ -15,12 +15,11 @@ package mvc.view.controls.selector.radioButtonGroup;
  *     RadioButtonOption option = new RadioButtonOption("Label", "COMMAND");
  * </pre>
  *
- * @param label the text displayed on the radio button
+ * @param label         the text displayed on the radio button
  * @param actionCommand the string representing the command associated with the radio button
+ * @author Sergio Vega García
  * @see RadioButtonGroup
  * @see javax.swing.JRadioButton
- *
- * @author Sergio Vega García
  */
 public record RadioButtonOption(String label, String actionCommand) {
 }
