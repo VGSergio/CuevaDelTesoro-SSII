@@ -32,20 +32,22 @@ public class MazeModel {
             this.squares[i] = new Square(defaultSquareStatus);
         }
 
-        // The maze always has a player on the bottom left position
-        squares[getSquarePositionInMaze((byte) (mazeSide - 1), (byte) 0, mazeSide)].setStatus(Status_Constants.PLAYER);
-
         this.amountOfMonsters = 0;
         this.amountOfTreasures = 0;
-        this.amountOfPlayers = 1; // Includes the initial player
     }
 
     /**
      * Initializes the player in the maze.
      */
     public void initializePlayer() {
-        // First player, which starts in the bottom left corner.
-        player = new Player((byte) (mazeSide - 1), (byte) 0);
+        // The maze always has a player on the bottom left position
+        byte row = (byte) (mazeSide - 1);
+        byte column = (byte) (0);
+
+        squares[getSquarePositionInMaze(row, column, mazeSide)].setStatus(Status_Constants.PLAYER);
+        this.amountOfPlayers = 1;
+
+        player = new Player(row, column);
         player.setMaze(this);
     }
 
