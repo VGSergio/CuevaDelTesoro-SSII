@@ -63,7 +63,7 @@ public class MazeView extends JPanel {
     /**
      * A cache for storing loaded images corresponding to maze statuses.
      */
-    private final Map<Integer, BufferedImage> imageCache = new HashMap<>();
+    private final Map<SquareStatus, BufferedImage> imageCache = new HashMap<>();
 
     /**
      * The model representing the maze.
@@ -99,10 +99,10 @@ public class MazeView extends JPanel {
      * Loads images for maze statuses into the cache.
      */
     private void initializeImages() {
-        imageCache.put((int) Status_Constants.MONSTER, loadImage(Images_Constants.MONSTER));
-        imageCache.put((int) Status_Constants.HOLE, loadImage(Images_Constants.HOLE));
-        imageCache.put((int) Status_Constants.TREASURE, loadImage(Images_Constants.TREASURE));
-        imageCache.put((int) Status_Constants.PLAYER, loadImage(Images_Constants.PLAYER));
+        imageCache.put(SquareStatus.MONSTER, loadImage(Images_Constants.MONSTER));
+        imageCache.put(SquareStatus.HOLE, loadImage(Images_Constants.HOLE));
+        imageCache.put(SquareStatus.TREASURE, loadImage(Images_Constants.TREASURE));
+        imageCache.put(SquareStatus.PLAYER, loadImage(Images_Constants.PLAYER));
     }
 
     /**
@@ -179,14 +179,14 @@ public class MazeView extends JPanel {
     /**
      * Draws the status associated with a square.
      *
-     * @param g       the {@link Graphics} object
+     * @param g      the {@link Graphics} object
      * @param status the status of the square
-     * @param x       the x-coordinate of the square
-     * @param y       the y-coordinate of the square
+     * @param x      the x-coordinate of the square
+     * @param y      the y-coordinate of the square
      */
-    private void drawStatus(Graphics g, byte status, int x, int y) {
-        if (status != Status_Constants.CLEAN) {
-            BufferedImage image = imageCache.get((int) status);
+    private void drawStatus(Graphics g, SquareStatus status, int x, int y) {
+        if (status != SquareStatus.CLEAN) {
+            BufferedImage image = imageCache.get(status);
             if (image != null) {
                 g.drawImage(image, x, y, squareSize, squareSize, null);
             }

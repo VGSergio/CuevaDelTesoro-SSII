@@ -19,13 +19,13 @@ import javax.swing.*;
  *   <li>Call {@link #updateView()} to refresh the maze view after changes to the model.</li>
  * </ul>
  *
+ * @author Sergio Vega García
  * @see JFrame
  * @see Controls
  * @see MazeView
  * @see mvc.controller.Controller
  * @see mvc.model.maze.MazeModel
  * <p>
- * @author Sergio Vega García
  */
 public class View extends javax.swing.JFrame {
 

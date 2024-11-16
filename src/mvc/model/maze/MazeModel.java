@@ -3,12 +3,11 @@ package mvc.model.maze;
 import mvc.model.Perceptions;
 import mvc.model.Player;
 
-import static mvc.model.Global.Status_Constants;
-import static mvc.model.Global.getSquarePositionInMaze;
+import static mvc.model.Global.*;
 
 public class MazeModel {
 
-    private final byte defaultSquareStatus;
+    private final SquareStatus defaultSquareStatus;
     private Square[] squares;
     private byte mazeSide;
     private byte amountOfMonsters;
@@ -17,7 +16,7 @@ public class MazeModel {
 
     private Player player;
 
-    public MazeModel(byte mazeSide, byte defaultSquareStatus) {
+    public MazeModel(byte mazeSide, SquareStatus defaultSquareStatus) {
         this.defaultSquareStatus = defaultSquareStatus;
         setMazeSide(mazeSide);
     }
@@ -44,7 +43,7 @@ public class MazeModel {
         byte row = (byte) (mazeSide - 1);
         byte column = (byte) (0);
 
-        squares[getSquarePositionInMaze(row, column, mazeSide)].setStatus(Status_Constants.PLAYER);
+        squares[getSquarePositionInMaze(row, column, mazeSide)].setStatus(SquareStatus.PLAYER);
         this.amountOfPlayers = 1;
 
         player = new Player(row, column);
@@ -65,7 +64,7 @@ public class MazeModel {
         return squares[getSquarePositionInMaze(row, column, mazeSide)];
     }
 
-    public void setSquaresStatus(byte status) {
+    public void setSquaresStatus(SquareStatus status) {
         for (Square square : squares) {
             square.setStatus(status);
         }
@@ -129,9 +128,10 @@ public class MazeModel {
             byte neighborCol = (byte) (column + delta[1]);
 
             if (isWithinBounds(neighborRow, neighborCol)) {
-                byte status = getSquare(neighborRow, neighborCol).getStatus();
-                if (perceptions.isAValidPerception(status)) {
-                    perceptions.setPerception(status, true);
+                SquareStatus status = getSquare(neighborRow, neighborCol).getStatus();
+                PerceptionType perceptionType = squareStatusToPerceptionType(status);
+                if (perceptionType != null) {
+                    perceptions.setPerception(perceptionType, true);
                 }
             }
         }

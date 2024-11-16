@@ -2,30 +2,31 @@ package mvc.model;
 
 public class Global {
 
+    public static final SquareStatus SQUARE_STATUS_DEFAULT = SquareStatus.MONSTER;
+
     // Utility method
     public static int getSquarePositionInMaze(byte row, byte column, byte sideSize) {
         return row * sideSize + column;
     }
 
+    public static PerceptionType squareStatusToPerceptionType(SquareStatus status) {
+        return switch (status) {
+            case MONSTER -> PerceptionType.MONSTER;
+            case HOLE -> PerceptionType.HOLE;
+            case TREASURE -> PerceptionType.TREASURE;
+            case PLAYER, CLEAN, UNKNOWN -> null;
+        };
+    }
+
     // Perception-related constants
-    public static class Perception_Constants {
-        public static final byte MONSTER = 0;
-        public static final byte HOLE = 1;
-        public static final byte TREASURE = 2;
-        public static final byte WALL = 3;
-        public static final byte MOAN = 4;
-        public static final byte NUMBER_OF_PERCEPTIONS = 5;
+    public enum PerceptionType {
+        MONSTER, HOLE, TREASURE, WALL, MOAN
     }
 
     // Status-related constants
-    public static class Status_Constants {
-        public static final byte MONSTER = 0;
-        public static final byte HOLE = 1;
-        public static final byte TREASURE = 2;
-        public static final byte PLAYER = 3;
-        public static final byte CLEAN = 4;
-        public static final byte UNKNOWN = 5;
-        public static final byte DEFAULT = MONSTER;
+    public enum SquareStatus {
+        MONSTER, HOLE, TREASURE, PLAYER, CLEAN, UNKNOWN
+
     }
 
     // Maze-related constants

@@ -1,24 +1,25 @@
 package mvc.model.maze;
 
+import mvc.model.Global.SquareStatus;
 import mvc.model.Perceptions;
 
 public class Square {
 
-    private byte status;
+    private SquareStatus status;
     private Perceptions perceptions;
     private boolean visited;
 
-    public Square(byte defaultStatus) {
+    public Square(SquareStatus defaultStatus) {
         status = defaultStatus;
         perceptions = new Perceptions();
         visited = false;
     }
 
-    public byte getStatus() {
+    public SquareStatus getStatus() {
         return status;
     }
 
-    public void setStatus(byte status) {
+    public void setStatus(SquareStatus status) {
         this.status = status;
     }
 

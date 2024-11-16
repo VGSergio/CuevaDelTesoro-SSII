@@ -12,7 +12,7 @@ public class Controller extends Thread {
     private Model model;
     private View view;
 
-    private byte selectedStatus = Status_Constants.DEFAULT;
+    private SquareStatus selectedStatus = SQUARE_STATUS_DEFAULT;
     private int selectedSpeed = Speed_Constants.DEFAULT_VALUE;
 
     public static void main(String[] args) {
@@ -71,7 +71,7 @@ public class Controller extends Thread {
         if (!canPlaceItem(row, column)) return;
 
         Square square = model.getMaze().getSquare(row, column);
-        byte status = square.getStatus();
+        SquareStatus status = square.getStatus();
 
         if (status == selectedStatus) {
             System.out.println("Square already set to selected item. No change made.");
@@ -90,19 +90,19 @@ public class Controller extends Thread {
         }
 
         MazeModel mazeModel = model.getMaze();
-        if (selectedStatus == Status_Constants.MONSTER && mazeModel.getAmountOfMonsters() >= Maze_Constants.MAX_MONSTERS) {
+        if (selectedStatus == SquareStatus.MONSTER && mazeModel.getAmountOfMonsters() >= Maze_Constants.MAX_MONSTERS) {
             System.err.println("Maximum number of monsters reached.");
             return false;
         }
-        if (selectedStatus == Status_Constants.TREASURE && mazeModel.getAmountOfTreasures() >= Maze_Constants.MAX_TREASURES) {
+        if (selectedStatus == SquareStatus.TREASURE && mazeModel.getAmountOfTreasures() >= Maze_Constants.MAX_TREASURES) {
             System.err.println("Maximum number of treasures reached.");
             return false;
         }
-        if (selectedStatus == Status_Constants.PLAYER && mazeModel.getAmountOfPlayers() >= Maze_Constants.MAX_PLAYERS) {
+        if (selectedStatus == SquareStatus.PLAYER && mazeModel.getAmountOfPlayers() >= Maze_Constants.MAX_PLAYERS) {
             System.err.println("Maximum number of players reached.");
             return false;
         }
-        if (selectedStatus != Status_Constants.PLAYER && row == mazeModel.getMazeSide() - 1 && column == 0) {
+        if (selectedStatus != SquareStatus.PLAYER && row == mazeModel.getMazeSide() - 1 && column == 0) {
             System.err.println("Position reserved for a player.");
             return false;
         }
@@ -110,27 +110,27 @@ public class Controller extends Thread {
         return true;
     }
 
-    private void updateModelCounts(byte currentStatus, byte newStatus) {
+    private void updateModelCounts(SquareStatus currentStatus, SquareStatus newStatus) {
         MazeModel mazeModel = model.getMaze();
         adjustMazeCount(mazeModel, currentStatus, -1);
         adjustMazeCount(mazeModel, newStatus, 1);
     }
 
-    private void adjustMazeCount(MazeModel mazeModel, byte status, int delta) {
+    private void adjustMazeCount(MazeModel mazeModel, SquareStatus status, int delta) {
         switch (status) {
-            case Status_Constants.MONSTER -> mazeModel.adjustAmountOfMonsters(delta);
-            case Status_Constants.TREASURE -> mazeModel.adjustAmountOfTreasures(delta);
-            case Status_Constants.PLAYER -> mazeModel.adjustAmountOfPlayers(delta);
+            case MONSTER -> mazeModel.adjustAmountOfMonsters(delta);
+            case TREASURE -> mazeModel.adjustAmountOfTreasures(delta);
+            case PLAYER -> mazeModel.adjustAmountOfPlayers(delta);
         }
     }
 
     private void handleElementChanged(String element) {
         selectedStatus = switch (element) {
-            case Images_Constants.MONSTER -> Status_Constants.MONSTER;
-            case Images_Constants.HOLE -> Status_Constants.HOLE;
-            case Images_Constants.TREASURE -> Status_Constants.TREASURE;
-            case Images_Constants.PLAYER -> Status_Constants.PLAYER;
-            case Images_Constants.CLEAN -> Status_Constants.CLEAN;
+            case Images_Constants.MONSTER -> SquareStatus.MONSTER;
+            case Images_Constants.HOLE -> SquareStatus.HOLE;
+            case Images_Constants.TREASURE -> SquareStatus.TREASURE;
+            case Images_Constants.PLAYER -> SquareStatus.PLAYER;
+            case Images_Constants.CLEAN -> SquareStatus.CLEAN;
             default -> throw new IllegalStateException("Unexpected value: " + element);
         };
         view.getControls().getStatusSelector().getPicture().setPicture(element);

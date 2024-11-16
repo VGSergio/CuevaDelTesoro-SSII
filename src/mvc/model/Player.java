@@ -3,7 +3,7 @@ package mvc.model;
 import mvc.model.maze.MazeModel;
 import mvc.model.maze.Square;
 
-import static mvc.model.Global.Status_Constants;
+import static mvc.model.Global.SquareStatus;
 
 public class Player {
 
@@ -30,8 +30,8 @@ public class Player {
 
     public void setMaze(MazeModel maze) {
         this.maze = maze;
-        map = new MazeModel(maze.getMazeSide(), Status_Constants.UNKNOWN);
-        map.setSquaresStatus(Global.Status_Constants.UNKNOWN);
+        map = new MazeModel(maze.getMazeSide(), SquareStatus.UNKNOWN);
+        map.setSquaresStatus(SquareStatus.UNKNOWN);
     }
 
     public void exploreMaze() {
@@ -94,18 +94,18 @@ public class Player {
         Square nextSquareMaze = maze.getSquare(nextRow, nextCol);
         Square nextSquareMap = map.getSquare(nextRow, nextCol);
 
-        byte nextStatus = nextSquareMaze.getStatus();
+        SquareStatus nextStatus = nextSquareMaze.getStatus();
         switch (nextStatus) {
-            case Status_Constants.MONSTER -> {
+            case MONSTER -> {
                 System.out.println("Player encountered a monster");
             }
-            case Status_Constants.HOLE -> {
+            case HOLE -> {
                 System.out.println("Player fell through a hole");
             }
-            case Status_Constants.TREASURE -> {
+            case TREASURE -> {
                 System.out.println("Player found a treasure");
             }
-            case Status_Constants.CLEAN -> {
+            case CLEAN -> {
                 System.out.println("Player moved to a new position");
             }
         }
@@ -113,11 +113,11 @@ public class Player {
         actualRow = nextRow;
         actualCol = nextCol;
 
-        actualSquareMaze.setStatus(Status_Constants.CLEAN);
-        actualSquareMap.setStatus(Status_Constants.CLEAN);
+        actualSquareMaze.setStatus(SquareStatus.CLEAN);
+        actualSquareMap.setStatus(SquareStatus.CLEAN);
 
-        nextSquareMaze.setStatus(Status_Constants.PLAYER);
-        nextSquareMap.setStatus(Status_Constants.PLAYER);
+        nextSquareMaze.setStatus(SquareStatus.PLAYER);
+        nextSquareMap.setStatus(SquareStatus.PLAYER);
     }
 
     /**
@@ -138,8 +138,8 @@ public class Player {
      * The player picks up an item on its position, if there's one.
      */
     private void take() {
-        byte status = maze.getSquare(actualRow, actualCol).getStatus();
-        if (status == Status_Constants.TREASURE) {
+        SquareStatus status = maze.getSquare(actualRow, actualCol).getStatus();
+        if (status == SquareStatus.TREASURE) {
             System.out.println("Player takes the treasure");
         }
     }

@@ -12,7 +12,7 @@ import static mvc.model.Global.Images_Constants;
  * for selecting status like "Monster", "Hole", "Treasure", etc.
  *
  * <p>This class initializes the radio button group with predefined options related to game status,
- * such as Monster, Hole, and Player, using constants defined in the {@link mvc.model.Global} class.
+ * such as Monster, Hole, and Player, using constants defined in the {@link mvc.model.Global.SquareStatus} enum.
  * It notifies the controller when the selected status changes.
  *
  * @author Sergio Vega García

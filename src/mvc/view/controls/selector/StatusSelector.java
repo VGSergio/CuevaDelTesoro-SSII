@@ -8,7 +8,7 @@ import mvc.view.controls.selector.radioButtonGroup.StatusRadioButtons;
  * A specialized implementation of {@link Selector} that pairs an {@link StatusRadioButtons}
  * component with an {@link StatusPicture} component.
  *
- * <p>This class is designed to allow users to select an status (e.g., Monster, Hole, etc.)
+ * <p>This class is designed to allow users to select a status (e.g., Monster, Hole, etc.)
  * via radio buttons and display the corresponding image. It leverages the generic
  * {@link Selector} class to combine these components into a cohesive UI element.
  *
