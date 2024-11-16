@@ -6,12 +6,42 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * A JPanel-based component for displaying and managing a resizable image.
+ *
+ * <p>This abstract class provides functionality to display a picture, with support for caching
+ * and resizing. Images are cached for improved performance, and they are scaled to a fixed size.
+ * Subclasses can extend this class to add more functionality or customize its behavior.
+ *
+ * @see javax.swing.JPanel
+ * @see javax.swing.ImageIcon
+ * @see java.util.Map
+ * @see java.awt.Image
+ *
+ * @author Sergio Vega García
+ */
 public abstract class Picture extends JPanel {
 
+    /**
+     * The fixed size (width and height) for displayed images.
+     */
     protected static final byte IMG_SIZE = 80;
-    private static final Map<String, ImageIcon> IMAGE_CACHE = new HashMap<>();
-    private final JLabel pictureLabel; // JLabel to display the picture
 
+    /**
+     * A cache for storing previously loaded and scaled {@link ImageIcon} instances.
+     */
+    private static final Map<String, ImageIcon> IMAGE_CACHE = new HashMap<>();
+
+    /**
+     * The JLabel used to display the picture within this component.
+     */
+    private final JLabel pictureLabel;
+
+    /**
+     * Constructs a new {@code Picture} panel with a default image.
+     *
+     * @param defaultImage the path to the default image to display
+     */
     public Picture(String defaultImage) {
         pictureLabel = new JLabel();
 
@@ -23,10 +53,14 @@ public abstract class Picture extends JPanel {
     }
 
     /**
-     * Loads an image from the cache or creates a new scaled instance if not cached.
+     * Loads an image from the cache or creates a new scaled {@link ImageIcon} if not cached.
+     *
+     * <p>If the image is not already in the cache, this method scales the image to {@link #IMG_SIZE}
+     * and stores it in the cache. If the file is not found or the path is invalid, it logs an error
+     * and returns {@code null}.
      *
      * @param path the path to the image file
-     * @return the scaled ImageIcon or a default error icon if file not found
+     * @return the scaled {@link ImageIcon}, or {@code null} if the file is invalid or not found
      */
     private ImageIcon loadCachedImage(String path) {
         if (path == null || path.isEmpty()) {
@@ -47,7 +81,10 @@ public abstract class Picture extends JPanel {
     }
 
     /**
-     * Sets the picture for the label.
+     * Updates the displayed picture in this component.
+     *
+     * <p>The method attempts to load the image from the given path. If successful, the image
+     * is scaled and displayed. If the image cannot be loaded, no changes are made to the label.
      *
      * @param imagePath the path to the image file
      */
