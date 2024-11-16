@@ -18,9 +18,9 @@ public class Global {
     /**
      * Calculates the linear index of a square in the maze based on its row and column.
      *
-     * @param row       The row of the square.
-     * @param column    The column of the square.
-     * @param sideSize  The side length of the maze.
+     * @param row      The row of the square.
+     * @param column   The column of the square.
+     * @param sideSize The side length of the maze.
      * @return The index of the square in the maze's 1D representation.
      */
     public static int getSquarePositionInMaze(byte row, byte column, byte sideSize) {
@@ -33,12 +33,27 @@ public class Global {
      * @param status The status of the square.
      * @return The corresponding perception type, or {@code null} if no perception is associated.
      */
-    public static PerceptionType squareStatusToPerceptionType(SquareStatus status) {
+    public static PerceptionType mapStatusToPerception(SquareStatus status) {
         return switch (status) {
-            case MONSTER -> PerceptionType.MONSTER;
-            case HOLE -> PerceptionType.HOLE;
-            case TREASURE -> PerceptionType.TREASURE;
+            case MONSTER -> PerceptionType.STENCH;
+            case HOLE -> PerceptionType.BREEZE;
+            case TREASURE -> PerceptionType.RADIANCE;
             case PLAYER, CLEAN, UNKNOWN -> null;
+        };
+    }
+
+    /**
+     * Maps a {@code PerceptionType} to its corresponding {@code SquareStatus}.
+     *
+     * @param perception The perception of the square.
+     * @return The corresponding status type, or {@code null} if no status is associated.
+     */
+    public static SquareStatus mapPerceptionToStatus(PerceptionType perception) {
+        return switch (perception) {
+            case STENCH -> SquareStatus.MONSTER;
+            case BREEZE -> SquareStatus.HOLE;
+            case RADIANCE -> SquareStatus.TREASURE;
+            case BANG, GROAN -> null;
         };
     }
 
@@ -46,7 +61,7 @@ public class Global {
      * Enum representing the types of perceptions in the maze.
      */
     public enum PerceptionType {
-        MONSTER, HOLE, TREASURE, WALL, MOAN
+        STENCH, BREEZE, RADIANCE, BANG, GROAN
     }
 
     /**

@@ -3,6 +3,8 @@ package mvc.model.maze;
 import mvc.model.Perceptions;
 import mvc.model.Player;
 
+import java.util.Arrays;
+
 import static mvc.model.Global.*;
 
 public class MazeModel {
@@ -47,7 +49,7 @@ public class MazeModel {
         this.amountOfPlayers = 1;
 
         player = new Player(row, column);
-        player.setMaze(this);
+        player.linkMaze(this);
     }
 
     /**
@@ -129,7 +131,7 @@ public class MazeModel {
 
             if (isWithinBounds(neighborRow, neighborCol)) {
                 SquareStatus status = getSquare(neighborRow, neighborCol).getStatus();
-                PerceptionType perceptionType = squareStatusToPerceptionType(status);
+                PerceptionType perceptionType = mapStatusToPerception(status);
                 if (perceptionType != null) {
                     perceptions.setPerception(perceptionType, true);
                 }
@@ -155,5 +157,9 @@ public class MazeModel {
 
     public boolean isWithinBounds(byte row, byte column) {
         return row >= 0 && row < mazeSide && column >= 0 && column < mazeSide;
+    }
+
+    public Perceptions[] getPerceptions(){
+        return Arrays.stream(squares).map(Square::getPerceptions).toArray(Perceptions[]::new);
     }
 }

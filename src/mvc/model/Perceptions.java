@@ -21,12 +21,21 @@ public class Perceptions {
         this.perceptions[perceptionType.ordinal()] = value;
     }
 
+    public boolean isClean(){
+        for (boolean value : perceptions){
+            if (value){
+                return false;
+            }
+        }
+        return true;
+    }
+
     @Override
     public String toString() {
-        return "Hedor: " + getPerception(PerceptionType.MONSTER.ordinal()) +
-                "\nBrisa: " + getPerception(PerceptionType.HOLE.ordinal()) +
-                "\nResplandor: " + getPerception(PerceptionType.TREASURE.ordinal()) +
-                "\nGolpe: " + getPerception(PerceptionType.WALL.ordinal()) +
-                "\nGemido: " + getPerception(PerceptionType.MOAN.ordinal());
+        return "Stench: " + getPerception(PerceptionType.STENCH.ordinal()) +
+                "\nBreeze: " + getPerception(PerceptionType.BREEZE.ordinal()) +
+                "\nRadiance: " + getPerception(PerceptionType.RADIANCE.ordinal()) +
+                "\nBang: " + getPerception(PerceptionType.BANG.ordinal()) +
+                "\nGroan: " + getPerception(PerceptionType.GROAN.ordinal());
     }
 }

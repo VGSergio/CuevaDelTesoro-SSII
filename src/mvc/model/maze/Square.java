@@ -11,7 +11,7 @@ public class Square {
 
     public Square(SquareStatus defaultStatus) {
         status = defaultStatus;
-        perceptions = new Perceptions();
+        perceptions = null;
         visited = false;
     }
 
@@ -31,8 +31,8 @@ public class Square {
         this.perceptions = perceptions;
     }
 
-    public boolean isVisited() {
-        return visited;
+    public boolean notVisited() {
+        return !visited;
     }
 
     public void setVisited(boolean value) {
