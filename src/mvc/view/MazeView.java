@@ -61,7 +61,7 @@ public class MazeView extends JPanel {
     private final int windowSize;
 
     /**
-     * A cache for storing loaded images corresponding to maze elements.
+     * A cache for storing loaded images corresponding to maze statuses.
      */
     private final Map<Integer, BufferedImage> imageCache = new HashMap<>();
 
@@ -78,7 +78,7 @@ public class MazeView extends JPanel {
     /**
      * Constructs a {@code MazeView} with the specified controller, window size, and maze model.
      *
-     * <p>This constructor initializes the maze view, loads images for the maze elements,
+     * <p>This constructor initializes the maze view, loads images for the maze statuses,
      * and sets up the panel for rendering and interaction.
      *
      * @param controller the {@link Controller} to handle interactions with the maze
@@ -96,7 +96,7 @@ public class MazeView extends JPanel {
     }
 
     /**
-     * Loads images for maze elements into the cache.
+     * Loads images for maze statuses into the cache.
      */
     private void initializeImages() {
         imageCache.put((int) Status_Constants.MONSTER, loadImage(Images_Constants.MONSTER));
@@ -140,7 +140,7 @@ public class MazeView extends JPanel {
      * Paints the maze onto the panel.
      *
      * <p>This method iterates through the squares in the maze and renders each square
-     * along with its corresponding element, if any.
+     * along with its corresponding status, if any.
      *
      * @param g the {@link Graphics} object used for rendering
      */
@@ -157,7 +157,7 @@ public class MazeView extends JPanel {
                 Square square = squares[getSquarePositionInMaze(row, column, mazeSide)];
 
                 drawSquare(g, x, y);
-                drawElement(g, square.getStatus(), x, y);
+                drawStatus(g, square.getStatus(), x, y);
             }
         }
     }
@@ -177,16 +177,16 @@ public class MazeView extends JPanel {
     }
 
     /**
-     * Draws the element associated with a square.
+     * Draws the status associated with a square.
      *
      * @param g       the {@link Graphics} object
-     * @param element the status of the square
+     * @param status the status of the square
      * @param x       the x-coordinate of the square
      * @param y       the y-coordinate of the square
      */
-    private void drawElement(Graphics g, byte element, int x, int y) {
-        if (element != Status_Constants.CLEAN) {
-            BufferedImage image = imageCache.get((int) element);
+    private void drawStatus(Graphics g, byte status, int x, int y) {
+        if (status != Status_Constants.CLEAN) {
+            BufferedImage image = imageCache.get((int) status);
             if (image != null) {
                 g.drawImage(image, x, y, squareSize, squareSize, null);
             }
