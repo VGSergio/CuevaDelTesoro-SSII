@@ -1,6 +1,5 @@
 package mvc.model.maze;
 
-import mvc.model.Global.Perception_Constants;
 import mvc.model.Perceptions;
 
 public class Square {
@@ -9,8 +8,8 @@ public class Square {
     private Perceptions perceptions;
     private boolean visited;
 
-    public Square() {
-        status = Perception_Constants.CLEAN;
+    public Square(byte defaultStatus) {
+        status = defaultStatus;
         perceptions = new Perceptions();
         visited = false;
     }

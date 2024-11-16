@@ -38,10 +38,10 @@ public class MazeView extends JPanel {
     }
 
     private void initializeImages() {
-        imageCache.put((int) Perception_Constants.MONSTER, loadImage(Images_Constants.MONSTER));
-        imageCache.put((int) Perception_Constants.HOLE, loadImage(Images_Constants.HOLE));
-        imageCache.put((int) Perception_Constants.TREASURE, loadImage(Images_Constants.TREASURE));
-        imageCache.put((int) Perception_Constants.PLAYER, loadImage(Images_Constants.PLAYER));
+        imageCache.put((int) Status_Constants.MONSTER, loadImage(Images_Constants.MONSTER));
+        imageCache.put((int) Status_Constants.HOLE, loadImage(Images_Constants.HOLE));
+        imageCache.put((int) Status_Constants.TREASURE, loadImage(Images_Constants.TREASURE));
+        imageCache.put((int) Status_Constants.PLAYER, loadImage(Images_Constants.PLAYER));
     }
 
     private void configure() {
@@ -89,7 +89,7 @@ public class MazeView extends JPanel {
     }
 
     private void drawElement(Graphics g, byte element, int x, int y) {
-        if (element != Perception_Constants.CLEAN) {
+        if (element != Status_Constants.CLEAN) {
             BufferedImage image = imageCache.get((int) element);
             if (image != null) {
                 g.drawImage(image, x, y, squareSize, squareSize, null);

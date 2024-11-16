@@ -3,6 +3,7 @@ package mvc.model;
 import mvc.model.maze.MazeModel;
 
 import static mvc.model.Global.Maze_Constants;
+import static mvc.model.Global.Status_Constants;
 
 public class Model {
 
@@ -10,7 +11,7 @@ public class Model {
     private boolean started;
 
     public Model() {
-        mazeModel = new MazeModel(Maze_Constants.MIN_SIDE);
+        mazeModel = new MazeModel(Maze_Constants.MIN_SIDE, Status_Constants.CLEAN);
         started = false;
     }
 

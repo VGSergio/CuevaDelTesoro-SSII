@@ -9,18 +9,23 @@ public class Global {
 
     // Perception-related constants
     public static class Perception_Constants {
-        // Perceptions and Status
         public static final byte MONSTER = 0;
         public static final byte HOLE = 1;
         public static final byte TREASURE = 2;
         public static final byte WALL = 3;
         public static final byte MOAN = 4;
         public static final byte NUMBER_OF_PERCEPTIONS = 5;
+    }
+
+    // Status-related constants
+    public static class Status_Constants {
+        public static final byte MONSTER = 0;
+        public static final byte HOLE = 1;
+        public static final byte TREASURE = 2;
+        public static final byte PLAYER = 3;
+        public static final byte CLEAN = 4;
+        public static final byte UNKNOWN = 5;
         public static final byte DEFAULT = MONSTER;
-        // Status
-        public static final byte PLAYER = 6;
-        public static final byte CLEAN = 7;
-        public static final byte UNKNOWN = 8;
     }
 
     // Maze-related constants

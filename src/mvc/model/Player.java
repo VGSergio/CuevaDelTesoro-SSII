@@ -3,19 +3,19 @@ package mvc.model;
 import mvc.model.maze.MazeModel;
 import mvc.model.maze.Square;
 
-import static mvc.model.Global.Perception_Constants;
+import static mvc.model.Global.Status_Constants;
 
 public class Player {
 
     private static final byte NUM_DIRECTIONS = 4;
     private final byte STARTING_ROW;
     private final byte STARTING_COL;
+    private final boolean leftCave;
     private MazeModel maze;
     private MazeModel map;
     private byte actualRow;
     private byte actualCol;
     private boolean treasureFound;
-    private final boolean leftCave;
     private byte direction = Direction.UP;
 
     public Player(byte row, byte column) {
@@ -30,8 +30,8 @@ public class Player {
 
     public void setMaze(MazeModel maze) {
         this.maze = maze;
-        map = new MazeModel(maze.getMazeSide());
-        map.setSquaresStatus(Perception_Constants.UNKNOWN);
+        map = new MazeModel(maze.getMazeSide(), Status_Constants.UNKNOWN);
+        map.setSquaresStatus(Global.Status_Constants.UNKNOWN);
     }
 
     public void exploreMaze() {
@@ -96,16 +96,16 @@ public class Player {
 
         byte nextStatus = nextSquareMaze.getStatus();
         switch (nextStatus) {
-            case Perception_Constants.MONSTER -> {
+            case Status_Constants.MONSTER -> {
                 System.out.println("Player encountered a monster");
             }
-            case Perception_Constants.HOLE -> {
+            case Status_Constants.HOLE -> {
                 System.out.println("Player fell through a hole");
             }
-            case Perception_Constants.TREASURE -> {
+            case Status_Constants.TREASURE -> {
                 System.out.println("Player found a treasure");
             }
-            case Perception_Constants.CLEAN -> {
+            case Status_Constants.CLEAN -> {
                 System.out.println("Player moved to a new position");
             }
         }
@@ -113,11 +113,11 @@ public class Player {
         actualRow = nextRow;
         actualCol = nextCol;
 
-        actualSquareMaze.setStatus(Perception_Constants.CLEAN);
-        actualSquareMap.setStatus(Perception_Constants.CLEAN);
+        actualSquareMaze.setStatus(Status_Constants.CLEAN);
+        actualSquareMap.setStatus(Status_Constants.CLEAN);
 
-        nextSquareMaze.setStatus(Perception_Constants.PLAYER);
-        nextSquareMap.setStatus(Perception_Constants.PLAYER);
+        nextSquareMaze.setStatus(Status_Constants.PLAYER);
+        nextSquareMap.setStatus(Status_Constants.PLAYER);
     }
 
     /**
@@ -139,7 +139,7 @@ public class Player {
      */
     private void take() {
         byte status = maze.getSquare(actualRow, actualCol).getStatus();
-        if (status == Perception_Constants.TREASURE) {
+        if (status == Status_Constants.TREASURE) {
             System.out.println("Player takes the treasure");
         }
     }

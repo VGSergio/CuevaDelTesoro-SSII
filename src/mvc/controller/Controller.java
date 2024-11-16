@@ -12,7 +12,7 @@ public class Controller extends Thread {
     private Model model;
     private View view;
 
-    private byte selectedItem = Perception_Constants.DEFAULT;
+    private byte selectedStatus = Status_Constants.DEFAULT;
     private int selectedSpeed = Speed_Constants.DEFAULT_VALUE;
 
     public static void main(String[] args) {
@@ -70,13 +70,13 @@ public class Controller extends Thread {
         Square square = model.getMaze().getSquare(row, column);
         byte status = square.getStatus();
 
-        if (status == selectedItem) {
+        if (status == selectedStatus) {
             System.out.println("Square already set to selected item. No change made.");
             return;
         } // Do nothing if already set to selected item
 
-        updateModelCounts(status, selectedItem);
-        square.setStatus(selectedItem);
+        updateModelCounts(status, selectedStatus);
+        square.setStatus(selectedStatus);
         view.updateView();
     }
 
@@ -87,19 +87,19 @@ public class Controller extends Thread {
         }
 
         MazeModel mazeModel = model.getMaze();
-        if (selectedItem == Perception_Constants.MONSTER && mazeModel.getAmountOfMonsters() >= Maze_Constants.MAX_MONSTERS) {
+        if (selectedStatus == Status_Constants.MONSTER && mazeModel.getAmountOfMonsters() >= Maze_Constants.MAX_MONSTERS) {
             System.err.println("Maximum number of monsters reached.");
             return false;
         }
-        if (selectedItem == Perception_Constants.TREASURE && mazeModel.getAmountOfTreasures() >= Maze_Constants.MAX_TREASURES) {
+        if (selectedStatus == Status_Constants.TREASURE && mazeModel.getAmountOfTreasures() >= Maze_Constants.MAX_TREASURES) {
             System.err.println("Maximum number of treasures reached.");
             return false;
         }
-        if (selectedItem == Perception_Constants.PLAYER && mazeModel.getAmountOfPlayers() >= Maze_Constants.MAX_PLAYERS) {
+        if (selectedStatus == Status_Constants.PLAYER && mazeModel.getAmountOfPlayers() >= Maze_Constants.MAX_PLAYERS) {
             System.err.println("Maximum number of players reached.");
             return false;
         }
-        if (selectedItem != Perception_Constants.PLAYER && row == mazeModel.getMazeSide() - 1 && column == 0) {
+        if (selectedStatus != Status_Constants.PLAYER && row == mazeModel.getMazeSide() - 1 && column == 0) {
             System.err.println("Position reserved for a player.");
             return false;
         }
@@ -115,19 +115,19 @@ public class Controller extends Thread {
 
     private void adjustMazeCount(MazeModel mazeModel, byte status, int delta) {
         switch (status) {
-            case Perception_Constants.MONSTER -> mazeModel.adjustAmountOfMonsters(delta);
-            case Perception_Constants.TREASURE -> mazeModel.adjustAmountOfTreasures(delta);
-            case Perception_Constants.PLAYER -> mazeModel.adjustAmountOfPlayers(delta);
+            case Status_Constants.MONSTER -> mazeModel.adjustAmountOfMonsters(delta);
+            case Status_Constants.TREASURE -> mazeModel.adjustAmountOfTreasures(delta);
+            case Status_Constants.PLAYER -> mazeModel.adjustAmountOfPlayers(delta);
         }
     }
 
     private void handleElementChanged(String element) {
-        selectedItem = switch (element) {
-            case Images_Constants.MONSTER -> Perception_Constants.MONSTER;
-            case Images_Constants.HOLE -> Perception_Constants.HOLE;
-            case Images_Constants.TREASURE -> Perception_Constants.TREASURE;
-            case Images_Constants.PLAYER -> Perception_Constants.PLAYER;
-            case Images_Constants.CLEAN -> Perception_Constants.CLEAN;
+        selectedStatus = switch (element) {
+            case Images_Constants.MONSTER -> Status_Constants.MONSTER;
+            case Images_Constants.HOLE -> Status_Constants.HOLE;
+            case Images_Constants.TREASURE -> Status_Constants.TREASURE;
+            case Images_Constants.PLAYER -> Status_Constants.PLAYER;
+            case Images_Constants.CLEAN -> Status_Constants.CLEAN;
             default -> throw new IllegalStateException("Unexpected value: " + element);
         };
         view.getControls().getElementSelector().getPicture().setPicture(element);
@@ -167,7 +167,7 @@ public class Controller extends Thread {
                 try {
                     Thread.sleep(selectedSpeed);
                 } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                    return;
                 }
             }
             model.setStarted(false);

@@ -3,13 +3,13 @@ package mvc.model.maze;
 import mvc.model.Perceptions;
 import mvc.model.Player;
 
-import static mvc.model.Global.Perception_Constants;
+import static mvc.model.Global.Status_Constants;
 import static mvc.model.Global.getSquarePositionInMaze;
 
 public class MazeModel {
 
+    private final byte defaultSquareStatus;
     private Square[] squares;
-
     private byte mazeSide;
     private byte amountOfMonsters;
     private byte amountOfTreasures;
@@ -17,7 +17,8 @@ public class MazeModel {
 
     private Player player;
 
-    public MazeModel(byte mazeSide) {
+    public MazeModel(byte mazeSide, byte defaultSquareStatus) {
+        this.defaultSquareStatus = defaultSquareStatus;
         setMazeSide(mazeSide);
     }
 
@@ -28,11 +29,11 @@ public class MazeModel {
         int totalSquares = mazeSide * mazeSide;
         this.squares = new Square[totalSquares];
         for (int i = 0; i < totalSquares; i++) {
-            this.squares[i] = new Square();
+            this.squares[i] = new Square(defaultSquareStatus);
         }
 
         // The maze always has a player on the bottom left position
-        squares[getSquarePositionInMaze((byte) (mazeSide - 1), (byte) 0, mazeSide)].setStatus(Perception_Constants.PLAYER);
+        squares[getSquarePositionInMaze((byte) (mazeSide - 1), (byte) 0, mazeSide)].setStatus(Status_Constants.PLAYER);
 
         this.amountOfMonsters = 0;
         this.amountOfTreasures = 0;
@@ -62,17 +63,6 @@ public class MazeModel {
         return squares[getSquarePositionInMaze(row, column, mazeSide)];
     }
 
-    /**
-     * Retrieves the status of all squares in the maze.
-     */
-    public byte[] getSquaresStatus() {
-        byte[] status = new byte[squares.length];
-        for (int i = 0; i < status.length; i++) {
-            status[i] = squares[i].getStatus();
-        }
-        return status;
-    }
-
     public void setSquaresStatus(byte status) {
         for (Square square : squares) {
             square.setStatus(status);
@@ -91,10 +81,6 @@ public class MazeModel {
     public void setMazeSide(byte mazeSide) {
         this.mazeSide = mazeSide;
         initializeMaze();
-    }
-
-    public int getMazeLength() {
-        return squares.length;
     }
 
     public byte getAmountOfMonsters() {
