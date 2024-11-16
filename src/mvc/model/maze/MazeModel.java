@@ -159,7 +159,7 @@ public class MazeModel {
         return row >= 0 && row < mazeSide && column >= 0 && column < mazeSide;
     }
 
-    public Perceptions[] getPerceptions(){
+    public Perceptions[] getPerceptions() {
         return Arrays.stream(squares).map(Square::getPerceptions).toArray(Perceptions[]::new);
     }
 }

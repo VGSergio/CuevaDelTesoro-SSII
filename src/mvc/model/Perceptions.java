@@ -21,9 +21,9 @@ public class Perceptions {
         this.perceptions[perceptionType.ordinal()] = value;
     }
 
-    public boolean isClean(){
-        for (boolean value : perceptions){
-            if (value){
+    public boolean isClean() {
+        for (boolean value : perceptions) {
+            if (value) {
                 return false;
             }
         }

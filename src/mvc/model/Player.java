@@ -9,12 +9,19 @@ public class Player {
 
     private final byte startingRow;
     private final byte startingCol;
+    // Define the relative directions (up, down, left, right)
+    private final int[][] directions = {
+            {-1, 0}, // NORTH
+            {0, 1},  // EAST
+            {1, 0},  // SOUTH
+            {0, -1}, // WEST
+    };
     private boolean leftCave;
     private MazeModel maze;
     private MazeModel map;
     private byte actualRow;
     private byte actualCol;
-    private boolean treasureFound;
+    private final boolean treasureFound;
 
     public Player(byte row, byte column) {
         this.startingRow = row;
@@ -141,7 +148,6 @@ public class Player {
             }
         }
     }
-
 
     /// ////////////
     /// ACTIONS ///
@@ -304,15 +310,6 @@ public class Player {
         }
         return true; // Out of bounds squares are considered visited
     }
-
-
-    // Define the relative directions (up, down, left, right)
-    private final int[][] directions = {
-            {-1, 0}, // NORTH
-            {0, 1},  // EAST
-            {1, 0},  // SOUTH
-            {0, -1}, // WEST
-    };
 
     private enum Directions {
         NORTH, EAST, SOUTH, WEST
