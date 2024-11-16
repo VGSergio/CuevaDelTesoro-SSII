@@ -41,7 +41,7 @@ public class Global {
     public static class Events_Constants {
         public static final String MAZE_SIDE_CHANGED = "MAZE_SIDE_CHANGED";
         public static final String SQUARE_CLICKED = "SQUARE_CLICKED";
-        public static final String ELEMENT_CHANGED = "ELEMENT_CHANGED";
+        public static final String STATUS_CHANGED = "ELEMENT_CHANGED";
         public static final String SPEED_CHANGED = "SPEED_CHANGED";
         public static final String NEXT_STEP_CLICKED = "NEXT_STEP_CLICKED";
         public static final String START_CLICKED = "START_CLICKED";

@@ -9,11 +9,11 @@ import static mvc.model.Global.Images_Constants;
 
 /**
  * A concrete implementation of {@link RadioButtonGroup} that represents a set of radio buttons
- * for selecting elements like "Monster", "Hole", "Treasure", etc.
+ * for selecting status like "Monster", "Hole", "Treasure", etc.
  *
- * <p>This class initializes the radio button group with predefined options related to game elements,
+ * <p>This class initializes the radio button group with predefined options related to game status,
  * such as Monster, Hole, and Player, using constants defined in the {@link mvc.model.Global} class.
- * It notifies the controller when the selected element changes.
+ * It notifies the controller when the selected status changes.
  *
  * @author Sergio Vega García
  * @see RadioButtonGroup
@@ -21,18 +21,18 @@ import static mvc.model.Global.Images_Constants;
  * @see Images_Constants
  * @see Controller
  */
-public class ElementRadioButtons extends RadioButtonGroup {
+public class StatusRadioButtons extends RadioButtonGroup {
 
     /**
-     * Constructs an {@code ElementRadioButtons} group.
+     * Constructs an {@code StatusRadioButtons} group.
      *
-     * <p>The group is associated with the {@link mvc.model.Global.Events_Constants#ELEMENT_CHANGED}
+     * <p>The group is associated with the {@link mvc.model.Global.Events_Constants#STATUS_CHANGED}
      * action type and will notify the {@link Controller} whenever a selection is made.
      *
-     * @param controller the {@link Controller} that will handle element change events
+     * @param controller the {@link Controller} that will handle status change events
      */
-    public ElementRadioButtons(Controller controller) {
-        super(controller, Events_Constants.ELEMENT_CHANGED);
+    public StatusRadioButtons(Controller controller) {
+        super(controller, Events_Constants.STATUS_CHANGED);
     }
 
     /**

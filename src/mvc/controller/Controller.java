@@ -46,7 +46,7 @@ public class Controller extends Thread {
         switch (event) {
             case Events_Constants.MAZE_SIDE_CHANGED -> handleMazeSideChanged(castToInt(params[0]));
             case Events_Constants.SQUARE_CLICKED -> handleSquareClicked(castToByte(params[0]), castToByte(params[1]));
-            case Events_Constants.ELEMENT_CHANGED -> handleElementChanged((String) params[0]);
+            case Events_Constants.STATUS_CHANGED -> handleElementChanged((String) params[0]);
             case Events_Constants.SPEED_CHANGED -> handleSpeedChanged((String) params[0]);
             case Events_Constants.NEXT_STEP_CLICKED -> handleNextStepClicked();
             case Events_Constants.START_CLICKED -> handleStartClicked();
@@ -60,7 +60,10 @@ public class Controller extends Thread {
             System.err.println("Maze size can not be changed once started.");
             return;
         }
+
         model.getMaze().setMazeSide((byte) size);
+        model.getMaze().initializePlayer();
+
         view.updateView();
     }
 
@@ -130,7 +133,7 @@ public class Controller extends Thread {
             case Images_Constants.CLEAN -> Status_Constants.CLEAN;
             default -> throw new IllegalStateException("Unexpected value: " + element);
         };
-        view.getControls().getElementSelector().getPicture().setPicture(element);
+        view.getControls().getStatusSelector().getPicture().setPicture(element);
     }
 
     private void handleSpeedChanged(String element) {

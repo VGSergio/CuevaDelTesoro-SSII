@@ -27,11 +27,11 @@ import java.awt.*;
  *
  * @param <T> the type of {@link RadioButtonGroup} to be used
  * @param <U> the type of {@link Picture} to be used
+ * @author Sergio Vega García
  * @see RadioButtonGroup
  * @see Picture
  * @see javax.swing.JPanel
  * <p>
- * author Sergio Vega García
  */
 public class Selector<T extends RadioButtonGroup, U extends Picture> extends JPanel {
 
