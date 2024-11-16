@@ -17,7 +17,7 @@ public class Player {
             {0, -1}, // WEST
     };
     private boolean leftCave;
-    private CaveModel maze;
+    private CaveModel cave;
     private CaveModel map;
     private byte actualRow;
     private byte actualCol;
@@ -33,18 +33,18 @@ public class Player {
         this.leftCave = false;
     }
 
-    public void linkMaze(CaveModel maze) {
-        this.maze = maze;
+    public void linkCave(CaveModel cave) {
+        this.cave = cave;
         initializeMap();
     }
 
     private void initializeMap() {
-        map = new CaveModel(maze.getCaveSide(), SquareStatus.UNKNOWN);
+        map = new CaveModel(cave.getCaveSide(), SquareStatus.UNKNOWN);
         map.setSquaresStatus(SquareStatus.UNKNOWN);
         map.getSquare(startingRow, startingCol).setStatus(SquareStatus.PLAYER);
     }
 
-    public void exploreMaze() {
+    public void exploreCave() {
         if (map.getSquare(actualRow, actualCol).notVisited()) {
             getPerceptions();
         }
@@ -54,23 +54,23 @@ public class Player {
 
     private void getPerceptions() {
         // Get the real cave position
-        Square actualSquareMaze = maze.getSquare(actualRow, actualCol);
+        Square actualSquareCave = cave.getSquare(actualRow, actualCol);
 
-        // Update our map with the maze perceptions
+        // Update our map with the cave perceptions
         Square actualSquareMap = map.getSquare(actualRow, actualCol);
-        actualSquareMap.setPerceptions(actualSquareMaze.getPerceptions());
+        actualSquareMap.setPerceptions(actualSquareCave.getPerceptions());
 
         actualSquareMap.setVisited(true);
     }
 
     private void updateKnowledge() {
         Square[] squares = this.map.getSquares();
-        byte mazeSide = this.map.getCaveSide();
+        byte caveSide = this.map.getCaveSide();
         Perceptions[] perceptions = map.getPerceptions();
 
-        for (byte row = 0; row < mazeSide; row++) {
-            for (byte col = 0; col < mazeSide; col++) {
-                int updatingPosition = getSquarePositionInCave(row, col, mazeSide);
+        for (byte row = 0; row < caveSide; row++) {
+            for (byte col = 0; col < caveSide; col++) {
+                int updatingPosition = getSquarePositionInCave(row, col, caveSide);
                 Square updatingSquare = squares[updatingPosition];
                 Perceptions updatingPerceptions = perceptions[updatingPosition];
 
@@ -155,10 +155,10 @@ public class Player {
 
     private void move(byte nextRow, byte nextCol) {
         if (map.isWithinBounds(nextRow, nextCol)) {
-            maze.getSquare(actualRow, actualCol).setStatus(SquareStatus.CLEAN);
+            cave.getSquare(actualRow, actualCol).setStatus(SquareStatus.CLEAN);
             map.getSquare(actualRow, actualCol).setStatus(SquareStatus.CLEAN);
 
-            maze.getSquare(nextRow, nextCol).setStatus(SquareStatus.PLAYER);
+            cave.getSquare(nextRow, nextCol).setStatus(SquareStatus.PLAYER);
             map.getSquare(nextRow, nextCol).setStatus(SquareStatus.PLAYER);
 
             actualRow = nextRow;
@@ -186,7 +186,7 @@ public class Player {
 
     private void leaveCave() {
         // Update actual cave to show that the player has successfully left the cave.
-        maze.getSquare(actualRow, actualCol).setStatus(SquareStatus.CLEAN);
+        cave.getSquare(actualRow, actualCol).setStatus(SquareStatus.CLEAN);
         // Update the boolean to allow hasFinished to return true.
         leftCave = true;
     }

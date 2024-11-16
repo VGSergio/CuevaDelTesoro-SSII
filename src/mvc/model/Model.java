@@ -23,15 +23,15 @@ public class Model {
         this.started = started;
     }
 
-    public CaveModel getMaze() {
+    public CaveModel getCave() {
         return caveModel;
     }
 
-    public void exploreMaze() {
-        caveModel.exploreMaze();
+    public void exploreCave() {
+        caveModel.exploreCave();
     }
 
-    public boolean isMazeExplored() {
-        return caveModel.isMazeExplored();
+    public boolean isCaveExplored() {
+        return caveModel.isCaveExplored();
     }
 }

@@ -24,9 +24,9 @@ public class CaveModel {
     }
 
     /**
-     * Initializes the maze structure and resets item counts.
+     * Initializes the cave structure and resets item counts.
      */
-    private void initializeMaze() {
+    private void initializeCave() {
         int totalSquares = caveSide * caveSide;
         this.squares = new Square[totalSquares];
         for (int i = 0; i < totalSquares; i++) {
@@ -38,10 +38,10 @@ public class CaveModel {
     }
 
     /**
-     * Initializes the player in the maze.
+     * Initializes the player in the cave.
      */
     public void initializePlayer() {
-        // The maze always has a player on the bottom left position
+        // The cave always has a player on the bottom left position
         byte row = (byte) (caveSide - 1);
         byte column = (byte) (0);
 
@@ -49,7 +49,7 @@ public class CaveModel {
         this.amountOfPlayers = 1;
 
         player = new Player(row, column);
-        player.linkMaze(this);
+        player.linkCave(this);
     }
 
     /**
@@ -77,13 +77,13 @@ public class CaveModel {
     }
 
     /**
-     * Sets the maze side and initializes the maze structure.
+     * Sets the cave side and initializes the cave structure.
      *
-     * @param caveSide The side length of the maze.
+     * @param caveSide The side length of the cave.
      */
     public void setCaveSide(byte caveSide) {
         this.caveSide = caveSide;
-        initializeMaze();
+        initializeCave();
     }
 
     public byte getAmountOfMonsters() {
@@ -147,11 +147,11 @@ public class CaveModel {
         }
     }
 
-    public void exploreMaze() {
-        player.exploreMaze();
+    public void exploreCave() {
+        player.exploreCave();
     }
 
-    public boolean isMazeExplored() {
+    public boolean isCaveExplored() {
         return player.hasFinished();
     }
 

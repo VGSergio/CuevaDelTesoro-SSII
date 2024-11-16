@@ -15,7 +15,7 @@ import static mvc.model.Global.*;
  *
  * <p>This class extends {@code Thread} to enable concurrent execution and utilizes
  * event-driven methods to respond to user actions. It supports functionalities like
- * maze side adjustments, square status changes, and maze exploration initiation.
+ * cave side adjustments, square status changes, and cave exploration initiation.
  *
  * @see Model
  * @see View
@@ -26,8 +26,8 @@ public class Controller extends Thread {
     private Model model;    // The model component of the MVC pattern
     private View view;      // The view component of the MVC pattern
 
-    private SquareStatus selectedStatus = SQUARE_STATUS_DEFAULT;  // The selected status for maze squares
-    private int selectedSpeed = Speed_Constants.DEFAULT_VALUE;    // The selected speed for maze exploration
+    private SquareStatus selectedStatus = SQUARE_STATUS_DEFAULT;  // The selected status for cave squares
+    private int selectedSpeed = Speed_Constants.DEFAULT_VALUE;    // The selected speed for cave exploration
 
     /**
      * Entry point of the application. Starts the controller thread.
@@ -49,11 +49,11 @@ public class Controller extends Thread {
     }
 
     /**
-     * Initializes the model and sets up the maze's initial state.
+     * Initializes the model and sets up the cave's initial state.
      */
     private void initializeModel() {
         model = new Model();
-        model.getMaze().initializePlayer();
+        model.getCave().initializePlayer();
     }
 
     /**
@@ -62,7 +62,7 @@ public class Controller extends Thread {
      */
     private void initializeView() {
         try {
-            view = new View(this, model.getMaze());
+            view = new View(this, model.getCave());
         } catch (Exception e) {
             System.err.println("Error initializing view: " + e.getMessage());
         }
@@ -81,36 +81,36 @@ public class Controller extends Thread {
      */
     public void notify(String event, Object... params) {
         switch (event) {
-            case Events_Constants.CAVE_SIDE_CHANGED -> handleMazeSideChanged(castToInt(params[0]));
+            case Events_Constants.CAVE_SIDE_CHANGED -> handleCaveSideChanged(castToInt(params[0]));
             case Events_Constants.SQUARE_CLICKED -> handleSquareClicked(castToByte(params[0]), castToByte(params[1]));
             case Events_Constants.STATUS_CHANGED -> handleStatusChanged((String) params[0]);
             case Events_Constants.SPEED_CHANGED -> handleSpeedChanged((String) params[0]);
             case Events_Constants.NEXT_STEP_CLICKED -> handleNextStepClicked();
             case Events_Constants.START_CLICKED -> handleStartClicked();
-            case Events_Constants.CAVE_UPDATED -> handleMazeUpdated();
+            case Events_Constants.CAVE_UPDATED -> handleCaveUpdated();
             default -> System.err.println("Unexpected event: " + event);
         }
     }
 
     /**
-     * Handles changes in the maze's side length.
+     * Handles changes in the cave's side length.
      *
-     * @param side the new side length of the maze
+     * @param side the new side length of the cave
      */
-    private void handleMazeSideChanged(int side) {
+    private void handleCaveSideChanged(int side) {
         if (model.isStarted()) {
-            System.err.println("Maze side can not be changed once started.");
+            System.err.println("Cave side can not be changed once started.");
             return;
         }
 
-        model.getMaze().setCaveSide((byte) side);
-        model.getMaze().initializePlayer();
+        model.getCave().setCaveSide((byte) side);
+        model.getCave().initializePlayer();
 
         view.updateView();
     }
 
     /**
-     * Handles square clicks within the maze and updates their status.
+     * Handles square clicks within the cave and updates their status.
      *
      * @param row    the row index of the clicked square
      * @param column the column index of the clicked square
@@ -118,7 +118,7 @@ public class Controller extends Thread {
     private void handleSquareClicked(byte row, byte column) {
         if (!canPlaceItem(row, column)) return;
 
-        Square square = model.getMaze().getSquare(row, column);
+        Square square = model.getCave().getSquare(row, column);
         SquareStatus status = square.getStatus();
 
         if (status == selectedStatus) {
@@ -132,7 +132,7 @@ public class Controller extends Thread {
     }
 
     /**
-     * Validates whether an item can be placed at the specified position in the maze.
+     * Validates whether an item can be placed at the specified position in the cave.
      *
      * @param row    the row index
      * @param column the column index
@@ -140,11 +140,11 @@ public class Controller extends Thread {
      */
     private boolean canPlaceItem(byte row, byte column) {
         if (model.isStarted()) {
-            System.err.println("Maze cannot be edited once started.");
+            System.err.println("Cave cannot be edited once started.");
             return false;
         }
 
-        CaveModel caveModel = model.getMaze();
+        CaveModel caveModel = model.getCave();
         if (selectedStatus == SquareStatus.MONSTER && caveModel.getAmountOfMonsters() >= Cave_Constants.MAX_MONSTERS) {
             System.err.println("Maximum number of monsters reached.");
             return false;
@@ -172,19 +172,19 @@ public class Controller extends Thread {
      * @param newStatus     the new status of the square
      */
     private void updateModelCounts(SquareStatus currentStatus, SquareStatus newStatus) {
-        CaveModel caveModel = model.getMaze();
-        adjustMazeCount(caveModel, currentStatus, -1);
-        adjustMazeCount(caveModel, newStatus, 1);
+        CaveModel caveModel = model.getCave();
+        adjustCaveCount(caveModel, currentStatus, -1);
+        adjustCaveCount(caveModel, newStatus, 1);
     }
 
     /**
      * Adjusts the count for a specific type of square (e.g., MONSTER, TREASURE).
      *
-     * @param caveModel the maze model containing square counts
+     * @param caveModel the cave model containing square counts
      * @param status    the square status to adjust
      * @param delta     the adjustment value (positive or negative)
      */
-    private void adjustMazeCount(CaveModel caveModel, SquareStatus status, int delta) {
+    private void adjustCaveCount(CaveModel caveModel, SquareStatus status, int delta) {
         switch (status) {
             case MONSTER -> caveModel.adjustAmountOfMonsters(delta);
             case TREASURE -> caveModel.adjustAmountOfTreasures(delta);
@@ -196,7 +196,7 @@ public class Controller extends Thread {
      * Updates the selected status based on the provided status.
      *
      * <p>The selected status determines the type of square to be placed
-     * when the user interacts with the maze. This method also updates
+     * when the user interacts with the cave. This method also updates
      * the view to reflect the selected status.
      *
      * @param status the name of the status (e.g., MONSTER, HOLE, TREASURE, PLAYER, CLEAN)
@@ -215,9 +215,9 @@ public class Controller extends Thread {
     }
 
     /**
-     * Updates the selected speed for maze exploration based on the provided speed.
+     * Updates the selected speed for cave exploration based on the provided speed.
      *
-     * <p>The speed determines how fast the maze exploration occurs when the game starts.
+     * <p>The speed determines how fast the cave exploration occurs when the game starts.
      *
      * @param speed the name of the speed option (e.g., SLOW, NORMAL, FAST, MANUAL)
      * @throws IllegalStateException if the provided speed option is not recognized
@@ -249,23 +249,23 @@ public class Controller extends Thread {
     }
 
     /**
-     * Handles the start action to begin maze exploration.
+     * Handles the start action to begin cave exploration.
      *
-     * <p>This method initializes perceptions in the maze, starts a background thread for
-     * exploration, and updates the view in a loop. Exploration continues until the maze
+     * <p>This method initializes perceptions in the cave, starts a background thread for
+     * exploration, and updates the view in a loop. Exploration continues until the cave
      * is fully explored or the thread is interrupted.
      */
     private void handleStartClicked() {
         if (!canStart()) return;
 
         // Load perceptions
-        model.getMaze().updateAllPerceptions();
+        model.getCave().updateAllPerceptions();
 
         new Thread(() -> {
-            System.out.println("Maze started.");
+            System.out.println("Cave started.");
             model.setStarted(true);
-            while (!model.isMazeExplored()) {
-                model.exploreMaze();
+            while (!model.isCaveExplored()) {
+                model.exploreCave();
                 view.updateView();
                 try {
                     Thread.sleep(selectedSpeed);
@@ -278,21 +278,21 @@ public class Controller extends Thread {
     }
 
     /**
-     * Validates whether the maze exploration can start.
+     * Validates whether the cave exploration can start.
      *
-     * <p>This method ensures that the maze has at least one monster, one treasure,
+     * <p>This method ensures that the cave has at least one monster, one treasure,
      * and one player before allowing the start of exploration. It also checks
      * that the game has not already started.
      *
-     * @return {@code true} if the maze can start; {@code false} otherwise
+     * @return {@code true} if the cave can start; {@code false} otherwise
      */
     private boolean canStart() {
         if (model.isStarted()) {
-            System.err.println("Maze has already started.");
+            System.err.println("Cave has already started.");
             return false;
         }
 
-        CaveModel caveModel = model.getMaze();
+        CaveModel caveModel = model.getCave();
         if (caveModel.getAmountOfMonsters() == 0 || caveModel.getAmountOfTreasures() == 0 || caveModel.getAmountOfPlayers() == 0) {
             System.err.println("A monster, a treasure and a player are required to start.");
             return false;
@@ -302,12 +302,12 @@ public class Controller extends Thread {
     }
 
     /**
-     * Handles updates to the maze and refreshes the view.
+     * Handles updates to the cave and refreshes the view.
      *
-     * <p>This method is triggered when the maze state changes, ensuring that
+     * <p>This method is triggered when the cave state changes, ensuring that
      * the view remains consistent with the model.
      */
-    private void handleMazeUpdated() {
+    private void handleCaveUpdated() {
         view.updateView();
     }
 
