@@ -7,10 +7,12 @@ public class Square {
 
     private byte status;
     private Perceptions perceptions;
+    private boolean visited;
 
     public Square() {
-        this.status = Perception_Constants.CLEAN;
-        this.perceptions = new Perceptions();
+        status = Perception_Constants.CLEAN;
+        perceptions = new Perceptions();
+        visited = false;
     }
 
     public byte getStatus() {
@@ -27,5 +29,13 @@ public class Square {
 
     public void setPerceptions(Perceptions perceptions) {
         this.perceptions = perceptions;
+    }
+
+    public boolean isVisited() {
+        return visited;
+    }
+
+    public void setVisited(boolean value) {
+        visited = value;
     }
 }

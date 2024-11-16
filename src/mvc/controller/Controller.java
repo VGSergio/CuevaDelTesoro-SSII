@@ -9,11 +9,11 @@ import static mvc.model.Global.*;
 
 public class Controller extends Thread {
 
-    private final Model MODEL = new Model();
+    private Model model;
     private View view;
 
-    private byte selectedItem = Perception_Constants.CLEAN;
-    private int selectedSpeed = Speed_Constants.NORMAL_VALUE;
+    private byte selectedItem = Perception_Constants.DEFAULT;
+    private int selectedSpeed = Speed_Constants.DEFAULT_VALUE;
 
     public static void main(String[] args) {
         new Controller().start();
@@ -21,18 +21,24 @@ public class Controller extends Thread {
 
     @Override
     public void run() {
+        initializeModel();
         initializeView();
+    }
 
-        while (MODEL.isStarted()) {
-            MODEL.updateMaze();
-        }
+    private void initializeModel() {
+        model = new Model();
+        model.getMaze().initializePlayer();
     }
 
     private void initializeView() {
         try {
-            view = new View(this, MODEL.getMaze());
+            view = new View(this, model.getMaze());
         } catch (Exception e) {
             System.err.println("Error initializing view: " + e.getMessage());
+        }
+        if (view == null) {
+            System.err.println("View failed to initialize. Exiting program.");
+            System.exit(1); // Fail-fast approach
         }
     }
 
@@ -44,26 +50,30 @@ public class Controller extends Thread {
             case Events_Constants.SPEED_CHANGED -> handleSpeedChanged((String) params[0]);
             case Events_Constants.NEXT_STEP_CLICKED -> handleNextStepClicked();
             case Events_Constants.START_CLICKED -> handleStartClicked();
+            case Events_Constants.MAZE_UPDATED -> handleMazeUpdated();
             default -> System.err.println("Unexpected event: " + event);
         }
     }
 
     private void handleMazeSideChanged(int size) {
-        if (MODEL.isStarted()) {
+        if (model.isStarted()) {
             System.err.println("Maze size can not be changed once started.");
             return;
         }
-        MODEL.getMaze().setMazeSide((byte) size);
+        model.getMaze().setMazeSide((byte) size);
         view.updateView();
     }
 
     private void handleSquareClicked(byte row, byte column) {
         if (!canPlaceItem(row, column)) return;
 
-        Square square = MODEL.getMaze().getSquare(row, column);
+        Square square = model.getMaze().getSquare(row, column);
         byte status = square.getStatus();
 
-        if (status == selectedItem) return; // Do nothing if already set to selected item
+        if (status == selectedItem) {
+            System.out.println("Square already set to selected item. No change made.");
+            return;
+        } // Do nothing if already set to selected item
 
         updateModelCounts(status, selectedItem);
         square.setStatus(selectedItem);
@@ -71,22 +81,25 @@ public class Controller extends Thread {
     }
 
     private boolean canPlaceItem(byte row, byte column) {
-        if (MODEL.isStarted()) {
+        if (model.isStarted()) {
             System.err.println("Maze cannot be edited once started.");
             return false;
         }
-        if (selectedItem == Perception_Constants.CLEAN) {
-            return true;
-        }
-        if (selectedItem == Perception_Constants.MONSTER && MODEL.getMaze().getAmountOfMonsters() >= Maze_Constants.MAX_MONSTERS) {
+
+        MazeModel mazeModel = model.getMaze();
+        if (selectedItem == Perception_Constants.MONSTER && mazeModel.getAmountOfMonsters() >= Maze_Constants.MAX_MONSTERS) {
             System.err.println("Maximum number of monsters reached.");
             return false;
         }
-        if (selectedItem == Perception_Constants.TREASURE && MODEL.getMaze().getAmountOfTreasures() >= Maze_Constants.MAX_TREASURES) {
+        if (selectedItem == Perception_Constants.TREASURE && mazeModel.getAmountOfTreasures() >= Maze_Constants.MAX_TREASURES) {
             System.err.println("Maximum number of treasures reached.");
             return false;
         }
-        if (selectedItem != Perception_Constants.PLAYER && row == MODEL.getMaze().getMazeSide() - 1 && column == 0) {
+        if (selectedItem == Perception_Constants.PLAYER && mazeModel.getAmountOfPlayers() >= Maze_Constants.MAX_PLAYERS) {
+            System.err.println("Maximum number of players reached.");
+            return false;
+        }
+        if (selectedItem != Perception_Constants.PLAYER && row == mazeModel.getMazeSide() - 1 && column == 0) {
             System.err.println("Position reserved for a player.");
             return false;
         }
@@ -95,12 +108,8 @@ public class Controller extends Thread {
     }
 
     private void updateModelCounts(byte currentStatus, byte newStatus) {
-        MazeModel mazeModel = MODEL.getMaze();
-
-        // Adjust the count for current status (decrease)
+        MazeModel mazeModel = model.getMaze();
         adjustMazeCount(mazeModel, currentStatus, -1);
-
-        // Adjust the count for new status (increase)
         adjustMazeCount(mazeModel, newStatus, 1);
     }
 
@@ -114,11 +123,11 @@ public class Controller extends Thread {
 
     private void handleElementChanged(String element) {
         selectedItem = switch (element) {
-            case Images_Constants.CLEAN -> Perception_Constants.CLEAN;
             case Images_Constants.MONSTER -> Perception_Constants.MONSTER;
             case Images_Constants.HOLE -> Perception_Constants.HOLE;
             case Images_Constants.TREASURE -> Perception_Constants.TREASURE;
             case Images_Constants.PLAYER -> Perception_Constants.PLAYER;
+            case Images_Constants.CLEAN -> Perception_Constants.CLEAN;
             default -> throw new IllegalStateException("Unexpected value: " + element);
         };
         view.getControls().getElementSelector().getPicture().setPicture(element);
@@ -146,29 +155,42 @@ public class Controller extends Thread {
     private void handleStartClicked() {
         if (!canStart()) return;
 
-        MODEL.getMaze().updateAllPerceptions();
-        MODEL.setStarted(true);
+        // Load perceptions
+        model.getMaze().updateAllPerceptions();
 
-        System.out.println("Maze started.");
+        new Thread(() -> {
+            System.out.println("Maze started.");
+            model.setStarted(true);
+            while (!model.isMazeExplored()) {
+                model.exploreMaze();
+                view.updateView();
+                try {
+                    Thread.sleep(selectedSpeed);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            model.setStarted(false);
+        }).start();
     }
 
     private boolean canStart() {
-        if (MODEL.isStarted()) {
+        if (model.isStarted()) {
             System.err.println("Maze has already started.");
             return false;
         }
 
-        MazeModel mazeModel = MODEL.getMaze();
-        if (mazeModel.getAmountOfMonsters() == 0 || mazeModel.getAmountOfTreasures() == 0) {
-            System.err.println("A monster and treasure are required to start.");
+        MazeModel mazeModel = model.getMaze();
+        if (mazeModel.getAmountOfMonsters() == 0 || mazeModel.getAmountOfTreasures() == 0 || mazeModel.getAmountOfPlayers() == 0) {
+            System.err.println("A monster, a treasure and a player are required to start.");
             return false;
         }
 
-        if (mazeModel.getAmountOfTreasures() != mazeModel.getAmountOfPlayers()) {
-            System.err.println("Each player has to be able to get a treasure.");
-            return false;
-        }
         return true;
+    }
+
+    private void handleMazeUpdated() {
+        view.updateView();
     }
 
     private int castToInt(Object param) {

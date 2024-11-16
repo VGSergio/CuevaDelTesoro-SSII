@@ -1,6 +1,7 @@
 package mvc.model.maze;
 
 import mvc.model.Perceptions;
+import mvc.model.Player;
 
 import static mvc.model.Global.Perception_Constants;
 import static mvc.model.Global.getSquarePositionInMaze;
@@ -14,10 +15,15 @@ public class MazeModel {
     private byte amountOfTreasures;
     private byte amountOfPlayers;
 
+    private Player player;
+
     public MazeModel(byte mazeSide) {
         setMazeSide(mazeSide);
     }
 
+    /**
+     * Initializes the maze structure and resets item counts.
+     */
     private void initializeMaze() {
         int totalSquares = mazeSide * mazeSide;
         this.squares = new Square[totalSquares];
@@ -25,19 +31,40 @@ public class MazeModel {
             this.squares[i] = new Square();
         }
 
+        // The maze always has a player on the bottom left position
+        squares[getSquarePositionInMaze((byte) (mazeSide - 1), (byte) 0, mazeSide)].setStatus(Perception_Constants.PLAYER);
+
         this.amountOfMonsters = 0;
         this.amountOfTreasures = 0;
-        this.amountOfPlayers = 0;
+        this.amountOfPlayers = 1; // Includes the initial player
     }
 
+    /**
+     * Initializes the player in the maze.
+     */
+    public void initializePlayer() {
+        // First player, which starts in the bottom left corner.
+        player = new Player((byte) (mazeSide - 1), (byte) 0);
+        player.setMaze(this);
+    }
+
+    /**
+     * Returns the squares array.
+     */
     public Square[] getSquares() {
-        return squares.clone();
+        return squares;
     }
 
+    /**
+     * Retrieves a specific square based on row and column.
+     */
     public Square getSquare(byte row, byte column) {
         return squares[getSquarePositionInMaze(row, column, mazeSide)];
     }
 
+    /**
+     * Retrieves the status of all squares in the maze.
+     */
     public byte[] getSquaresStatus() {
         byte[] status = new byte[squares.length];
         for (int i = 0; i < status.length; i++) {
@@ -46,10 +73,21 @@ public class MazeModel {
         return status;
     }
 
+    public void setSquaresStatus(byte status) {
+        for (Square square : squares) {
+            square.setStatus(status);
+        }
+    }
+
     public byte getMazeSide() {
         return mazeSide;
     }
 
+    /**
+     * Sets the maze side and initializes the maze structure.
+     *
+     * @param mazeSide The side length of the maze.
+     */
     public void setMazeSide(byte mazeSide) {
         this.mazeSide = mazeSide;
         initializeMaze();
@@ -83,33 +121,29 @@ public class MazeModel {
         this.amountOfPlayers += (byte) delta;
     }
 
+    /**
+     * Updates perceptions for a specific square by position index.
+     */
     public void updatePerceptions(int position) {
-        updatePerceptions(squares[position], (byte) (position / mazeSide), (byte) (position % mazeSide));
+        updatePerceptions((byte) (position / mazeSide), (byte) (position % mazeSide));
     }
 
+    /**
+     * Updates perceptions for a specific square by row and column.
+     */
     public void updatePerceptions(byte row, byte column) {
-        updatePerceptions(squares[getSquarePositionInMaze(row, column, mazeSide)], row, column);
-    }
-
-    private void updatePerceptions(Square square, byte row, byte column) {
+        Square square = getSquare(row, column);
         Perceptions perceptions = new Perceptions();
 
-        // Retrieve neighbors and calculate perceptions
+        // Calculate perceptions based on neighbors
         for (int[] delta : new int[][]{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}) {
             byte neighborRow = (byte) (row + delta[0]);
             byte neighborCol = (byte) (column + delta[1]);
 
-            if (neighborRow >= 0 && neighborRow < mazeSide && neighborCol >= 0 && neighborCol < mazeSide) {
-                Square neighbor = getSquare(neighborRow, neighborCol);
-                switch (neighbor.getStatus()) {
-                    case Perception_Constants.MONSTER -> perceptions.setMonsterPerception(true);
-                    case Perception_Constants.HOLE -> perceptions.setHolePerception(true);
-                    case Perception_Constants.TREASURE -> perceptions.setTreasurePerception(true);
-                    case Perception_Constants.WALL ->
-                            perceptions.setWallPerception(true); // Typically, walls shouldn't trigger updates
-                    case Perception_Constants.CLEAN, Perception_Constants.PLAYER -> {
-                    } // No perception for these
-                    default -> throw new IllegalStateException("Unexpected status: " + square.getStatus());
+            if (isWithinBounds(neighborRow, neighborCol)) {
+                byte status = getSquare(neighborRow, neighborCol).getStatus();
+                if (perceptions.isAValidPerception(status)) {
+                    perceptions.setPerception(status, true);
                 }
             }
         }
@@ -123,4 +157,15 @@ public class MazeModel {
         }
     }
 
+    public void exploreMaze() {
+        player.exploreMaze();
+    }
+
+    public boolean isMazeExplored() {
+        return player.hasFinished();
+    }
+
+    public boolean isWithinBounds(byte row, byte column) {
+        return row >= 0 && row < mazeSide && column >= 0 && column < mazeSide;
+    }
 }

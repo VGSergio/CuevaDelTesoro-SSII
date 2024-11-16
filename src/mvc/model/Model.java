@@ -6,26 +6,31 @@ import static mvc.model.Global.Maze_Constants;
 
 public class Model {
 
-    private final MazeModel mazeModel = new MazeModel(Maze_Constants.MIN_SIDE);
+    private final MazeModel mazeModel;
     private boolean started;
 
     public Model() {
-        this.started = false;
+        mazeModel = new MazeModel(Maze_Constants.MIN_SIDE);
+        started = false;
     }
 
     public boolean isStarted() {
         return started;
     }
 
-    public void setStarted(boolean value) {
-        this.started = value;
+    public void setStarted(boolean started) {
+        this.started = started;
     }
 
     public MazeModel getMaze() {
         return mazeModel;
     }
 
-    public void updateMaze() {
+    public void exploreMaze() {
+        mazeModel.exploreMaze();
+    }
 
+    public boolean isMazeExplored() {
+        return mazeModel.isMazeExplored();
     }
 }

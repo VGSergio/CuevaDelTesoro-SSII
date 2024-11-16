@@ -10,46 +10,27 @@ public class Perceptions {
 
     public Perceptions() {
         this.perceptions = new boolean[Perception_Constants.NUMBER_OF_PERCEPTIONS];
-        Arrays.fill(this.perceptions, false);
+        Arrays.fill(this.perceptions, false); // Initialize all perceptions to false
     }
 
-    public boolean[] getPerceptions() {
-        return this.perceptions;
+    public boolean getPerception(int perceptionType) {
+        return perceptions[perceptionType];
     }
 
-    public void setMonsterPerception(boolean value) {
-        this.perceptions[Perception_Constants.MONSTER] = value;
+    public void setPerception(int perceptionType, boolean value) {
+        this.perceptions[perceptionType] = value;
     }
 
-    public boolean getMonsterPerception() {
-        return this.perceptions[Perception_Constants.MONSTER];
-    }
-
-    public void setHolePerception(boolean value) {
-        this.perceptions[Perception_Constants.HOLE] = value;
-    }
-
-    public boolean getHolePerception() {
-        return this.perceptions[Perception_Constants.HOLE];
-    }
-
-    public void setTreasurePerception(boolean value) {
-        this.perceptions[Perception_Constants.TREASURE] = value;
-    }
-
-    public boolean getTreasurePerception() {
-        return this.perceptions[Perception_Constants.TREASURE];
-    }
-
-    public void setWallPerception(boolean value) {
-        this.perceptions[Perception_Constants.WALL] = value;
-    }
-
-    public boolean getWallPerception() {
-        return this.perceptions[Perception_Constants.WALL];
-    }
-
+    @Override
     public String toString() {
-        return "Stinks? " + getMonsterPerception() + " Wind? " + getHolePerception() + " Brilliance? " + getTreasurePerception();
+        return "Hedor: " + getPerception(Perception_Constants.MONSTER) +
+                "\nBrisa: " + getPerception(Perception_Constants.HOLE) +
+                "\nResplandor: " + getPerception(Perception_Constants.TREASURE) +
+                "\nGolpe: " + getPerception(Perception_Constants.WALL) +
+                "\nGemido: " + getPerception(Perception_Constants.MOAN);
+    }
+
+    public boolean isAValidPerception(int perceptionType) {
+        return perceptionType >= 0 && perceptionType < Perception_Constants.NUMBER_OF_PERCEPTIONS;
     }
 }

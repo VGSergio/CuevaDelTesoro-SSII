@@ -4,137 +4,177 @@ import mvc.model.maze.MazeModel;
 import mvc.model.maze.Square;
 
 import static mvc.model.Global.Perception_Constants;
-import static mvc.model.Global.getSquarePositionInMaze;
 
 public class Player {
 
-    private final MazeModel MAZEModel;
+    private static final byte NUM_DIRECTIONS = 4;
     private final byte STARTING_ROW;
     private final byte STARTING_COL;
-    private final Knowledge[] BC;
-    private final byte actualRow;
-    private final byte actualCol;
-    private final boolean foundTreasure;
-    private int arrows;
+    private MazeModel maze;
+    private MazeModel map;
+    private byte actualRow;
+    private byte actualCol;
+    private boolean treasureFound;
+    private final boolean leftCave;
+    private byte direction = Direction.UP;
 
-    public Player(MazeModel mazeModel, byte row, byte column) {
-        // Maze
-        this.MAZEModel = mazeModel;
-
-        // Player data
+    public Player(byte row, byte column) {
         this.STARTING_ROW = row;
         this.STARTING_COL = column;
         this.actualRow = STARTING_ROW;
         this.actualCol = STARTING_COL;
-        this.foundTreasure = false;
-        this.arrows = mazeModel.getAmountOfMonsters();
 
-        this.BC = new Knowledge[mazeModel.getMazeLength()];
-        for (int i = 0; i < BC.length; i++) {
-            this.BC[i] = new Knowledge();
-        }
-        BC[getSquarePositionInMaze(actualRow, actualCol, mazeModel.getMazeSide())].setStatus(Perception_Constants.CLEAN); // The starting position is safe
-        updatePerceptions();
+        this.treasureFound = false;
+        this.leftCave = false;
     }
 
-    private static Knowledge getKnowledge(int[] positions, int mazeLength, Square[] squares) {
-        Knowledge knowledge = new Knowledge();
-        boolean monster = false;
-        boolean hole = false;
-        boolean treasure = false;
-
-        for (int pos : positions) {
-            if (pos < 0 || pos >= mazeLength) {
-                continue;
-            }
-
-            byte status = squares[pos].getStatus();
-
-            switch (status) {
-                case Perception_Constants.MONSTER:
-                    monster = true;
-                    break;
-                case Perception_Constants.HOLE:
-                    hole = true;
-                    break;
-                case Perception_Constants.TREASURE:
-                    treasure = true;
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        Perceptions perceptions = knowledge.getPerceptions();
-
-        perceptions.setMonsterPerception(monster);
-        perceptions.setHolePerception(hole);
-        perceptions.setHolePerception(treasure);
-        return knowledge;
-    }
-
-    private void updatePerceptions() {
-        byte mazeSide = MAZEModel.getMazeSide();
-        int mazeLength = MAZEModel.getMazeLength();
-        Square[] squares = MAZEModel.getSquares();
-
-        int playerPosition = getSquarePositionInMaze(actualRow, actualCol, mazeSide);
-        int[] positions = {
-                (actualRow - 1) * mazeSide + actualCol, // up
-                (actualRow + 1) * mazeSide + actualCol, // down
-                playerPosition - 1,                     // left
-                playerPosition + 1                      // right
-        };
-
-        Knowledge perceptions = getKnowledge(positions, mazeLength, squares);
-
-        BC[playerPosition] = perceptions;
-    }
-
-    private void throwArrow(String direction) {
-        arrows--;
-        switch (direction) {
-            case "up":
-                System.out.println("up");
-                break;
-            case "down":
-                System.out.println("down");
-                break;
-            case "left":
-                System.out.println("left");
-                break;
-            case "right":
-                System.out.println("right");
-                break;
-            default:
-                System.err.println("unknown direction");
-                break;
-        }
-
-        // update knowledge
-        // update maze
+    public void setMaze(MazeModel maze) {
+        this.maze = maze;
+        map = new MazeModel(maze.getMazeSide());
+        map.setSquaresStatus(Perception_Constants.UNKNOWN);
     }
 
     public void exploreMaze() {
-        // find treasure
-        while (!foundTreasure) {
-            updatePerceptions();
-            makeDecision();
+        // Find treasure
+        if (!treasureFound) {
+            if (!map.getSquare(actualRow, actualCol).isVisited()) {
+                getPerceptions();
+            }
             updateKnowledge();
+            makeDecision();
         }
-        // return to the starting position to exit the maze
 
+        // return to the starting position to exit the maze
+    }
+
+    private void getPerceptions() {
+        Square actualSquareMaze = maze.getSquare(actualRow, actualCol);
+
+        // Update our map with the maze perceptions
+        Square actualSquareMap = map.getSquare(actualRow, actualCol);
+        actualSquareMap.setPerceptions(actualSquareMaze.getPerceptions());
+
+        actualSquareMap.setVisited(true);
     }
 
     private void makeDecision() {
+        advance();
 
+        // Update view to show changes
+//        controller.notify(Events_Constants.MAZE_UPDATED);
     }
 
     private void updateKnowledge() {
 
     }
 
+    /**
+     * The player advances one position forward
+     */
+    private void advance() {
+        byte nextRow = (byte) (actualRow + switch (direction) {
+            case Direction.UP -> -1;
+            case Direction.DOWN -> +1;
+            default -> 0;
+        });
+        byte nextCol = (byte) (actualCol + switch (direction) {
+            case Direction.RIGHT -> +1;
+            case Direction.LEFT -> -1;
+            default -> 0;
+        });
+
+        if (!maze.isWithinBounds(nextRow, nextCol)) {
+            System.out.println("Player collided with a wall");
+            treasureFound = true;
+            return;
+        }
+
+        Square actualSquareMaze = maze.getSquare(actualRow, actualCol);
+        Square actualSquareMap = map.getSquare(actualRow, actualCol);
+        Square nextSquareMaze = maze.getSquare(nextRow, nextCol);
+        Square nextSquareMap = map.getSquare(nextRow, nextCol);
+
+        byte nextStatus = nextSquareMaze.getStatus();
+        switch (nextStatus) {
+            case Perception_Constants.MONSTER -> {
+                System.out.println("Player encountered a monster");
+            }
+            case Perception_Constants.HOLE -> {
+                System.out.println("Player fell through a hole");
+            }
+            case Perception_Constants.TREASURE -> {
+                System.out.println("Player found a treasure");
+            }
+            case Perception_Constants.CLEAN -> {
+                System.out.println("Player moved to a new position");
+            }
+        }
+
+        actualRow = nextRow;
+        actualCol = nextCol;
+
+        actualSquareMaze.setStatus(Perception_Constants.CLEAN);
+        actualSquareMap.setStatus(Perception_Constants.CLEAN);
+
+        nextSquareMaze.setStatus(Perception_Constants.PLAYER);
+        nextSquareMap.setStatus(Perception_Constants.PLAYER);
+    }
+
+    /**
+     * The player makes a 90º right turn / clockwise
+     */
+    private void turnRight() {
+        direction = (byte) ((direction + 1) % NUM_DIRECTIONS);
+    }
+
+    /**
+     * The player makes a 90º left turn / counterclockwise
+     */
+    private void turnLeft() {
+        direction = (byte) ((direction + NUM_DIRECTIONS - 1) % NUM_DIRECTIONS);
+    }
+
+    /**
+     * The player picks up an item on its position, if there's one.
+     */
+    private void take() {
+        byte status = maze.getSquare(actualRow, actualCol).getStatus();
+        if (status == Perception_Constants.TREASURE) {
+            System.out.println("Player takes the treasure");
+        }
+    }
+
+    /**
+     * The player shoots an arrow in the direction it's looking.
+     * The arrow won't stop until it kills a monster or collides with a wall.
+     */
+    private void shoot() {
+
+    }
+
+    /**
+     * The player leaves the cave.
+     * Only possible if the player is on its initial position.
+     */
+    private void jump() {
+
+    }
+
+    /**
+     * The player dies on entering a room with an alive monster or a hole.
+     */
+    private void die() {
+
+    }
+
     public boolean hasFinished() {
-        return foundTreasure && actualRow == STARTING_ROW && actualCol == STARTING_COL;
+        return treasureFound && leftCave;
+    }
+
+    private static class Direction {
+        private static final byte UP = 0;
+        private static final byte RIGHT = 1;
+        private static final byte DOWN = 2;
+        private static final byte LEFT = 3;
     }
 }

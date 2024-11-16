@@ -2,6 +2,11 @@ package mvc.model;
 
 public class Global {
 
+    // Utility method
+    public static int getSquarePositionInMaze(byte row, byte column, byte sideSize) {
+        return row * sideSize + column;
+    }
+
     // Perception-related constants
     public static class Perception_Constants {
         // Perceptions and Status
@@ -35,6 +40,7 @@ public class Global {
         public static final String SPEED_CHANGED = "SPEED_CHANGED";
         public static final String NEXT_STEP_CLICKED = "NEXT_STEP_CLICKED";
         public static final String START_CLICKED = "START_CLICKED";
+        public static final String MAZE_UPDATED = "MAZE_UPDATED";
     }
 
     // Image paths
@@ -55,17 +61,12 @@ public class Global {
         public static final String NORMAL = "NORMAL_SPEED";
         public static final String FAST = "FAST_SPEED";
         public static final String MANUAL = "MANUAL_SPEED";
-        public static final String DEFAULT = NORMAL;
+        public static final String DEFAULT = FAST;
 
-        public static final int SLOW_VALUE = 1_000;
-        public static final int NORMAL_VALUE = 500;
-        public static final int FAST_VALUE = 250;
+        public static final int SLOW_VALUE = 3_000;
+        public static final int NORMAL_VALUE = 2_000;
+        public static final int FAST_VALUE = 1_000;
         public static final int MANUAL_VALUE = -1;
-        public static final int DEFAULT_VALUE = NORMAL_VALUE;
-    }
-
-    // Utility method
-    public static int getSquarePositionInMaze(byte row, byte column, byte sideSize) {
-        return row * sideSize + column;
+        public static final int DEFAULT_VALUE = FAST_VALUE;
     }
 }
