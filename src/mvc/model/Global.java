@@ -1,14 +1,38 @@
 package mvc.model;
 
+/**
+ * The {@code Global} class serves as a container for shared constants, utility methods,
+ * and enums used across the application. It centralizes the definitions for square statuses,
+ * perception types, maze configuration, event constants, image paths, and speed settings.
+ *
+ * <p>This class provides a single point of reference for constants and utility methods,
+ * enhancing code readability and maintainability.</p>
+ */
 public class Global {
 
+    /**
+     * The default status for a {@code Square} in the maze.
+     */
     public static final SquareStatus SQUARE_STATUS_DEFAULT = SquareStatus.MONSTER;
 
-    // Utility method
+    /**
+     * Calculates the linear index of a square in the maze based on its row and column.
+     *
+     * @param row       The row of the square.
+     * @param column    The column of the square.
+     * @param sideSize  The side length of the maze.
+     * @return The index of the square in the maze's 1D representation.
+     */
     public static int getSquarePositionInMaze(byte row, byte column, byte sideSize) {
         return row * sideSize + column;
     }
 
+    /**
+     * Maps a {@code SquareStatus} to its corresponding {@code PerceptionType}.
+     *
+     * @param status The status of the square.
+     * @return The corresponding perception type, or {@code null} if no perception is associated.
+     */
     public static PerceptionType squareStatusToPerceptionType(SquareStatus status) {
         return switch (status) {
             case MONSTER -> PerceptionType.MONSTER;
@@ -18,27 +42,53 @@ public class Global {
         };
     }
 
-    // Perception-related constants
+    /**
+     * Enum representing the types of perceptions in the maze.
+     */
     public enum PerceptionType {
         MONSTER, HOLE, TREASURE, WALL, MOAN
     }
 
-    // Status-related constants
+    /**
+     * Enum representing the possible statuses of a square in the maze.
+     */
     public enum SquareStatus {
         MONSTER, HOLE, TREASURE, PLAYER, CLEAN, UNKNOWN
-
     }
 
-    // Maze-related constants
+    /**
+     * Class containing constants related to maze configuration.
+     */
     public static class Maze_Constants {
+        /**
+         * The minimum allowed size of the maze's side.
+         */
         public static final byte MIN_SIDE = 4;
+
+        /**
+         * The maximum allowed size of the maze's side.
+         */
         public static final byte MAX_SIDE = 16;
+
+        /**
+         * The maximum number of monsters allowed in the maze.
+         */
         public static final byte MAX_MONSTERS = 1;
+
+        /**
+         * The maximum number of treasures allowed in the maze.
+         */
         public static final byte MAX_TREASURES = 1;
+
+        /**
+         * The maximum number of players allowed in the maze.
+         */
         public static final byte MAX_PLAYERS = 1;
     }
 
-    // Event-related constants
+    /**
+     * Class containing constants related to game events.
+     */
     public static class Events_Constants {
         public static final String MAZE_SIDE_CHANGED = "MAZE_SIDE_CHANGED";
         public static final String SQUARE_CLICKED = "SQUARE_CLICKED";
@@ -49,7 +99,9 @@ public class Global {
         public static final String MAZE_UPDATED = "MAZE_UPDATED";
     }
 
-    // Image paths
+    /**
+     * Class containing constants for image file paths.
+     */
     public static class Images_Constants {
         public static final String MONSTER = "resources/monster.png";
         public static final String HOLE = "resources/hole.png";
@@ -58,21 +110,50 @@ public class Global {
         public static final String PLAYER = "resources/player.png";
         public static final String NEXT_STEP = "resources/next_step.png";
         public static final String START = "resources/start.png";
+
+        /**
+         * Default image path.
+         */
         public static final String DEFAULT = MONSTER;
     }
 
-    // Speed-related constants
+    /**
+     * Class containing constants for game speed settings.
+     */
     public static class Speed_Constants {
         public static final String SLOW = "SLOW_SPEED";
         public static final String NORMAL = "NORMAL_SPEED";
         public static final String FAST = "FAST_SPEED";
         public static final String MANUAL = "MANUAL_SPEED";
+
+        /**
+         * Default speed setting.
+         */
         public static final String DEFAULT = FAST;
 
+        /**
+         * The delay (in milliseconds) for slow speed.
+         */
         public static final int SLOW_VALUE = 3_000;
+
+        /**
+         * The delay (in milliseconds) for normal speed.
+         */
         public static final int NORMAL_VALUE = 2_000;
+
+        /**
+         * The delay (in milliseconds) for fast speed.
+         */
         public static final int FAST_VALUE = 1_000;
+
+        /**
+         * Special value indicating manual control.
+         */
         public static final int MANUAL_VALUE = -1;
+
+        /**
+         * Default delay value for the game speed.
+         */
         public static final int DEFAULT_VALUE = FAST_VALUE;
     }
 }
