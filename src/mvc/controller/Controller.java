@@ -53,7 +53,6 @@ public class Controller extends Thread {
      */
     private void initializeModel() {
         model = new Model();
-        model.getCave().initializePlayer();
     }
 
     /**
@@ -104,7 +103,6 @@ public class Controller extends Thread {
         }
 
         model.getCave().setCaveSide((byte) side);
-        model.getCave().initializePlayer();
 
         view.updateView();
     }
@@ -124,6 +122,13 @@ public class Controller extends Thread {
         if (status == selectedStatus) {
             System.out.println("Square already set to selected item. No change made.");
             return;
+        }
+
+        if (selectedStatus == SquareStatus.PLAYER) {
+            model.addPlayer(row, column);
+        }
+        if (status == SquareStatus.PLAYER && selectedStatus == SquareStatus.CLEAN) {
+            model.removePlayer(row, column);
         }
 
         updateModelCounts(status, selectedStatus);
@@ -232,7 +237,6 @@ public class Controller extends Thread {
         };
         System.out.println("Speed changed to " + selectedSpeed);
     }
-
 
     /**
      * Handles the "Next Step" action in the manual exploration mode.

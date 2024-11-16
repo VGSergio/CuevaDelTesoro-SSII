@@ -18,9 +18,9 @@ public class Global {
     /**
      * Calculates the linear index of a square in the cave based on its row and column.
      *
-     * @param row      The row of the square.
-     * @param column   The column of the square.
-     * @param side The side length of the cave.
+     * @param row    The row of the square.
+     * @param column The column of the square.
+     * @param side   The side length of the cave.
      * @return The index of the square in the cave's 1D representation.
      */
     public static int getSquarePositionInCave(byte row, byte column, byte side) {
@@ -98,7 +98,7 @@ public class Global {
         /**
          * The maximum number of players allowed in the cave.
          */
-        public static final byte MAX_PLAYERS = 1;
+        public static final byte MAX_PLAYERS = 4;
     }
 
     /**
@@ -107,7 +107,7 @@ public class Global {
     public static class Events_Constants {
         public static final String CAVE_SIDE_CHANGED = "CAVE_SIDE_CHANGED";
         public static final String SQUARE_CLICKED = "SQUARE_CLICKED";
-        public static final String STATUS_CHANGED = "ELEMENT_CHANGED";
+        public static final String STATUS_CHANGED = "STATUS_CHANGED";
         public static final String SPEED_CHANGED = "SPEED_CHANGED";
         public static final String NEXT_STEP_CLICKED = "NEXT_STEP_CLICKED";
         public static final String START_CLICKED = "START_CLICKED";

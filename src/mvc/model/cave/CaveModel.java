@@ -1,25 +1,19 @@
 package mvc.model.cave;
 
 import mvc.model.Perceptions;
-import mvc.model.Player;
-
-import java.util.Arrays;
 
 import static mvc.model.Global.*;
 
 public class CaveModel {
 
-    private final SquareStatus defaultSquareStatus;
-    private Square[] squares;
     private byte caveSide;
+    private Square[] squares;
+
     private byte amountOfMonsters;
     private byte amountOfTreasures;
     private byte amountOfPlayers;
 
-    private Player player;
-
-    public CaveModel(byte caveSide, SquareStatus defaultSquareStatus) {
-        this.defaultSquareStatus = defaultSquareStatus;
+    public CaveModel(byte caveSide) {
         setCaveSide(caveSide);
     }
 
@@ -30,7 +24,8 @@ public class CaveModel {
         int totalSquares = caveSide * caveSide;
         this.squares = new Square[totalSquares];
         for (int i = 0; i < totalSquares; i++) {
-            this.squares[i] = new Square(defaultSquareStatus);
+            this.squares[i] = new Square();
+            this.squares[i].setStatus(SquareStatus.CLEAN);
         }
 
         this.amountOfMonsters = 0;
@@ -47,9 +42,6 @@ public class CaveModel {
 
         squares[getSquarePositionInCave(row, column, caveSide)].setStatus(SquareStatus.PLAYER);
         this.amountOfPlayers = 1;
-
-        player = new Player(row, column);
-        player.linkCave(this);
     }
 
     /**
@@ -147,19 +139,8 @@ public class CaveModel {
         }
     }
 
-    public void exploreCave() {
-        player.exploreCave();
-    }
-
-    public boolean isCaveExplored() {
-        return player.hasFinished();
-    }
-
     public boolean isWithinBounds(byte row, byte column) {
         return row >= 0 && row < caveSide && column >= 0 && column < caveSide;
     }
 
-    public Perceptions[] getPerceptions() {
-        return Arrays.stream(squares).map(Square::getPerceptions).toArray(Perceptions[]::new);
-    }
 }

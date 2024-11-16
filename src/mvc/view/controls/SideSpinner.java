@@ -5,8 +5,8 @@ import mvc.controller.Controller;
 import javax.swing.*;
 import java.awt.*;
 
-import static mvc.model.Global.Events_Constants;
 import static mvc.model.Global.Cave_Constants;
+import static mvc.model.Global.Events_Constants;
 
 /**
  * A JPanel-based component for selecting the side of a cave.

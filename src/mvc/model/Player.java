@@ -1,7 +1,10 @@
 package mvc.model;
 
 import mvc.model.cave.CaveModel;
+import mvc.model.cave.Map;
 import mvc.model.cave.Square;
+
+import java.util.Objects;
 
 import static mvc.model.Global.*;
 
@@ -16,12 +19,12 @@ public class Player {
             {1, 0},  // SOUTH
             {0, -1}, // WEST
     };
+    private final boolean treasureFound;
     private boolean leftCave;
     private CaveModel cave;
-    private CaveModel map;
+    private Map map;
     private byte actualRow;
     private byte actualCol;
-    private final boolean treasureFound;
 
     public Player(byte row, byte column) {
         this.startingRow = row;
@@ -39,8 +42,7 @@ public class Player {
     }
 
     private void initializeMap() {
-        map = new CaveModel(cave.getCaveSide(), SquareStatus.UNKNOWN);
-        map.setSquaresStatus(SquareStatus.UNKNOWN);
+        map = new Map(cave.getCaveSide());
         map.getSquare(startingRow, startingCol).setStatus(SquareStatus.PLAYER);
     }
 
@@ -309,6 +311,19 @@ public class Player {
             return map.getSquare(row, col).notVisited();
         }
         return true; // Out of bounds squares are considered visited
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Player player = (Player) o;
+        return startingRow == player.startingRow && startingCol == player.startingCol;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(startingRow, startingCol);
     }
 
     private enum Directions {

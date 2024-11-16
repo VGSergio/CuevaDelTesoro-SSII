@@ -9,8 +9,8 @@ public class Square {
     private Perceptions perceptions;
     private boolean visited;
 
-    public Square(SquareStatus defaultStatus) {
-        status = defaultStatus;
+    public Square() {
+        status = SquareStatus.UNKNOWN;
         perceptions = null;
         visited = false;
     }
