@@ -1,30 +1,30 @@
 package mvc.view;
 
 import mvc.controller.Controller;
-import mvc.model.maze.MazeModel;
+import mvc.model.cave.CaveModel;
 import mvc.view.controls.Controls;
 
 import javax.swing.*;
 
 /**
- * The main application window for the maze application.
+ * The main application window for the cave application.
  *
  * <p>This class extends {@link JFrame} and serves as the primary view in the MVC architecture.
- * It combines the {@link Controls} panel for user interactions and the {@link MazeView} panel
- * for visualizing the maze. The layout and components are configured for a seamless user experience.
+ * It combines the {@link Controls} panel for user interactions and the {@link CaveView} panel
+ * for visualizing the cave. The layout and components are configured for a seamless user experience.
  *
  * <p>Usage:
  * <ul>
- *   <li>Create an instance by passing a {@link Controller} and a {@link MazeModel}.</li>
- *   <li>Call {@link #updateView()} to refresh the maze view after changes to the model.</li>
+ *   <li>Create an instance by passing a {@link Controller} and a {@link CaveModel}.</li>
+ *   <li>Call {@link #updateView()} to refresh the cave view after changes to the model.</li>
  * </ul>
  *
  * @author Sergio Vega García
  * @see JFrame
  * @see Controls
- * @see MazeView
+ * @see CaveView
  * @see mvc.controller.Controller
- * @see mvc.model.maze.MazeModel
+ * @see CaveModel
  * <p>
  */
 public class View extends javax.swing.JFrame {
@@ -35,24 +35,24 @@ public class View extends javax.swing.JFrame {
     private final Controls controls;
 
     /**
-     * The panel for displaying the maze.
+     * The panel for displaying the cave.
      */
-    private final MazeView mazeView;
+    private final CaveView caveView;
 
     /**
-     * Constructs a {@code View} with the specified controller and maze model.
+     * Constructs a {@code View} with the specified controller and cave model.
      *
      * <p>The view is initialized with a fixed width of 800 pixels, and it combines
-     * the {@link Controls} panel and the {@link MazeView} panel in a vertical layout.
+     * the {@link Controls} panel and the {@link CaveView} panel in a vertical layout.
      *
      * @param controller the {@link Controller} to handle user interactions
-     * @param mazeModel  the {@link MazeModel} representing the maze data
+     * @param caveModel  the {@link CaveModel} representing the cave data
      */
-    public View(Controller controller, MazeModel mazeModel) {
+    public View(Controller controller, CaveModel caveModel) {
         int width = 800;
 
         controls = new Controls(controller, width);
-        mazeView = new MazeView(controller, width, mazeModel);
+        caveView = new CaveView(controller, width, caveModel);
 
         configure();
         initComponents();
@@ -63,7 +63,7 @@ public class View extends javax.swing.JFrame {
      * Configures the layout of the frame.
      *
      * <p>The content pane is set to use a vertical {@link BoxLayout},
-     * arranging the {@link Controls} panel above the {@link MazeView} panel.
+     * arranging the {@link Controls} panel above the {@link CaveView} panel.
      */
     private void configure() {
         setLayout(new BoxLayout(getContentPane(), BoxLayout.PAGE_AXIS));
@@ -72,12 +72,12 @@ public class View extends javax.swing.JFrame {
     /**
      * Initializes and adds the components to the frame.
      *
-     * <p>The {@link Controls} panel and {@link MazeView} panel are added to the frame
+     * <p>The {@link Controls} panel and {@link CaveView} panel are added to the frame
      * in the configured vertical layout.
      */
     private void initComponents() {
         add(controls);
-        add(mazeView);
+        add(caveView);
     }
 
     /**
@@ -110,12 +110,12 @@ public class View extends javax.swing.JFrame {
     }
 
     /**
-     * Updates the view by refreshing the maze display.
+     * Updates the view by refreshing the cave display.
      *
-     * <p>This method invokes {@link MazeView#updateMaze()} to redraw the maze
-     * based on the current state of the {@link MazeModel}.
+     * <p>This method invokes {@link CaveView#updateCave()} to redraw the cave
+     * based on the current state of the {@link CaveModel}.
      */
     public void updateView() {
-        mazeView.updateMaze();
+        caveView.updateCave();
     }
 }

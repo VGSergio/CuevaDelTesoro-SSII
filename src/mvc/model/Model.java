@@ -1,17 +1,17 @@
 package mvc.model;
 
-import mvc.model.maze.MazeModel;
+import mvc.model.cave.CaveModel;
 
-import static mvc.model.Global.Maze_Constants;
+import static mvc.model.Global.Cave_Constants;
 import static mvc.model.Global.SquareStatus;
 
 public class Model {
 
-    private final MazeModel mazeModel;
+    private final CaveModel caveModel;
     private boolean started;
 
     public Model() {
-        mazeModel = new MazeModel(Maze_Constants.MIN_SIDE, SquareStatus.CLEAN);
+        caveModel = new CaveModel(Cave_Constants.MIN_SIDE, SquareStatus.CLEAN);
         started = false;
     }
 
@@ -23,15 +23,15 @@ public class Model {
         this.started = started;
     }
 
-    public MazeModel getMaze() {
-        return mazeModel;
+    public CaveModel getMaze() {
+        return caveModel;
     }
 
     public void exploreMaze() {
-        mazeModel.exploreMaze();
+        caveModel.exploreMaze();
     }
 
     public boolean isMazeExplored() {
-        return mazeModel.isMazeExplored();
+        return caveModel.isMazeExplored();
     }
 }

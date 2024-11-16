@@ -12,7 +12,7 @@ import java.awt.*;
  * A JPanel-based component that serves as the main control panel of the application.
  *
  * <p>This class provides a user interface for controlling various aspects of the application,
- * such as status selection, size adjustment, speed selection, and starting actions. It organizes
+ * such as status selection, side adjustment, speed selection, and starting actions. It organizes
  * these controls into a grid layout for a clean and intuitive layout.
  *
  * <p>Usage:
@@ -21,7 +21,7 @@ import java.awt.*;
  *   <li>The control panel includes:
  *       <ul>
  *           <li>{@link StatusSelector} for status-related options.</li>
- *           <li>{@link SizeSpinner} for adjusting the size.</li>
+ *           <li>{@link SideSpinner} for adjusting the side.</li>
  *           <li>{@link SpeedSelector} for speed selection.</li>
  *           <li>{@link StartPicture} for initiating actions via a clickable image.</li>
  *       </ul>
@@ -33,7 +33,7 @@ import java.awt.*;
  * @see StatusSelector
  * @see SpeedSelector
  * @see StartPicture
- * @see SizeSpinner
+ * @see SideSpinner
  * @see mvc.controller.Controller
  * <p>
  */
@@ -45,9 +45,9 @@ public class Controls extends JPanel {
     private final StatusSelector statusSelector;
 
     /**
-     * Spinner for adjusting size-related parameters.
+     * Spinner for adjusting side-related parameters.
      */
-    private final SizeSpinner sizeSpinner;
+    private final SideSpinner sideSpinner;
 
     /**
      * Selector for speed-related options.
@@ -71,7 +71,7 @@ public class Controls extends JPanel {
     public Controls(Controller controller, int windowWidth) {
         // Initialize components
         statusSelector = new StatusSelector(controller);
-        sizeSpinner = new SizeSpinner(controller);
+        sideSpinner = new SideSpinner(controller);
         speedSelector = new SpeedSelector(controller);
         startPicture = new StartPicture(controller);
 
@@ -99,7 +99,7 @@ public class Controls extends JPanel {
      * <p>Each component is added to the panel with specific constraints to ensure proper alignment.
      */
     private void initComponents() {
-        addComponent(sizeSpinner, 0);
+        addComponent(sideSpinner, 0);
         addComponent(statusSelector, 1);
         addComponent(speedSelector, 2);
         addComponent(startPicture, 3);

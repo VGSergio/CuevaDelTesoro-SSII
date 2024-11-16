@@ -1,4 +1,4 @@
-package mvc.model.maze;
+package mvc.model.cave;
 
 import mvc.model.Perceptions;
 import mvc.model.Player;
@@ -7,27 +7,27 @@ import java.util.Arrays;
 
 import static mvc.model.Global.*;
 
-public class MazeModel {
+public class CaveModel {
 
     private final SquareStatus defaultSquareStatus;
     private Square[] squares;
-    private byte mazeSide;
+    private byte caveSide;
     private byte amountOfMonsters;
     private byte amountOfTreasures;
     private byte amountOfPlayers;
 
     private Player player;
 
-    public MazeModel(byte mazeSide, SquareStatus defaultSquareStatus) {
+    public CaveModel(byte caveSide, SquareStatus defaultSquareStatus) {
         this.defaultSquareStatus = defaultSquareStatus;
-        setMazeSide(mazeSide);
+        setCaveSide(caveSide);
     }
 
     /**
      * Initializes the maze structure and resets item counts.
      */
     private void initializeMaze() {
-        int totalSquares = mazeSide * mazeSide;
+        int totalSquares = caveSide * caveSide;
         this.squares = new Square[totalSquares];
         for (int i = 0; i < totalSquares; i++) {
             this.squares[i] = new Square(defaultSquareStatus);
@@ -42,10 +42,10 @@ public class MazeModel {
      */
     public void initializePlayer() {
         // The maze always has a player on the bottom left position
-        byte row = (byte) (mazeSide - 1);
+        byte row = (byte) (caveSide - 1);
         byte column = (byte) (0);
 
-        squares[getSquarePositionInMaze(row, column, mazeSide)].setStatus(SquareStatus.PLAYER);
+        squares[getSquarePositionInCave(row, column, caveSide)].setStatus(SquareStatus.PLAYER);
         this.amountOfPlayers = 1;
 
         player = new Player(row, column);
@@ -63,7 +63,7 @@ public class MazeModel {
      * Retrieves a specific square based on row and column.
      */
     public Square getSquare(byte row, byte column) {
-        return squares[getSquarePositionInMaze(row, column, mazeSide)];
+        return squares[getSquarePositionInCave(row, column, caveSide)];
     }
 
     public void setSquaresStatus(SquareStatus status) {
@@ -72,17 +72,17 @@ public class MazeModel {
         }
     }
 
-    public byte getMazeSide() {
-        return mazeSide;
+    public byte getCaveSide() {
+        return caveSide;
     }
 
     /**
      * Sets the maze side and initializes the maze structure.
      *
-     * @param mazeSide The side length of the maze.
+     * @param caveSide The side length of the maze.
      */
-    public void setMazeSide(byte mazeSide) {
-        this.mazeSide = mazeSide;
+    public void setCaveSide(byte caveSide) {
+        this.caveSide = caveSide;
         initializeMaze();
     }
 
@@ -114,7 +114,7 @@ public class MazeModel {
      * Updates perceptions for a specific square by position index.
      */
     public void updatePerceptions(int position) {
-        updatePerceptions((byte) (position / mazeSide), (byte) (position % mazeSide));
+        updatePerceptions((byte) (position / caveSide), (byte) (position % caveSide));
     }
 
     /**
@@ -156,7 +156,7 @@ public class MazeModel {
     }
 
     public boolean isWithinBounds(byte row, byte column) {
-        return row >= 0 && row < mazeSide && column >= 0 && column < mazeSide;
+        return row >= 0 && row < caveSide && column >= 0 && column < caveSide;
     }
 
     public Perceptions[] getPerceptions() {

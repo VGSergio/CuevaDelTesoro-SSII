@@ -1,7 +1,7 @@
 package mvc.model;
 
-import mvc.model.maze.MazeModel;
-import mvc.model.maze.Square;
+import mvc.model.cave.CaveModel;
+import mvc.model.cave.Square;
 
 import static mvc.model.Global.*;
 
@@ -17,8 +17,8 @@ public class Player {
             {0, -1}, // WEST
     };
     private boolean leftCave;
-    private MazeModel maze;
-    private MazeModel map;
+    private CaveModel maze;
+    private CaveModel map;
     private byte actualRow;
     private byte actualCol;
     private final boolean treasureFound;
@@ -33,13 +33,13 @@ public class Player {
         this.leftCave = false;
     }
 
-    public void linkMaze(MazeModel maze) {
+    public void linkMaze(CaveModel maze) {
         this.maze = maze;
         initializeMap();
     }
 
     private void initializeMap() {
-        map = new MazeModel(maze.getMazeSide(), SquareStatus.UNKNOWN);
+        map = new CaveModel(maze.getCaveSide(), SquareStatus.UNKNOWN);
         map.setSquaresStatus(SquareStatus.UNKNOWN);
         map.getSquare(startingRow, startingCol).setStatus(SquareStatus.PLAYER);
     }
@@ -65,12 +65,12 @@ public class Player {
 
     private void updateKnowledge() {
         Square[] squares = this.map.getSquares();
-        byte mazeSide = this.map.getMazeSide();
+        byte mazeSide = this.map.getCaveSide();
         Perceptions[] perceptions = map.getPerceptions();
 
         for (byte row = 0; row < mazeSide; row++) {
             for (byte col = 0; col < mazeSide; col++) {
-                int updatingPosition = getSquarePositionInMaze(row, col, mazeSide);
+                int updatingPosition = getSquarePositionInCave(row, col, mazeSide);
                 Square updatingSquare = squares[updatingPosition];
                 Perceptions updatingPerceptions = perceptions[updatingPosition];
 

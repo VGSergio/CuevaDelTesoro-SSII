@@ -10,7 +10,7 @@ import java.util.Map;
  * A JPanel-based component for displaying and managing a resizable image.
  *
  * <p>This abstract class provides functionality to display a picture, with support for caching
- * and resizing. Images are cached for improved performance, and they are scaled to a fixed size.
+ * and resizing. Images are cached for improved performance, and they are scaled to a fixed side length.
  * Subclasses can extend this class to add more functionality or customize its behavior.
  *
  * @author Sergio Vega García
@@ -22,9 +22,9 @@ import java.util.Map;
 public abstract class Picture extends JPanel {
 
     /**
-     * The fixed size (width and height) for displayed images.
+     * The fixed side (width and height) for displayed images.
      */
-    protected static final byte IMG_SIZE = 80;
+    protected static final byte IMG_SIDE = 80;
 
     /**
      * A cache for storing previously loaded and scaled {@link ImageIcon} instances.
@@ -45,7 +45,7 @@ public abstract class Picture extends JPanel {
         pictureLabel = new JLabel();
 
         setLayout(new BorderLayout());
-        setPreferredSize(new Dimension(IMG_SIZE, IMG_SIZE));
+        setPreferredSize(new Dimension(IMG_SIDE, IMG_SIDE));
         add(pictureLabel, BorderLayout.CENTER);
 
         setPicture(defaultImage);
@@ -54,7 +54,7 @@ public abstract class Picture extends JPanel {
     /**
      * Loads an image from the cache or creates a new scaled {@link ImageIcon} if not cached.
      *
-     * <p>If the image is not already in the cache, this method scales the image to {@link #IMG_SIZE}
+     * <p>If the image is not already in the cache, this method scales the image to {@link #IMG_SIDE}
      * and stores it in the cache. If the file is not found or the path is invalid, it logs an error
      * and returns {@code null}.
      *
@@ -74,7 +74,7 @@ public abstract class Picture extends JPanel {
         }
 
         return IMAGE_CACHE.computeIfAbsent(path, p -> {
-            Image image = new ImageIcon(p).getImage().getScaledInstance(IMG_SIZE, IMG_SIZE, Image.SCALE_SMOOTH);
+            Image image = new ImageIcon(p).getImage().getScaledInstance(IMG_SIDE, IMG_SIDE, Image.SCALE_SMOOTH);
             return new ImageIcon(image);
         });
     }

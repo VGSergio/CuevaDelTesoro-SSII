@@ -3,7 +3,7 @@ package mvc.model;
 /**
  * The {@code Global} class serves as a container for shared constants, utility methods,
  * and enums used across the application. It centralizes the definitions for square statuses,
- * perception types, maze configuration, event constants, image paths, and speed settings.
+ * perception types, cave configuration, event constants, image paths, and speed settings.
  *
  * <p>This class provides a single point of reference for constants and utility methods,
  * enhancing code readability and maintainability.</p>
@@ -11,20 +11,20 @@ package mvc.model;
 public class Global {
 
     /**
-     * The default status for a {@code Square} in the maze.
+     * The default status for a {@code Square} in the cave.
      */
     public static final SquareStatus SQUARE_STATUS_DEFAULT = SquareStatus.MONSTER;
 
     /**
-     * Calculates the linear index of a square in the maze based on its row and column.
+     * Calculates the linear index of a square in the cave based on its row and column.
      *
      * @param row      The row of the square.
      * @param column   The column of the square.
-     * @param sideSize The side length of the maze.
-     * @return The index of the square in the maze's 1D representation.
+     * @param side The side length of the cave.
+     * @return The index of the square in the cave's 1D representation.
      */
-    public static int getSquarePositionInMaze(byte row, byte column, byte sideSize) {
-        return row * sideSize + column;
+    public static int getSquarePositionInCave(byte row, byte column, byte side) {
+        return row * side + column;
     }
 
     /**
@@ -58,45 +58,45 @@ public class Global {
     }
 
     /**
-     * Enum representing the types of perceptions in the maze.
+     * Enum representing the types of perceptions in the cave.
      */
     public enum PerceptionType {
         STENCH, BREEZE, RADIANCE, BANG, GROAN
     }
 
     /**
-     * Enum representing the possible statuses of a square in the maze.
+     * Enum representing the possible statuses of a square in the cave.
      */
     public enum SquareStatus {
         MONSTER, HOLE, TREASURE, PLAYER, CLEAN, UNKNOWN
     }
 
     /**
-     * Class containing constants related to maze configuration.
+     * Class containing constants related to cave configuration.
      */
-    public static class Maze_Constants {
+    public static class Cave_Constants {
         /**
-         * The minimum allowed size of the maze's side.
+         * The minimum allowed length of the cave's side.
          */
         public static final byte MIN_SIDE = 4;
 
         /**
-         * The maximum allowed size of the maze's side.
+         * The maximum allowed length of the cave's side.
          */
         public static final byte MAX_SIDE = 16;
 
         /**
-         * The maximum number of monsters allowed in the maze.
+         * The maximum number of monsters allowed in the cave.
          */
         public static final byte MAX_MONSTERS = 1;
 
         /**
-         * The maximum number of treasures allowed in the maze.
+         * The maximum number of treasures allowed in the cave.
          */
         public static final byte MAX_TREASURES = 1;
 
         /**
-         * The maximum number of players allowed in the maze.
+         * The maximum number of players allowed in the cave.
          */
         public static final byte MAX_PLAYERS = 1;
     }
@@ -105,13 +105,13 @@ public class Global {
      * Class containing constants related to game events.
      */
     public static class Events_Constants {
-        public static final String MAZE_SIDE_CHANGED = "MAZE_SIDE_CHANGED";
+        public static final String CAVE_SIDE_CHANGED = "CAVE_SIDE_CHANGED";
         public static final String SQUARE_CLICKED = "SQUARE_CLICKED";
         public static final String STATUS_CHANGED = "ELEMENT_CHANGED";
         public static final String SPEED_CHANGED = "SPEED_CHANGED";
         public static final String NEXT_STEP_CLICKED = "NEXT_STEP_CLICKED";
         public static final String START_CLICKED = "START_CLICKED";
-        public static final String MAZE_UPDATED = "MAZE_UPDATED";
+        public static final String CAVE_UPDATED = "CAVE_UPDATED";
     }
 
     /**

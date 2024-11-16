@@ -1,8 +1,8 @@
 package mvc.controller;
 
 import mvc.model.Model;
-import mvc.model.maze.MazeModel;
-import mvc.model.maze.Square;
+import mvc.model.cave.CaveModel;
+import mvc.model.cave.Square;
 import mvc.view.View;
 
 import static mvc.model.Global.*;
@@ -15,11 +15,11 @@ import static mvc.model.Global.*;
  *
  * <p>This class extends {@code Thread} to enable concurrent execution and utilizes
  * event-driven methods to respond to user actions. It supports functionalities like
- * maze size adjustments, square status changes, and maze exploration initiation.
+ * maze side adjustments, square status changes, and maze exploration initiation.
  *
  * @see Model
  * @see View
- * @see MazeModel
+ * @see CaveModel
  */
 public class Controller extends Thread {
 
@@ -81,13 +81,13 @@ public class Controller extends Thread {
      */
     public void notify(String event, Object... params) {
         switch (event) {
-            case Events_Constants.MAZE_SIDE_CHANGED -> handleMazeSideChanged(castToInt(params[0]));
+            case Events_Constants.CAVE_SIDE_CHANGED -> handleMazeSideChanged(castToInt(params[0]));
             case Events_Constants.SQUARE_CLICKED -> handleSquareClicked(castToByte(params[0]), castToByte(params[1]));
             case Events_Constants.STATUS_CHANGED -> handleStatusChanged((String) params[0]);
             case Events_Constants.SPEED_CHANGED -> handleSpeedChanged((String) params[0]);
             case Events_Constants.NEXT_STEP_CLICKED -> handleNextStepClicked();
             case Events_Constants.START_CLICKED -> handleStartClicked();
-            case Events_Constants.MAZE_UPDATED -> handleMazeUpdated();
+            case Events_Constants.CAVE_UPDATED -> handleMazeUpdated();
             default -> System.err.println("Unexpected event: " + event);
         }
     }
@@ -95,15 +95,15 @@ public class Controller extends Thread {
     /**
      * Handles changes in the maze's side length.
      *
-     * @param size the new side length of the maze
+     * @param side the new side length of the maze
      */
-    private void handleMazeSideChanged(int size) {
+    private void handleMazeSideChanged(int side) {
         if (model.isStarted()) {
-            System.err.println("Maze size can not be changed once started.");
+            System.err.println("Maze side can not be changed once started.");
             return;
         }
 
-        model.getMaze().setMazeSide((byte) size);
+        model.getMaze().setCaveSide((byte) side);
         model.getMaze().initializePlayer();
 
         view.updateView();
@@ -144,20 +144,20 @@ public class Controller extends Thread {
             return false;
         }
 
-        MazeModel mazeModel = model.getMaze();
-        if (selectedStatus == SquareStatus.MONSTER && mazeModel.getAmountOfMonsters() >= Maze_Constants.MAX_MONSTERS) {
+        CaveModel caveModel = model.getMaze();
+        if (selectedStatus == SquareStatus.MONSTER && caveModel.getAmountOfMonsters() >= Cave_Constants.MAX_MONSTERS) {
             System.err.println("Maximum number of monsters reached.");
             return false;
         }
-        if (selectedStatus == SquareStatus.TREASURE && mazeModel.getAmountOfTreasures() >= Maze_Constants.MAX_TREASURES) {
+        if (selectedStatus == SquareStatus.TREASURE && caveModel.getAmountOfTreasures() >= Cave_Constants.MAX_TREASURES) {
             System.err.println("Maximum number of treasures reached.");
             return false;
         }
-        if (selectedStatus == SquareStatus.PLAYER && mazeModel.getAmountOfPlayers() >= Maze_Constants.MAX_PLAYERS) {
+        if (selectedStatus == SquareStatus.PLAYER && caveModel.getAmountOfPlayers() >= Cave_Constants.MAX_PLAYERS) {
             System.err.println("Maximum number of players reached.");
             return false;
         }
-        if (selectedStatus != SquareStatus.PLAYER && row == mazeModel.getMazeSide() - 1 && column == 0) {
+        if (selectedStatus != SquareStatus.PLAYER && row == caveModel.getCaveSide() - 1 && column == 0) {
             System.err.println("Position reserved for a player.");
             return false;
         }
@@ -172,23 +172,23 @@ public class Controller extends Thread {
      * @param newStatus     the new status of the square
      */
     private void updateModelCounts(SquareStatus currentStatus, SquareStatus newStatus) {
-        MazeModel mazeModel = model.getMaze();
-        adjustMazeCount(mazeModel, currentStatus, -1);
-        adjustMazeCount(mazeModel, newStatus, 1);
+        CaveModel caveModel = model.getMaze();
+        adjustMazeCount(caveModel, currentStatus, -1);
+        adjustMazeCount(caveModel, newStatus, 1);
     }
 
     /**
      * Adjusts the count for a specific type of square (e.g., MONSTER, TREASURE).
      *
-     * @param mazeModel the maze model containing square counts
+     * @param caveModel the maze model containing square counts
      * @param status    the square status to adjust
      * @param delta     the adjustment value (positive or negative)
      */
-    private void adjustMazeCount(MazeModel mazeModel, SquareStatus status, int delta) {
+    private void adjustMazeCount(CaveModel caveModel, SquareStatus status, int delta) {
         switch (status) {
-            case MONSTER -> mazeModel.adjustAmountOfMonsters(delta);
-            case TREASURE -> mazeModel.adjustAmountOfTreasures(delta);
-            case PLAYER -> mazeModel.adjustAmountOfPlayers(delta);
+            case MONSTER -> caveModel.adjustAmountOfMonsters(delta);
+            case TREASURE -> caveModel.adjustAmountOfTreasures(delta);
+            case PLAYER -> caveModel.adjustAmountOfPlayers(delta);
         }
     }
 
@@ -292,8 +292,8 @@ public class Controller extends Thread {
             return false;
         }
 
-        MazeModel mazeModel = model.getMaze();
-        if (mazeModel.getAmountOfMonsters() == 0 || mazeModel.getAmountOfTreasures() == 0 || mazeModel.getAmountOfPlayers() == 0) {
+        CaveModel caveModel = model.getMaze();
+        if (caveModel.getAmountOfMonsters() == 0 || caveModel.getAmountOfTreasures() == 0 || caveModel.getAmountOfPlayers() == 0) {
             System.err.println("A monster, a treasure and a player are required to start.");
             return false;
         }

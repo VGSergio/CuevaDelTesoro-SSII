@@ -1,8 +1,8 @@
 package mvc.view;
 
 import mvc.controller.Controller;
-import mvc.model.maze.MazeModel;
-import mvc.model.maze.Square;
+import mvc.model.cave.CaveModel;
+import mvc.model.cave.Square;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -18,35 +18,35 @@ import java.util.Map;
 import static mvc.model.Global.*;
 
 /**
- * A JPanel-based component for visualizing and interacting with a maze.
+ * A JPanel-based component for visualizing and interacting with a cave.
  *
- * <p>This class renders a maze based on a {@link MazeModel} and allows user interaction
- * by clicking on squares in the maze. Each square in the maze can represent different
+ * <p>This class renders a cave based on a {@link CaveModel} and allows user interaction
+ * by clicking on squares in the cave. Each square in the cave can represent different
  * statuses, such as Monster, Hole, Treasure, Player, or Clean, with corresponding images.
  *
  * <p>Usage:
  * <ul>
- *   <li>Create an instance by passing a {@link Controller}, the desired window size,
- *       and a {@link MazeModel}.</li>
- *   <li>Call {@link #updateMaze()} to refresh the maze view after changes to the model.</li>
+ *   <li>Create an instance by passing a {@link Controller}, the desired window side,
+ *       and a {@link CaveModel}.</li>
+ *   <li>Call {@link #updateCave()} to refresh the cave view after changes to the model.</li>
  * </ul>
  *
  * @author Sergio Vega García
- * @see MazeModel
+ * @see CaveModel
  * @see Square
  * @see mvc.controller.Controller
  * @see javax.swing.JPanel
  * <p>
  */
-public class MazeView extends JPanel {
+public class CaveView extends JPanel {
 
     /**
-     * The background color of each square in the maze.
+     * The background color of each square in the cave.
      */
     private static final Color SQUARE_COLOR = Color.WHITE;
 
     /**
-     * The border color of each square in the maze.
+     * The border color of each square in the cave.
      */
     private static final Color BORDER_COLOR = Color.BLACK;
 
@@ -56,47 +56,47 @@ public class MazeView extends JPanel {
     private final Controller controller;
 
     /**
-     * The size of the window in pixels.
+     * The side of the window in pixels.
      */
-    private final int windowSize;
+    private final int windowSide;
 
     /**
-     * A cache for storing loaded images corresponding to maze statuses.
+     * A cache for storing loaded images corresponding to cave statuses.
      */
     private final Map<SquareStatus, BufferedImage> imageCache = new HashMap<>();
 
     /**
-     * The model representing the maze.
+     * The model representing the cave.
      */
-    private final MazeModel mazeModel;
+    private final CaveModel caveModel;
 
     /**
-     * The size of a single square in the maze, dynamically calculated.
+     * The side of a single square in the cave, dynamically calculated.
      */
-    private int squareSize;
+    private int squareSide;
 
     /**
-     * Constructs a {@code MazeView} with the specified controller, window size, and maze model.
+     * Constructs a {@code caveView} with the specified controller, window side, and cave model.
      *
-     * <p>This constructor initializes the maze view, loads images for the maze statuses,
+     * <p>This constructor initializes the cave view, loads images for the cave statuses,
      * and sets up the panel for rendering and interaction.
      *
-     * @param controller the {@link Controller} to handle interactions with the maze
-     * @param windowSize the size of the window in pixels
-     * @param mazeModel  the {@link MazeModel} containing the maze's data
+     * @param controller the {@link Controller} to handle interactions with the cave
+     * @param windowSide the side of the window in pixels
+     * @param caveModel  the {@link CaveModel} containing the cave's data
      */
-    public MazeView(Controller controller, int windowSize, MazeModel mazeModel) {
+    public CaveView(Controller controller, int windowSide, CaveModel caveModel) {
         this.controller = controller;
-        this.windowSize = windowSize;
-        this.mazeModel = mazeModel;
+        this.windowSide = windowSide;
+        this.caveModel = caveModel;
 
         initializeImages();
         configure();
-        updateMaze();
+        updateCave();
     }
 
     /**
-     * Loads images for maze statuses into the cache.
+     * Loads images for cave statuses into the cache.
      */
     private void initializeImages() {
         imageCache.put(SquareStatus.MONSTER, loadImage(Images_Constants.MONSTER));
@@ -109,15 +109,15 @@ public class MazeView extends JPanel {
      * Configures the panel's layout and interaction settings.
      */
     private void configure() {
-        setPreferredSize(new Dimension(windowSize, windowSize));
-        addMouseListener(new MazeMouseListener());
+        setPreferredSize(new Dimension(windowSide, windowSide));
+        addMouseListener(new CaveMouseListener());
     }
 
     /**
-     * Updates the maze view by recalculating square sizes and repainting the panel.
+     * Updates the cave view by recalculating square side and repainting the panel.
      */
-    public void updateMaze() {
-        squareSize = windowSize / mazeModel.getMazeSide();
+    public void updateCave() {
+        squareSide = windowSide / caveModel.getCaveSide();
         repaint();
     }
 
@@ -137,9 +137,9 @@ public class MazeView extends JPanel {
     }
 
     /**
-     * Paints the maze onto the panel.
+     * Paints the cave onto the panel.
      *
-     * <p>This method iterates through the squares in the maze and renders each square
+     * <p>This method iterates through the squares in the cave and renders each square
      * along with its corresponding status, if any.
      *
      * @param g the {@link Graphics} object used for rendering
@@ -147,14 +147,14 @@ public class MazeView extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        byte mazeSide = mazeModel.getMazeSide();
-        Square[] squares = mazeModel.getSquares();
+        byte caveSide = caveModel.getCaveSide();
+        Square[] squares = caveModel.getSquares();
 
-        for (byte row = 0; row < mazeSide; row++) {
-            for (byte column = 0; column < mazeSide; column++) {
-                int x = column * squareSize;
-                int y = row * squareSize;
-                Square square = squares[getSquarePositionInMaze(row, column, mazeSide)];
+        for (byte row = 0; row < caveSide; row++) {
+            for (byte column = 0; column < caveSide; column++) {
+                int x = column * squareSide;
+                int y = row * squareSide;
+                Square square = squares[getSquarePositionInCave(row, column, caveSide)];
 
                 drawSquare(g, x, y);
                 drawStatus(g, square.getStatus(), x, y);
@@ -171,9 +171,9 @@ public class MazeView extends JPanel {
      */
     private void drawSquare(Graphics g, int x, int y) {
         g.setColor(SQUARE_COLOR);
-        g.fillRect(x, y, squareSize, squareSize);
+        g.fillRect(x, y, squareSide, squareSide);
         g.setColor(BORDER_COLOR);
-        g.drawRect(x, y, squareSize, squareSize);
+        g.drawRect(x, y, squareSide, squareSide);
     }
 
     /**
@@ -188,20 +188,20 @@ public class MazeView extends JPanel {
         if (status != SquareStatus.CLEAN) {
             BufferedImage image = imageCache.get(status);
             if (image != null) {
-                g.drawImage(image, x, y, squareSize, squareSize, null);
+                g.drawImage(image, x, y, squareSide, squareSide, null);
             }
         }
     }
 
     /**
-     * A mouse listener for handling clicks on the maze.
+     * A mouse listener for handling clicks on the cave.
      */
-    private class MazeMouseListener extends MouseAdapter {
+    private class CaveMouseListener extends MouseAdapter {
         @Override
         public void mouseClicked(MouseEvent e) {
             e.consume();
-            byte row = (byte) (e.getY() / squareSize);
-            byte column = (byte) (e.getX() / squareSize);
+            byte row = (byte) (e.getY() / squareSide);
+            byte column = (byte) (e.getX() / squareSide);
             controller.notify(Events_Constants.SQUARE_CLICKED, row, column);
         }
     }

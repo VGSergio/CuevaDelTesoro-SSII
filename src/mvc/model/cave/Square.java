@@ -1,4 +1,4 @@
-package mvc.model.maze;
+package mvc.model.cave;
 
 import mvc.model.Global.SquareStatus;
 import mvc.model.Perceptions;
