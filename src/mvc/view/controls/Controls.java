@@ -62,7 +62,7 @@ public class Controls extends JPanel {
     /**
      * Constructs a {@code Controls} panel with the specified controller and window width.
      *
-     * <p>This constructor initializes all sub-components and organizes them into a panel
+     * <p>This constructor initializes all subcomponents and organizes them into a panel
      * using a {@link GridBagLayout}.
      *
      * @param controller  the {@link Controller} responsible for handling user interactions
