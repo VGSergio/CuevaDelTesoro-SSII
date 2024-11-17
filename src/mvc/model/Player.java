@@ -379,13 +379,6 @@ public class Player {
         return Objects.hash(startingRow, startingCol);
     }
 
-    private enum Directions {
-        NORTH,
-        EAST,
-        SOUTH,
-        WEST
-    }
-
     private int[] getDirectionsDelta(Directions direction) {
         return switch (direction) {
             case NORTH -> new int[]{-1, 0};
@@ -393,5 +386,12 @@ public class Player {
             case SOUTH -> new int[]{1, 0};
             case WEST -> new int[]{0, -1};
         };
+    }
+
+    private enum Directions {
+        NORTH,
+        EAST,
+        SOUTH,
+        WEST
     }
 }

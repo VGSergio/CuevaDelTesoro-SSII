@@ -50,8 +50,8 @@ public abstract class CaveModel {
     /**
      * Computes whether a row and column are valid given a caveSide.
      *
-     * @param row      The row to check.
-     * @param column   The column to check.
+     * @param row    The row to check.
+     * @param column The column to check.
      * @return Whether row anc column are valid or not.
      */
     public boolean isWithinBounds(byte row, byte column) {

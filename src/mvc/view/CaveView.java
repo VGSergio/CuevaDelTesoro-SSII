@@ -83,7 +83,7 @@ public class CaveView extends JPanel {
      *
      * @param controller the {@link Controller} to handle interactions with the cave
      * @param windowSide the side of the window in pixels
-     * @param cave  the {@link Cave} containing the cave's data
+     * @param cave       the {@link Cave} containing the cave's data
      */
     public CaveView(Controller controller, int windowSide, Cave cave) {
         this.controller = controller;

@@ -186,9 +186,9 @@ public class Controller extends Thread {
     /**
      * Adjusts the count for a specific type of square (e.g., MONSTER, TREASURE).
      *
-     * @param cave the cave model containing square counts
-     * @param status    the square status to adjust
-     * @param delta     the adjustment value (positive or negative)
+     * @param cave   the cave model containing square counts
+     * @param status the square status to adjust
+     * @param delta  the adjustment value (positive or negative)
      */
     private void adjustCaveCount(Cave cave, SquareStatus status, int delta) {
         switch (status) {

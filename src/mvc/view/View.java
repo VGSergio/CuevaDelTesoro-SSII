@@ -46,7 +46,7 @@ public class View extends javax.swing.JFrame {
      * the {@link Controls} panel and the {@link CaveView} panel in a vertical layout.
      *
      * @param controller the {@link Controller} to handle user interactions
-     * @param cave  the {@link Cave} representing the cave data
+     * @param cave       the {@link Cave} representing the cave data
      */
     public View(Controller controller, Cave cave) {
         int width = 800;
