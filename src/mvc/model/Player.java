@@ -18,19 +18,21 @@ public class Player {
     private Map map;
     private byte actualRow;
     private byte actualCol;
+    private int arrows;
 
     public Player(byte row, byte column) {
-        this.startingRow = row;
-        this.startingCol = column;
-        this.actualRow = startingRow;
-        this.actualCol = startingCol;
+        startingRow = row;
+        startingCol = column;
+        actualRow = startingRow;
+        actualCol = startingCol;
 
-        this.treasureFound = false;
-        this.leftCave = false;
+        treasureFound = false;
+        leftCave = false;
     }
 
     public void linkCave(Cave cave) {
         this.cave = cave;
+        arrows = cave.getAmountOfMonsters();
         initializeMap();
     }
 
@@ -40,9 +42,7 @@ public class Player {
     }
 
     public void exploreCave() {
-        if (map.getSquare(actualRow, actualCol).notVisited()) {
-            getPerceptions();
-        }
+        getPerceptions();
         updateKnowledge();
         makeDecision();
     }
@@ -79,7 +79,6 @@ public class Player {
         for (byte row = 0; row < caveSide; row++) {
             for (byte col = 0; col < caveSide; col++) {
                 int updatingPosition = map.getSquarePositionInCave(row, col);
-                Square updatingSquare = squares[updatingPosition];
                 Perceptions updatingPerceptions = perceptions[updatingPosition];
 
                 // Without perceptions there's no reasoning to do.
@@ -153,35 +152,25 @@ public class Player {
      * The arrow won't stop until it kills a monster or collides with a wall.
      */
     private void shoot(Directions direction) {
+        arrows -= 1;
+
         byte[] delta = getDirectionDelta(direction);
-
         byte newRow = (byte) (actualRow + delta[0]);
-        byte newCol = (byte) (actualRow + delta[1]);
+        byte newCol = (byte) (actualCol + delta[1]);
 
-        boolean arrowStopped = false;
-
-        while (!arrowStopped) {
-            if (map.isWithinBounds(newRow, newCol)) {
-                Square caveSquare = cave.getSquare(newRow, newCol);
-                if (caveSquare.getStatus() == SquareStatus.MONSTER) {
-                    arrowStopped = true;
-                    System.out.println(PerceptionType.GROAN);
-                    caveSquare.setStatus(SquareStatus.CLEAN);
-                    // Update neighbours perceptions
-                    Square[] neighbours = getNeighbours(newRow, newCol);
-                    for (Square neighbour : neighbours) {
-                        if (neighbour != null) {
-                            // TODO
-                        }
-                    }
-                }
-            } else {
-                System.out.println(PerceptionType.BANG);
-                arrowStopped = true;
+        while (map.isWithinBounds(newRow, newCol)) {
+            Square caveSquare = cave.getSquare(newRow, newCol);
+            if (caveSquare.getStatus() == SquareStatus.MONSTER) {
+                System.out.println(PerceptionType.GROAN);
+                caveSquare.setStatus(SquareStatus.CLEAN);
+                updateNeighborPerceptions(newRow, newCol);
+                break;
             }
-            newRow += (byte) (delta[0]);
-            newCol += (byte) (delta[1]);
+            newRow += delta[0];
+            newCol += delta[1];
         }
+        // The arrow hits a wall
+        System.out.println(PerceptionType.BANG);
     }
 
     /// ////////////
@@ -287,6 +276,15 @@ public class Player {
             }
         }
         return neighboursRowsAndColumns;
+    }
+
+    private void updateNeighborPerceptions(byte row, byte col) {
+        byte[][] neighbors = getNeighboursRowsAndColumns(row, col);
+        for (byte[] neighbor : neighbors) {
+            if (neighbor != null) {
+                cave.updatePerceptions(neighbor[0], neighbor[1]);
+            }
+        }
     }
 
     public boolean hasFinished() {

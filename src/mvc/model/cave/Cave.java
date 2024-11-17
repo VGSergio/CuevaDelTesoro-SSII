@@ -84,7 +84,7 @@ public class Cave extends CaveModel {
      * @param row    The row index of the target square.
      * @param column The column index of the target square.
      */
-    private void updatePerceptions(byte row, byte column) {
+    public void updatePerceptions(byte row, byte column) {
         Square square = getSquare(row, column);
         Perceptions perceptions = new Perceptions();
 
