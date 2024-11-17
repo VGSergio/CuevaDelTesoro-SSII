@@ -23,14 +23,19 @@ public class Global {
     }
 
     /**
-     * Deltas for computing the row and column of adjacent squares.
+     * Maps a {@code Directions} to its corresponding deltas.
+     *
+     * @param direction The direction for which we want the deltas.
+     * @return The corresponding deltas.
      */
-    public static final byte[][] DIRECTIONS_DELTAS = new byte[][]{
-            {-1, 0},    // NORTH
-            {0, 1},     // EAST
-            {1, 0},     // SOUTH
-            {0, -1},    // WEST
-    };
+    public static byte[] getDirectionDelta(Directions direction) {
+        return switch (direction) {
+            case NORTH -> new byte[]{-1, 0};
+            case EAST -> new byte[]{0, 1};
+            case SOUTH -> new byte[]{1, 0};
+            case WEST -> new byte[]{0, -1};
+        };
+    }
 
     /**
      * The default status for a {@code Square} in the cave.

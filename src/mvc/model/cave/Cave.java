@@ -89,7 +89,8 @@ public class Cave extends CaveModel {
         Perceptions perceptions = new Perceptions();
 
         // Calculate perceptions based on neighbors
-        for (byte[] delta : DIRECTIONS_DELTAS) {
+        for (Directions direction : Directions.values()) {
+            byte[] delta = getDirectionDelta(direction);
             byte neighborRow = (byte) (row + delta[0]);
             byte neighborCol = (byte) (column + delta[1]);
 

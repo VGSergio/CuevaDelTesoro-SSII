@@ -130,7 +130,7 @@ public class Player {
     /// ////////////
 
     private void moveInDirection(Directions direction) {
-        int[] delta = getDirectionsDelta(direction);
+        byte[] delta = getDirectionDelta(direction);
         move((byte) (actualRow + delta[0]), (byte) (actualCol + delta[1]));
     }
 
@@ -153,7 +153,7 @@ public class Player {
      * The arrow won't stop until it kills a monster or collides with a wall.
      */
     private void shoot(Directions direction) {
-        int[] delta = getDirectionsDelta(direction);
+        byte[] delta = getDirectionDelta(direction);
 
         byte newRow = (byte) (actualRow + delta[0]);
         byte newCol = (byte) (actualRow + delta[1]);
@@ -227,7 +227,7 @@ public class Player {
     }
 
     private boolean isSafe(Directions direction) {
-        int[] delta = getDirectionsDelta(direction);
+        byte[] delta = getDirectionDelta(direction);
         byte newRow = (byte) (actualRow + delta[0]);
         byte newCol = (byte) (actualCol + delta[1]);
         return isPositionSafe(newRow, newCol);
@@ -238,9 +238,10 @@ public class Player {
         byte[] counts = new byte[PerceptionType.values().length];
         boolean neighbourHasPerceptions = false;
 
-        for (byte[] direction : DIRECTIONS_DELTAS) {
-            byte newRow = (byte) (actualRow + direction[0]);
-            byte newCol = (byte) (actualCol + direction[1]);
+        for (Directions direction : Directions.values()) {
+            byte[] delta = getDirectionDelta(direction);
+            byte newRow = (byte) (actualRow + delta[0]);
+            byte newCol = (byte) (actualCol + delta[1]);
 
             if (map.isWithinBounds(newRow, newCol)) {
                 Perceptions neighborPerceptions = map.getSquare(newRow, newCol).getPerceptions();
@@ -273,7 +274,7 @@ public class Player {
     private byte[][] getNeighboursRowsAndColumns(byte row, byte col) {
         byte[][] neighboursRowsAndColumns = new byte[Directions.values().length][2];
         for (Directions direction : Directions.values()) {
-            int[] directionDelta = getDirectionsDelta(direction);
+            byte[] directionDelta = getDirectionDelta(direction);
 
             byte newRow = (byte) (row + directionDelta[0]);
             byte newCol = (byte) (col + directionDelta[1]);
@@ -293,7 +294,7 @@ public class Player {
     }
 
     private boolean notHasVisited(Directions direction) {
-        int[] delta = getDirectionsDelta(direction);
+        byte[] delta = getDirectionDelta(direction);
         byte newRow = (byte) (actualRow + delta[0]);
         byte newCol = (byte) (actualCol + delta[1]);
         if (map.isWithinBounds(newRow, newCol)) {
@@ -314,15 +315,6 @@ public class Player {
     @Override
     public int hashCode() {
         return Objects.hash(startingRow, startingCol);
-    }
-
-    private int[] getDirectionsDelta(Directions direction) {
-        return switch (direction) {
-            case NORTH -> new int[]{-1, 0};
-            case EAST -> new int[]{0, 1};
-            case SOUTH -> new int[]{1, 0};
-            case WEST -> new int[]{0, -1};
-        };
     }
 
 }
