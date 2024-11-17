@@ -72,8 +72,8 @@ public class Player {
     }
 
     private void updateKnowledge() {
-        Square[] squares = this.map.getSquares();
-        byte caveSide = this.map.getCaveSide();
+        Square[] squares = map.getSquares();
+        byte caveSide = map.getCaveSide();
         Perceptions[] perceptions = map.getPerceptions();
 
         for (byte row = 0; row < caveSide; row++) {
