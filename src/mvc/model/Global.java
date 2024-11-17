@@ -12,6 +12,9 @@ package mvc.model;
  */
 public class Global {
 
+    /**
+     * The possible directions in which a player can move.
+     */
     public enum Directions {
         NORTH,
         EAST,
@@ -19,6 +22,9 @@ public class Global {
         WEST
     }
 
+    /**
+     * Deltas for computing the row and column of adjacent squares.
+     */
     public static final byte[][] DIRECTIONS_DELTAS = new byte[][]{
             {-1, 0},    // NORTH
             {0, 1},     // EAST
