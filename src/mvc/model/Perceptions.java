@@ -13,8 +13,8 @@ public class Perceptions {
         Arrays.fill(this.perceptions, false); // Initialize all perceptions to false
     }
 
-    public boolean getPerception(int perceptionType) {
-        return perceptions[perceptionType];
+    public boolean getPerception(PerceptionType perceptionType) {
+        return perceptions[perceptionType.ordinal()];
     }
 
     public void setPerception(PerceptionType perceptionType, boolean value) {
@@ -32,10 +32,10 @@ public class Perceptions {
 
     @Override
     public String toString() {
-        return "Stench: " + getPerception(PerceptionType.STENCH.ordinal()) +
-                "\nBreeze: " + getPerception(PerceptionType.BREEZE.ordinal()) +
-                "\nRadiance: " + getPerception(PerceptionType.RADIANCE.ordinal()) +
-                "\nBang: " + getPerception(PerceptionType.BANG.ordinal()) +
-                "\nGroan: " + getPerception(PerceptionType.GROAN.ordinal());
+        return "Stench: " + getPerception(PerceptionType.STENCH) +
+                "\nBreeze: " + getPerception(PerceptionType.BREEZE) +
+                "\nRadiance: " + getPerception(PerceptionType.RADIANCE) +
+                "\nBang: " + getPerception(PerceptionType.BANG) +
+                "\nGroan: " + getPerception(PerceptionType.GROAN);
     }
 }

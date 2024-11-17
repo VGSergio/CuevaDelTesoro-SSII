@@ -32,7 +32,9 @@ public class Model {
     }
 
     public void addPlayer(byte row, byte col) {
-        players.add(new Player(row, col));
+        Player player = new Player(row, col);
+        player.linkCave(caveModel);
+        players.add(player);
     }
 
     public void removePlayer(byte row, byte col) {
@@ -41,7 +43,6 @@ public class Model {
 
     public void exploreCave() {
         for (Player player : players) {
-            player.linkCave(caveModel);
             player.exploreCave();
         }
     }

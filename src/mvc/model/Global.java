@@ -7,6 +7,8 @@ package mvc.model;
  *
  * <p>This class provides a single point of reference for constants and utility methods,
  * enhancing code readability and maintainability.</p>
+ *
+ * @author Sergio Vega García
  */
 public class Global {
 
@@ -55,6 +57,18 @@ public class Global {
             case RADIANCE -> SquareStatus.TREASURE;
             case BANG, GROAN -> null;
         };
+    }
+
+    /**
+     * Computes whether a row and column are valid given a caveSide.
+     *
+     * @param row      The row to check.
+     * @param column   The column to check.
+     * @param caveSide Value to check if row and column are valid
+     * @return Whether row anc column are valid or not.
+     */
+    public static boolean isWithinBounds(byte row, byte column, byte caveSide) {
+        return row >= 0 && row < caveSide && column >= 0 && column < caveSide;
     }
 
     /**

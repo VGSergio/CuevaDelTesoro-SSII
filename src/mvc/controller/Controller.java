@@ -17,6 +17,7 @@ import static mvc.model.Global.*;
  * event-driven methods to respond to user actions. It supports functionalities like
  * cave side adjustments, square status changes, and cave exploration initiation.
  *
+ * @author Sergio Vega García
  * @see Model
  * @see View
  * @see CaveModel
