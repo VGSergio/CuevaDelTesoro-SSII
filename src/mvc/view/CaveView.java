@@ -1,7 +1,7 @@
 package mvc.view;
 
 import mvc.controller.Controller;
-import mvc.model.cave.CaveModel;
+import mvc.model.cave.Cave;
 import mvc.model.cave.Square;
 
 import javax.imageio.ImageIO;
@@ -20,19 +20,19 @@ import static mvc.model.Global.*;
 /**
  * A JPanel-based component for visualizing and interacting with a cave.
  *
- * <p>This class renders a cave based on a {@link CaveModel} and allows user interaction
+ * <p>This class renders a cave based on a {@link Cave} and allows user interaction
  * by clicking on squares in the cave. Each square in the cave can represent different
  * statuses, such as Monster, Hole, Treasure, Player, or Clean, with corresponding images.
  *
  * <p>Usage:
  * <ul>
  *   <li>Create an instance by passing a {@link Controller}, the desired window side,
- *       and a {@link CaveModel}.</li>
+ *       and a {@link Cave}.</li>
  *   <li>Call {@link #updateCave()} to refresh the cave view after changes to the model.</li>
  * </ul>
  *
  * @author Sergio Vega García
- * @see CaveModel
+ * @see Cave
  * @see Square
  * @see mvc.controller.Controller
  * @see javax.swing.JPanel
@@ -68,7 +68,7 @@ public class CaveView extends JPanel {
     /**
      * The model representing the cave.
      */
-    private final CaveModel caveModel;
+    private final Cave cave;
 
     /**
      * The side of a single square in the cave, dynamically calculated.
@@ -83,12 +83,12 @@ public class CaveView extends JPanel {
      *
      * @param controller the {@link Controller} to handle interactions with the cave
      * @param windowSide the side of the window in pixels
-     * @param caveModel  the {@link CaveModel} containing the cave's data
+     * @param cave  the {@link Cave} containing the cave's data
      */
-    public CaveView(Controller controller, int windowSide, CaveModel caveModel) {
+    public CaveView(Controller controller, int windowSide, Cave cave) {
         this.controller = controller;
         this.windowSide = windowSide;
-        this.caveModel = caveModel;
+        this.cave = cave;
 
         initializeImages();
         configure();
@@ -117,7 +117,7 @@ public class CaveView extends JPanel {
      * Updates the cave view by recalculating square side and repainting the panel.
      */
     public void updateCave() {
-        squareSide = windowSide / caveModel.getCaveSide();
+        squareSide = windowSide / cave.getCaveSide();
         repaint();
     }
 
@@ -147,8 +147,8 @@ public class CaveView extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        byte caveSide = caveModel.getCaveSide();
-        Square[] squares = caveModel.getSquares();
+        byte caveSide = cave.getCaveSide();
+        Square[] squares = cave.getSquares();
 
         for (byte row = 0; row < caveSide; row++) {
             for (byte column = 0; column < caveSide; column++) {

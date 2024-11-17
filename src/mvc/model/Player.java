@@ -1,6 +1,6 @@
 package mvc.model;
 
-import mvc.model.cave.CaveModel;
+import mvc.model.cave.Cave;
 import mvc.model.cave.Map;
 import mvc.model.cave.Square;
 
@@ -21,7 +21,7 @@ public class Player {
     };
     private final boolean treasureFound;
     private boolean leftCave;
-    private CaveModel cave;
+    private Cave cave;
     private Map map;
     private byte actualRow;
     private byte actualCol;
@@ -36,7 +36,7 @@ public class Player {
         this.leftCave = false;
     }
 
-    public void linkCave(CaveModel cave) {
+    public void linkCave(Cave cave) {
         this.cave = cave;
         initializeMap();
     }
@@ -169,7 +169,7 @@ public class Player {
     /// ////////////
 
     private void move(byte nextRow, byte nextCol) {
-        if (isWithinBounds(nextRow, nextCol, map.getCaveSide())) {
+        if (map.isWithinBounds(nextRow, nextCol)) {
             cave.getSquare(actualRow, actualCol).setStatus(SquareStatus.CLEAN);
             map.getSquare(actualRow, actualCol).setStatus(SquareStatus.CLEAN);
 
@@ -226,7 +226,7 @@ public class Player {
         boolean arrowStopped = false;
 
         while (!arrowStopped) {
-            if (isWithinBounds(newRow, newCol, map.getCaveSide())) {
+            if (map.isWithinBounds(newRow, newCol)) {
                 Square caveSquare = cave.getSquare(newRow, newCol);
                 if (caveSquare.getStatus() == SquareStatus.MONSTER) {
                     arrowStopped = true;
@@ -254,7 +254,7 @@ public class Player {
     /// ////////////
 
     private boolean isPositionSafe(byte row, byte col) {
-        if (isWithinBounds(row, col, map.getCaveSide())) {
+        if (map.isWithinBounds(row, col)) {
             SquareStatus status = map.getSquare(row, col).getStatus();
             return (status == SquareStatus.TREASURE || status == SquareStatus.PLAYER || status == SquareStatus.CLEAN);
         } else {
@@ -309,7 +309,7 @@ public class Player {
             byte newRow = (byte) (actualRow + direction[0]);
             byte newCol = (byte) (actualCol + direction[1]);
 
-            if (isWithinBounds(newRow, newCol, map.getCaveSide())) {
+            if (map.isWithinBounds(newRow, newCol)) {
                 Perceptions neighborPerceptions = map.getSquare(newRow, newCol).getPerceptions();
                 if (neighborPerceptions != null) {
                     neighbourHasPerceptions = true;
@@ -345,7 +345,7 @@ public class Player {
             byte newRow = (byte) (row + directionDelta[0]);
             byte newCol = (byte) (col + directionDelta[1]);
 
-            if (isWithinBounds(newRow, newCol, map.getCaveSide())) {
+            if (map.isWithinBounds(newRow, newCol)) {
                 neighboursRowsAndColumns[direction.ordinal()][0] = newRow;
                 neighboursRowsAndColumns[direction.ordinal()][1] = newCol;
             } else {
@@ -360,7 +360,7 @@ public class Player {
     }
 
     private boolean notHasVisited(byte row, byte col) {
-        if (isWithinBounds(row, col, map.getCaveSide())) {
+        if (map.isWithinBounds(row, col)) {
             return map.getSquare(row, col).notVisited();
         }
         return true; // Out of bounds squares are considered visited

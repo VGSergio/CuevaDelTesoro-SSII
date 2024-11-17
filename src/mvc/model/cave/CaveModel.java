@@ -1,35 +1,39 @@
 package mvc.model.cave;
 
-import mvc.model.Perceptions;
+import static mvc.model.Global.getSquarePositionInCave;
 
-import static mvc.model.Global.*;
+public abstract class CaveModel {
 
-public class CaveModel {
-
-    private byte caveSide;
-    private Square[] squares;
-
-    private byte amountOfMonsters;
-    private byte amountOfTreasures;
-    private byte amountOfPlayers;
+    protected byte caveSide;
+    protected Square[] squares;
 
     public CaveModel(byte caveSide) {
-        setCaveSide(caveSide);
+        this.caveSide = caveSide;
+        initializeSquares();
     }
 
     /**
-     * Initializes the cave structure and resets item counts.
+     * Initializes the squares array.
      */
-    private void initializeCave() {
-        int totalSquares = caveSide * caveSide;
-        this.squares = new Square[totalSquares];
-        for (int i = 0; i < totalSquares; i++) {
-            this.squares[i] = new Square();
-            this.squares[i].setStatus(SquareStatus.CLEAN);
+    protected void initializeSquares() {
+        squares = new Square[caveSide * caveSide];
+        for (int i = 0; i < squares.length; i++) {
+            squares[i] = new Square();
         }
+    }
 
-        this.amountOfMonsters = 0;
-        this.amountOfTreasures = 0;
+    /**
+     * Retrieves a square at a given position.
+     */
+    public Square getSquare(int pos) {
+        return squares[pos];
+    }
+
+    /**
+     * Retrieves a square at a given row and column.
+     */
+    public Square getSquare(byte row, byte col) {
+        return squares[getSquarePositionInCave(row, col, caveSide)];
     }
 
     /**
@@ -39,79 +43,19 @@ public class CaveModel {
         return squares;
     }
 
-    /**
-     * Retrieves a specific square based on row and column.
-     */
-    public Square getSquare(byte row, byte column) {
-        return squares[getSquarePositionInCave(row, column, caveSide)];
-    }
-
     public byte getCaveSide() {
         return caveSide;
     }
 
     /**
-     * Sets the cave side and initializes the cave structure.
+     * Computes whether a row and column are valid given a caveSide.
      *
-     * @param caveSide The side length of the cave.
+     * @param row      The row to check.
+     * @param column   The column to check.
+     * @return Whether row anc column are valid or not.
      */
-    public void setCaveSide(byte caveSide) {
-        this.caveSide = caveSide;
-        initializeCave();
-    }
-
-    public byte getAmountOfMonsters() {
-        return amountOfMonsters;
-    }
-
-    public void adjustAmountOfMonsters(int delta) {
-        this.amountOfMonsters += (byte) delta;
-    }
-
-    public byte getAmountOfTreasures() {
-        return amountOfTreasures;
-    }
-
-    public void adjustAmountOfTreasures(int delta) {
-        this.amountOfTreasures += (byte) delta;
-    }
-
-    public int getAmountOfPlayers() {
-        return amountOfPlayers;
-    }
-
-    public void adjustAmountOfPlayers(int delta) {
-        this.amountOfPlayers += (byte) delta;
-    }
-
-    /**
-     * Updates perceptions for a specific square by row and column.
-     */
-    public void updatePerceptions(byte row, byte column) {
-        Square square = getSquare(row, column);
-        Perceptions perceptions = new Perceptions();
-
-        // Calculate perceptions based on neighbors
-        for (int[] delta : new int[][]{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}) {
-            byte neighborRow = (byte) (row + delta[0]);
-            byte neighborCol = (byte) (column + delta[1]);
-
-            if (isWithinBounds(neighborRow, neighborCol, caveSide)) {
-                SquareStatus status = getSquare(neighborRow, neighborCol).getStatus();
-                PerceptionType perceptionType = mapStatusToPerception(status);
-                if (perceptionType != null) {
-                    perceptions.setPerception(perceptionType, true);
-                }
-            }
-        }
-
-        square.setPerceptions(perceptions);
-    }
-
-    public void updateAllPerceptions() {
-        for (int position = 0; position < squares.length; position++) {
-            updatePerceptions((byte) (position / caveSide), (byte) (position % caveSide));
-        }
+    public boolean isWithinBounds(byte row, byte column) {
+        return row >= 0 && row < caveSide && column >= 0 && column < caveSide;
     }
 
 }

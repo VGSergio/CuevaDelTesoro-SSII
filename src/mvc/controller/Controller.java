@@ -1,7 +1,7 @@
 package mvc.controller;
 
 import mvc.model.Model;
-import mvc.model.cave.CaveModel;
+import mvc.model.cave.Cave;
 import mvc.model.cave.Square;
 import mvc.view.View;
 
@@ -20,7 +20,7 @@ import static mvc.model.Global.*;
  * @author Sergio Vega García
  * @see Model
  * @see View
- * @see CaveModel
+ * @see Cave
  */
 public class Controller extends Thread {
 
@@ -150,20 +150,20 @@ public class Controller extends Thread {
             return false;
         }
 
-        CaveModel caveModel = model.getCave();
-        if (selectedStatus == SquareStatus.MONSTER && caveModel.getAmountOfMonsters() >= Cave_Constants.MAX_MONSTERS) {
+        Cave cave = model.getCave();
+        if (selectedStatus == SquareStatus.MONSTER && cave.getAmountOfMonsters() >= Cave_Constants.MAX_MONSTERS) {
             System.err.println("Maximum number of monsters reached.");
             return false;
         }
-        if (selectedStatus == SquareStatus.TREASURE && caveModel.getAmountOfTreasures() >= Cave_Constants.MAX_TREASURES) {
+        if (selectedStatus == SquareStatus.TREASURE && cave.getAmountOfTreasures() >= Cave_Constants.MAX_TREASURES) {
             System.err.println("Maximum number of treasures reached.");
             return false;
         }
-        if (selectedStatus == SquareStatus.PLAYER && caveModel.getAmountOfPlayers() >= Cave_Constants.MAX_PLAYERS) {
+        if (selectedStatus == SquareStatus.PLAYER && cave.getAmountOfPlayers() >= Cave_Constants.MAX_PLAYERS) {
             System.err.println("Maximum number of players reached.");
             return false;
         }
-        if (selectedStatus != SquareStatus.PLAYER && row == caveModel.getCaveSide() - 1 && column == 0) {
+        if (selectedStatus != SquareStatus.PLAYER && row == cave.getCaveSide() - 1 && column == 0) {
             System.err.println("Position reserved for a player.");
             return false;
         }
@@ -178,23 +178,23 @@ public class Controller extends Thread {
      * @param newStatus     the new status of the square
      */
     private void updateModelCounts(SquareStatus currentStatus, SquareStatus newStatus) {
-        CaveModel caveModel = model.getCave();
-        adjustCaveCount(caveModel, currentStatus, -1);
-        adjustCaveCount(caveModel, newStatus, 1);
+        Cave cave = model.getCave();
+        adjustCaveCount(cave, currentStatus, -1);
+        adjustCaveCount(cave, newStatus, 1);
     }
 
     /**
      * Adjusts the count for a specific type of square (e.g., MONSTER, TREASURE).
      *
-     * @param caveModel the cave model containing square counts
+     * @param cave the cave model containing square counts
      * @param status    the square status to adjust
      * @param delta     the adjustment value (positive or negative)
      */
-    private void adjustCaveCount(CaveModel caveModel, SquareStatus status, int delta) {
+    private void adjustCaveCount(Cave cave, SquareStatus status, int delta) {
         switch (status) {
-            case MONSTER -> caveModel.adjustAmountOfMonsters(delta);
-            case TREASURE -> caveModel.adjustAmountOfTreasures(delta);
-            case PLAYER -> caveModel.adjustAmountOfPlayers(delta);
+            case MONSTER -> cave.adjustAmountOfMonsters(delta);
+            case TREASURE -> cave.adjustAmountOfTreasures(delta);
+            case PLAYER -> cave.adjustAmountOfPlayers(delta);
         }
     }
 
@@ -297,8 +297,8 @@ public class Controller extends Thread {
             return false;
         }
 
-        CaveModel caveModel = model.getCave();
-        if (caveModel.getAmountOfMonsters() == 0 || caveModel.getAmountOfTreasures() == 0 || caveModel.getAmountOfPlayers() == 0) {
+        Cave cave = model.getCave();
+        if (cave.getAmountOfMonsters() == 0 || cave.getAmountOfTreasures() == 0 || cave.getAmountOfPlayers() == 0) {
             System.err.println("A monster, a treasure and a player are required to start.");
             return false;
         }

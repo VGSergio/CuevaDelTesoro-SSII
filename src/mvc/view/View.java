@@ -1,7 +1,7 @@
 package mvc.view;
 
 import mvc.controller.Controller;
-import mvc.model.cave.CaveModel;
+import mvc.model.cave.Cave;
 import mvc.view.controls.Controls;
 
 import javax.swing.*;
@@ -15,7 +15,7 @@ import javax.swing.*;
  *
  * <p>Usage:
  * <ul>
- *   <li>Create an instance by passing a {@link Controller} and a {@link CaveModel}.</li>
+ *   <li>Create an instance by passing a {@link Controller} and a {@link Cave}.</li>
  *   <li>Call {@link #updateView()} to refresh the cave view after changes to the model.</li>
  * </ul>
  *
@@ -24,7 +24,7 @@ import javax.swing.*;
  * @see Controls
  * @see CaveView
  * @see mvc.controller.Controller
- * @see CaveModel
+ * @see Cave
  * <p>
  */
 public class View extends javax.swing.JFrame {
@@ -46,13 +46,13 @@ public class View extends javax.swing.JFrame {
      * the {@link Controls} panel and the {@link CaveView} panel in a vertical layout.
      *
      * @param controller the {@link Controller} to handle user interactions
-     * @param caveModel  the {@link CaveModel} representing the cave data
+     * @param cave  the {@link Cave} representing the cave data
      */
-    public View(Controller controller, CaveModel caveModel) {
+    public View(Controller controller, Cave cave) {
         int width = 800;
 
         controls = new Controls(controller, width);
-        caveView = new CaveView(controller, width, caveModel);
+        caveView = new CaveView(controller, width, cave);
 
         configure();
         initComponents();
@@ -113,7 +113,7 @@ public class View extends javax.swing.JFrame {
      * Updates the view by refreshing the cave display.
      *
      * <p>This method invokes {@link CaveView#updateCave()} to redraw the cave
-     * based on the current state of the {@link CaveModel}.
+     * based on the current state of the {@link Cave}.
      */
     public void updateView() {
         caveView.updateCave();

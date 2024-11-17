@@ -7,21 +7,19 @@ import mvc.model.Perceptions;
 public class Square {
 
     /**
-     * SquareStatus of this square
-     */
-    private SquareStatus status;
-
-    /**
-     * Perceptions perceived from this squared.
-     */
-    private Perceptions perceptions;
-
-    /**
      * Counter of how many times this Square instance neighbours have perceived a certain PerceptionType.
      * Minimum number of neighbours: 2. Maximum number of neighbours: 4.
      * Minimum counter value: 0. Maximum counter value: 4.
      */
     private final byte[] perceptionsCounter;
+    /**
+     * SquareStatus of this square
+     */
+    private SquareStatus status;
+    /**
+     * Perceptions perceived from this squared.
+     */
+    private Perceptions perceptions;
     private boolean visited;
 
     public Square() {

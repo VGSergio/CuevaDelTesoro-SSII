@@ -1,6 +1,6 @@
 package mvc.model;
 
-import mvc.model.cave.CaveModel;
+import mvc.model.cave.Cave;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,12 +9,12 @@ import static mvc.model.Global.Cave_Constants;
 
 public class Model {
 
-    private final CaveModel caveModel;
+    private final Cave cave;
     private final List<Player> players;
     private boolean started;
 
     public Model() {
-        caveModel = new CaveModel(Cave_Constants.MIN_SIDE);
+        cave = new Cave(Cave_Constants.MIN_SIDE);
         started = false;
         players = new ArrayList<>();
     }
@@ -27,13 +27,13 @@ public class Model {
         this.started = started;
     }
 
-    public CaveModel getCave() {
-        return caveModel;
+    public Cave getCave() {
+        return cave;
     }
 
     public void addPlayer(byte row, byte col) {
         Player player = new Player(row, col);
-        player.linkCave(caveModel);
+        player.linkCave(cave);
         players.add(player);
     }
 

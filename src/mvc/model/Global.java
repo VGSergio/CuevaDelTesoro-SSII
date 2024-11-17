@@ -60,18 +60,6 @@ public class Global {
     }
 
     /**
-     * Computes whether a row and column are valid given a caveSide.
-     *
-     * @param row      The row to check.
-     * @param column   The column to check.
-     * @param caveSide Value to check if row and column are valid
-     * @return Whether row anc column are valid or not.
-     */
-    public static boolean isWithinBounds(byte row, byte column, byte caveSide) {
-        return row >= 0 && row < caveSide && column >= 0 && column < caveSide;
-    }
-
-    /**
      * Enum representing the types of perceptions in the cave.
      */
     public enum PerceptionType {
