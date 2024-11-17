@@ -102,7 +102,7 @@ public class Global {
         /**
          * The maximum number of players allowed in the cave.
          */
-        public static final byte MAX_PLAYERS = 4;
+        public static final byte MAX_PLAYERS = 2;
     }
 
     /**
