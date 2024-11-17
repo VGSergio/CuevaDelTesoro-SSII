@@ -60,9 +60,22 @@ public class Player {
 
         // Update our map with the cave perceptions
         Square actualSquareMap = map.getSquare(actualRow, actualCol);
-        actualSquareMap.setPerceptions(actualSquareCave.getPerceptions());
+        Perceptions perceptions = actualSquareCave.getPerceptions();
+        actualSquareMap.setPerceptions(perceptions);
 
         actualSquareMap.setVisited(true);
+
+        // Update actualSquareMap neighbours perceptions counter
+        Square[] neighbours = getNeighbours(actualRow, actualCol);
+        for (Square neighbour : neighbours) {
+            if (neighbour != null) {
+                for (PerceptionType perception : PerceptionType.values()) {
+                    if (perceptions.getPerception(perception)) {
+                        neighbour.adjustPerceptionsCounter(perception, 1);
+                    }
+                }
+            }
+        }
     }
 
     private void updateKnowledge() {
@@ -156,7 +169,7 @@ public class Player {
     /// ////////////
 
     private void move(byte nextRow, byte nextCol) {
-        if (map.isWithinBounds(nextRow, nextCol)) {
+        if (isWithinBounds(nextRow, nextCol, map.getCaveSide())) {
             cave.getSquare(actualRow, actualCol).setStatus(SquareStatus.CLEAN);
             map.getSquare(actualRow, actualCol).setStatus(SquareStatus.CLEAN);
 
@@ -204,8 +217,36 @@ public class Player {
      * The player shoots an arrow in the direction it's looking.
      * The arrow won't stop until it kills a monster or collides with a wall.
      */
-    private void shoot() {
-        //TODO
+    private void shoot(Directions direction) {
+        int[] delta = getDirectionsDelta(direction);
+
+        byte newRow = (byte) (actualRow + delta[0]);
+        byte newCol = (byte) (actualRow + delta[1]);
+
+        boolean arrowStopped = false;
+
+        while (!arrowStopped) {
+            if (isWithinBounds(newRow, newCol, map.getCaveSide())) {
+                Square caveSquare = cave.getSquare(newRow, newCol);
+                if (caveSquare.getStatus() == SquareStatus.MONSTER) {
+                    arrowStopped = true;
+                    System.out.println(PerceptionType.GROAN);
+                    caveSquare.setStatus(SquareStatus.CLEAN);
+                    // Update neighbours perceptions
+                    Square[] neighbours = getNeighbours(newRow, newCol);
+                    for (Square neighbour : neighbours) {
+                        if (neighbour != null) {
+                            // TODO
+                        }
+                    }
+                }
+            } else {
+                System.out.println(PerceptionType.BANG);
+                arrowStopped = true;
+            }
+            newRow += (byte) (delta[0]);
+            newCol += (byte) (delta[1]);
+        }
     }
 
     /// ////////////
@@ -213,7 +254,7 @@ public class Player {
     /// ////////////
 
     private boolean isPositionSafe(byte row, byte col) {
-        if (map.isWithinBounds(row, col)) {
+        if (isWithinBounds(row, col, map.getCaveSide())) {
             SquareStatus status = map.getSquare(row, col).getStatus();
             return (status == SquareStatus.TREASURE || status == SquareStatus.PLAYER || status == SquareStatus.CLEAN);
         } else {
@@ -268,12 +309,12 @@ public class Player {
             byte newRow = (byte) (actualRow + direction[0]);
             byte newCol = (byte) (actualCol + direction[1]);
 
-            if (map.isWithinBounds(newRow, newCol)) {
+            if (isWithinBounds(newRow, newCol, map.getCaveSide())) {
                 Perceptions neighborPerceptions = map.getSquare(newRow, newCol).getPerceptions();
                 if (neighborPerceptions != null) {
                     neighbourHasPerceptions = true;
                     for (PerceptionType perception : PerceptionType.values()) {
-                        if (neighborPerceptions.getPerception(perception.ordinal())) {
+                        if (neighborPerceptions.getPerception(perception)) {
                             counts[perception.ordinal()]++;
                         }
                     }
@@ -286,20 +327,32 @@ public class Player {
     private Square[] getNeighbours(byte row, byte col) {
         Square[] neighbours = new Square[Directions.values().length];
 
+        byte[][] neighboursRowsAndColumns = getNeighboursRowsAndColumns(row, col);
+
         for (Directions direction : Directions.values()) {
-            int[] directionDelta = directions[direction.ordinal()];
+            byte[] neighbourRowAndColumn = neighboursRowsAndColumns[direction.ordinal()];
+            neighbours[direction.ordinal()] = neighbourRowAndColumn == null ? null : map.getSquare(neighbourRowAndColumn[0], neighbourRowAndColumn[1]);
+        }
+
+        return neighbours;
+    }
+
+    private byte[][] getNeighboursRowsAndColumns(byte row, byte col) {
+        byte[][] neighboursRowsAndColumns = new byte[Directions.values().length][2];
+        for (Directions direction : Directions.values()) {
+            int[] directionDelta = getDirectionsDelta(direction);
 
             byte newRow = (byte) (row + directionDelta[0]);
             byte newCol = (byte) (col + directionDelta[1]);
 
-            if (map.isWithinBounds(newRow, newCol)) {
-                neighbours[direction.ordinal()] = map.getSquare(newRow, newCol);
+            if (isWithinBounds(newRow, newCol, map.getCaveSide())) {
+                neighboursRowsAndColumns[direction.ordinal()][0] = newRow;
+                neighboursRowsAndColumns[direction.ordinal()][1] = newCol;
             } else {
-                neighbours[direction.ordinal()] = null;
+                neighboursRowsAndColumns[direction.ordinal()] = null;
             }
         }
-
-        return neighbours;
+        return neighboursRowsAndColumns;
     }
 
     public boolean hasFinished() {
@@ -307,7 +360,7 @@ public class Player {
     }
 
     private boolean notHasVisited(byte row, byte col) {
-        if (map.isWithinBounds(row, col)) {
+        if (isWithinBounds(row, col, map.getCaveSide())) {
             return map.getSquare(row, col).notVisited();
         }
         return true; // Out of bounds squares are considered visited
@@ -327,6 +380,18 @@ public class Player {
     }
 
     private enum Directions {
-        NORTH, EAST, SOUTH, WEST
+        NORTH,
+        EAST,
+        SOUTH,
+        WEST
+    }
+
+    private int[] getDirectionsDelta(Directions direction) {
+        return switch (direction) {
+            case NORTH -> new int[]{-1, 0};
+            case EAST -> new int[]{0, 1};
+            case SOUTH -> new int[]{1, 0};
+            case WEST -> new int[]{0, -1};
+        };
     }
 }

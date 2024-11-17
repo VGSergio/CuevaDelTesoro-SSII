@@ -8,7 +8,7 @@ import static mvc.model.Global.getSquarePositionInCave;
 
 public class Map {
 
-    private byte caveSide;
+    private final byte caveSide;
     private Square[] squares;
 
     public Map(byte caveSide) {
@@ -27,11 +27,6 @@ public class Map {
         return caveSide;
     }
 
-    public void setCaveSide(byte caveSide) {
-        this.caveSide = caveSide;
-        initializeSquares();
-    }
-
     public Square[] getSquares() {
         return squares;
     }
@@ -48,7 +43,7 @@ public class Map {
         return Arrays.stream(squares).map(Square::getPerceptions).toArray(Perceptions[]::new);
     }
 
-    public boolean isWithinBounds(byte row, byte column) {
-        return row >= 0 && row < caveSide && column >= 0 && column < caveSide;
+    public byte[][] getAllPerceptionsCounters() {
+       return (byte[][]) Arrays.stream(squares).map(Square::getPerceptionsCounter).toArray();
     }
 }
