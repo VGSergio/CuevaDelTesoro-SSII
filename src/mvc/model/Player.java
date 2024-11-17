@@ -12,13 +12,6 @@ public class Player {
 
     private final byte startingRow;
     private final byte startingCol;
-    // Define the relative directions (up, down, left, right)
-    private final int[][] directions = {
-            {-1, 0}, // NORTH
-            {0, 1},  // EAST
-            {1, 0},  // SOUTH
-            {0, -1}, // WEST
-    };
     private final boolean treasureFound;
     private boolean leftCave;
     private Cave cave;
@@ -85,7 +78,7 @@ public class Player {
 
         for (byte row = 0; row < caveSide; row++) {
             for (byte col = 0; col < caveSide; col++) {
-                int updatingPosition = getSquarePositionInCave(row, col, caveSide);
+                int updatingPosition = map.getSquarePositionInCave(row, col);
                 Square updatingSquare = squares[updatingPosition];
                 Perceptions updatingPerceptions = perceptions[updatingPosition];
 
@@ -388,10 +381,4 @@ public class Player {
         };
     }
 
-    private enum Directions {
-        NORTH,
-        EAST,
-        SOUTH,
-        WEST
-    }
 }

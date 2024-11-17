@@ -12,18 +12,21 @@ public class Square {
      * Minimum counter value: 0. Maximum counter value: 4.
      */
     private final byte[] perceptionsCounter;
+
     /**
      * SquareStatus of this square
      */
     private SquareStatus status;
+
     /**
      * Perceptions perceived from this squared.
      */
     private Perceptions perceptions;
+
     private boolean visited;
 
-    public Square() {
-        status = SquareStatus.UNKNOWN;
+    public Square(SquareStatus status) {
+        this.status = status;
         perceptions = null;
         perceptionsCounter = new byte[PerceptionType.values().length];
         visited = false;

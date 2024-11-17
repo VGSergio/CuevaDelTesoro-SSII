@@ -12,22 +12,24 @@ package mvc.model;
  */
 public class Global {
 
+    public enum Directions {
+        NORTH,
+        EAST,
+        SOUTH,
+        WEST
+    }
+
+    public static final byte[][] DIRECTIONS_DELTAS = new byte[][]{
+            {-1, 0},    // NORTH
+            {0, 1},     // EAST
+            {1, 0},     // SOUTH
+            {0, -1},    // WEST
+    };
+
     /**
      * The default status for a {@code Square} in the cave.
      */
     public static final SquareStatus SQUARE_STATUS_DEFAULT = SquareStatus.MONSTER;
-
-    /**
-     * Calculates the linear index of a square in the cave based on its row and column.
-     *
-     * @param row    The row of the square.
-     * @param column The column of the square.
-     * @param side   The side length of the cave.
-     * @return The index of the square in the cave's 1D representation.
-     */
-    public static int getSquarePositionInCave(byte row, byte column, byte side) {
-        return row * side + column;
-    }
 
     /**
      * Maps a {@code SquareStatus} to its corresponding {@code PerceptionType}.

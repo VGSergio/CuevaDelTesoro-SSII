@@ -12,14 +12,12 @@ public class Cave extends CaveModel {
 
     public Cave(byte caveSide) {
         super(caveSide);
-        cleanCave();
         initializeItemCounts();
     }
 
-    private void cleanCave() {
-        for (Square square : squares) {
-            square.setStatus(SquareStatus.CLEAN);
-        }
+    @Override
+    protected SquareStatus getInitialStatus() {
+        return SquareStatus.CLEAN;
     }
 
     /**
@@ -30,10 +28,31 @@ public class Cave extends CaveModel {
         this.amountOfTreasures = 0;
     }
 
+    /**
+     * Updates perceptions for a specific square by row and column.
+     */
+    private void updatePerceptions(byte row, byte column) {
+        Square square = getSquare(row, column);
+        Perceptions perceptions = new Perceptions();
+
+        // Calculate perceptions based on neighbors
+        for (byte[] delta : DIRECTIONS_DELTAS) {
+            byte neighborRow = (byte) (row + delta[0]);
+            byte neighborCol = (byte) (column + delta[1]);
+
+            if (isWithinBounds(neighborRow, neighborCol)) {
+                PerceptionType perceptionType = mapStatusToPerception(getSquare(neighborRow, neighborCol).getStatus());
+                if (perceptionType != null) {
+                    perceptions.setPerception(perceptionType, true);
+                }
+            }
+        }
+        square.setPerceptions(perceptions);
+    }
+
     public void setCaveSide(byte caveSide) {
         this.caveSide = caveSide;
         initializeSquares();
-        cleanCave();
         initializeItemCounts();
     }
 
@@ -59,30 +78,6 @@ public class Cave extends CaveModel {
 
     public void adjustAmountOfPlayers(int delta) {
         this.amountOfPlayers += (byte) delta;
-    }
-
-    /**
-     * Updates perceptions for a specific square by row and column.
-     */
-    public void updatePerceptions(byte row, byte column) {
-        Square square = getSquare(row, column);
-        Perceptions perceptions = new Perceptions();
-
-        // Calculate perceptions based on neighbors
-        for (int[] delta : new int[][]{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}) {
-            byte neighborRow = (byte) (row + delta[0]);
-            byte neighborCol = (byte) (column + delta[1]);
-
-            if (isWithinBounds(neighborRow, neighborCol)) {
-                SquareStatus status = getSquare(neighborRow, neighborCol).getStatus();
-                PerceptionType perceptionType = mapStatusToPerception(status);
-                if (perceptionType != null) {
-                    perceptions.setPerception(perceptionType, true);
-                }
-            }
-        }
-
-        square.setPerceptions(perceptions);
     }
 
     public void updateAllPerceptions() {

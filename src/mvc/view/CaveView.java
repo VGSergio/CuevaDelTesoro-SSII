@@ -154,7 +154,7 @@ public class CaveView extends JPanel {
             for (byte column = 0; column < caveSide; column++) {
                 int x = column * squareSide;
                 int y = row * squareSide;
-                Square square = squares[getSquarePositionInCave(row, column, caveSide)];
+                Square square = squares[cave.getSquarePositionInCave(row, column)];
 
                 drawSquare(g, x, y);
                 drawStatus(g, square.getStatus(), x, y);
