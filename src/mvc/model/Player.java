@@ -114,46 +114,14 @@ public class Player {
     }
 
     private void makeDecision() {
-        // We have found the treasure.
         if (treasureFound) {
-            // We are in our starting position.
             if (actualRow == startingRow && actualCol == startingCol) {
                 leaveCave();
             } else {
-                // Returning to the starting position with preference WEST > SOUTH > EAST > NORTH
-                if (isWestSafe() && notHasVisited(getWest(), actualCol)) {
-                    moveWest();
-                } else if (isSouthSafe() && notHasVisited(getSouth(), actualCol)) {
-                    moveSouth();
-                } else if (isEastSafe() && notHasVisited(actualRow, getEast())) {
-                    moveEast();
-                } else if (isNorthSafe() && notHasVisited(getNorth(), actualCol)) {
-                    moveNorth();
-                } else {
-                    // If all preferred directions are visited, fall back to the original safe preference
-                    if (isWestSafe()) moveWest();
-                    else if (isSouthSafe()) moveSouth();
-                    else if (isEastSafe()) moveEast();
-                    else if (isNorthSafe()) moveNorth();
-                }
+                prioritizeMovement(Directions.WEST, Directions.SOUTH, Directions.EAST, Directions.NORTH);
             }
         } else {
-            // Treasure hunting with preference NORTH > EAST > SOUTH > WEST
-            if (isNorthSafe() && notHasVisited(getNorth(), actualCol)) {
-                moveNorth();
-            } else if (isEastSafe() && notHasVisited(actualRow, getEast())) {
-                moveEast();
-            } else if (isSouthSafe() && notHasVisited(getSouth(), actualCol)) {
-                moveSouth();
-            } else if (isWestSafe() && notHasVisited(actualRow, getWest())) {
-                moveWest();
-            } else {
-                // If all preferred directions are visited, fall back to the original safe preference
-                if (isNorthSafe()) moveNorth();
-                else if (isEastSafe()) moveEast();
-                else if (isSouthSafe()) moveSouth();
-                else if (isWestSafe()) moveWest();
-            }
+            prioritizeMovement(Directions.NORTH, Directions.EAST, Directions.SOUTH, Directions.WEST);
         }
     }
 
@@ -161,40 +129,14 @@ public class Player {
     /// ACTIONS ///
     /// ////////////
 
-    private void move(byte nextRow, byte nextCol) {
-        if (map.isWithinBounds(nextRow, nextCol)) {
-            cave.getSquare(actualRow, actualCol).setStatus(SquareStatus.CLEAN);
-            map.getSquare(actualRow, actualCol).setStatus(SquareStatus.CLEAN);
-
-            cave.getSquare(nextRow, nextCol).setStatus(SquareStatus.PLAYER);
-            map.getSquare(nextRow, nextCol).setStatus(SquareStatus.PLAYER);
-
-            actualRow = nextRow;
-            actualCol = nextCol;
-        } else {
-            System.out.println(PerceptionType.BANG);
-        }
-    }
-
-    private void moveNorth() {
-        move(getNorth(), actualCol);
-    }
-
-    private void moveEast() {
-        move(actualRow, getEast());
-    }
-
-    private void moveSouth() {
-        move(getSouth(), actualCol);
-    }
-
-    private void moveWest() {
-        move(actualRow, getWest());
+    private void moveInDirection(Directions direction) {
+        int[] delta = getDirectionsDelta(direction);
+        move((byte) (actualRow + delta[0]), (byte) (actualCol + delta[1]));
     }
 
     private void leaveCave() {
-        // Update actual cave to show that the player has successfully left the cave.
-        cave.getSquare(actualRow, actualCol).setStatus(SquareStatus.CLEAN);
+        updateSquareStatus(actualRow, actualCol, SquareStatus.CLEAN);
+
         // Update the boolean to allow hasFinished to return true.
         leftCave = true;
     }
@@ -246,6 +188,35 @@ public class Player {
     /// HELPERS ///
     /// ////////////
 
+    private void move(byte nextRow, byte nextCol) {
+        updateSquareStatus(actualRow, actualCol, SquareStatus.CLEAN);
+        updateSquareStatus(nextRow, nextCol, SquareStatus.PLAYER);
+
+        actualRow = nextRow;
+        actualCol = nextCol;
+    }
+
+    private void updateSquareStatus(byte row, byte col, SquareStatus status) {
+        cave.getSquare(row, col).setStatus(status);
+        map.getSquare(row, col).setStatus(status);
+    }
+
+    private void prioritizeMovement(Directions... preferences) {
+        for (Directions direction : preferences) {
+            if (isSafe(direction) && notHasVisited(direction)) {
+                moveInDirection(direction);
+                return;
+            }
+        }
+        // Fallback to safe moves if all are visited
+        for (Directions direction : preferences) {
+            if (isSafe(direction)) {
+                moveInDirection(direction);
+                return;
+            }
+        }
+    }
+
     private boolean isPositionSafe(byte row, byte col) {
         if (map.isWithinBounds(row, col)) {
             SquareStatus status = map.getSquare(row, col).getStatus();
@@ -255,50 +226,19 @@ public class Player {
         }
     }
 
-    private boolean isNorthSafe() {
-        return isPositionSafe(getNorth(), actualCol);
-    }
-
-    private boolean isEastSafe() {
-        return isPositionSafe(actualRow, getEast());
-    }
-
-    private boolean isSouthSafe() {
-        return isPositionSafe(getSouth(), actualCol);
-    }
-
-    private boolean isWestSafe() {
-        return isPositionSafe(actualRow, getWest());
-    }
-
-    private byte getNorth() {
-        return (byte) (actualRow - 1);
-    }
-
-    private byte getEast() {
-        return (byte) (actualCol + 1);
-    }
-
-    private byte getSouth() {
-        return (byte) (actualRow + 1);
-    }
-
-    private byte getWest() {
-        return (byte) (actualCol - 1);
+    private boolean isSafe(Directions direction) {
+        int[] delta = getDirectionsDelta(direction);
+        byte newRow = (byte) (actualRow + delta[0]);
+        byte newCol = (byte) (actualCol + delta[1]);
+        return isPositionSafe(newRow, newCol);
     }
 
     private byte[] getPerceptionsCount(Square square) {
-        int[][] directions = {
-                {-1, 0}, // up
-                {1, 0},  // down
-                {0, -1}, // left
-                {0, 1}   // right
-        };
 
         byte[] counts = new byte[PerceptionType.values().length];
         boolean neighbourHasPerceptions = false;
 
-        for (int[] direction : directions) {
+        for (byte[] direction : DIRECTIONS_DELTAS) {
             byte newRow = (byte) (actualRow + direction[0]);
             byte newCol = (byte) (actualCol + direction[1]);
 
@@ -352,11 +292,15 @@ public class Player {
         return treasureFound && leftCave;
     }
 
-    private boolean notHasVisited(byte row, byte col) {
-        if (map.isWithinBounds(row, col)) {
-            return map.getSquare(row, col).notVisited();
+    private boolean notHasVisited(Directions direction) {
+        int[] delta = getDirectionsDelta(direction);
+        byte newRow = (byte) (actualRow + delta[0]);
+        byte newCol = (byte) (actualCol + delta[1]);
+        if (map.isWithinBounds(newRow, newCol)) {
+            return map.getSquare(newRow, newCol).notVisited();
         }
-        return true; // Out of bounds squares are considered visited
+        return true;
+
     }
 
     @Override
