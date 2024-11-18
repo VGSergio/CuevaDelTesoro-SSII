@@ -127,6 +127,7 @@ public class Global {
         public static final String NEXT_STEP_CLICKED = "NEXT_STEP_CLICKED";
         public static final String START_CLICKED = "START_CLICKED";
         public static final String CAVE_UPDATED = "CAVE_UPDATED";
+        public static final String RESET_CLICKED = "RESET_CLICKED";
     }
 
     /**
@@ -140,6 +141,7 @@ public class Global {
         public static final String PLAYER = "resources/player.png";
         public static final String NEXT_STEP = "resources/next_step.png";
         public static final String START = "resources/start.png";
+        public static final String RESET = "resources/reset.png";
 
         /**
          * Default image path.

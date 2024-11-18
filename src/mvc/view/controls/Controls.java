@@ -3,6 +3,7 @@ package mvc.view.controls;
 import mvc.controller.Controller;
 import mvc.view.controls.selector.SpeedSelector;
 import mvc.view.controls.selector.StatusSelector;
+import mvc.view.controls.selector.picture.ResetPicture;
 import mvc.view.controls.selector.picture.StartPicture;
 
 import javax.swing.*;
@@ -40,14 +41,19 @@ import java.awt.*;
 public class Controls extends JPanel {
 
     /**
-     * Selector for status-related options.
+     * Picture component for reset actions.
      */
-    private final StatusSelector statusSelector;
+    private final ResetPicture resetPicture;
 
     /**
      * Spinner for adjusting side-related parameters.
      */
     private final SideSpinner sideSpinner;
+
+    /**
+     * Selector for status-related options.
+     */
+    private final StatusSelector statusSelector;
 
     /**
      * Selector for speed-related options.
@@ -70,8 +76,9 @@ public class Controls extends JPanel {
      */
     public Controls(Controller controller, int windowWidth) {
         // Initialize components
-        statusSelector = new StatusSelector(controller);
+        resetPicture = new ResetPicture(controller);
         sideSpinner = new SideSpinner(controller);
+        statusSelector = new StatusSelector(controller);
         speedSelector = new SpeedSelector(controller);
         startPicture = new StartPicture(controller);
 
@@ -99,10 +106,12 @@ public class Controls extends JPanel {
      * <p>Each component is added to the panel with specific constraints to ensure proper alignment.
      */
     private void initComponents() {
-        addComponent(sideSpinner, 0);
-        addComponent(statusSelector, 1);
-        addComponent(speedSelector, 2);
-        addComponent(startPicture, 3);
+        byte gridX = 0;
+        addComponent(resetPicture, gridX++);
+        addComponent(sideSpinner, gridX++);
+        addComponent(statusSelector, gridX++);
+        addComponent(speedSelector, gridX++);
+        addComponent(startPicture, gridX);
     }
 
     /**
@@ -115,7 +124,7 @@ public class Controls extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = gridX;
         gbc.gridy = 0;
-        gbc.insets = new Insets(0, gridX == 0 ? 5 : 30, 0, gridX == 3 ? 5 : 30);
+        gbc.insets = new Insets(0, gridX == 0 ? 5 : 15, 0, gridX == 0 ? 5 : 15);
         gbc.anchor = GridBagConstraints.CENTER;
         add(component, gbc);
     }

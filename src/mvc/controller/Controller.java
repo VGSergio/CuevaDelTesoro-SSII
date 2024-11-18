@@ -88,6 +88,7 @@ public class Controller extends Thread {
             case Events_Constants.NEXT_STEP_CLICKED -> handleNextStepClicked();
             case Events_Constants.START_CLICKED -> handleStartClicked();
             case Events_Constants.CAVE_UPDATED -> handleCaveUpdated();
+            case Events_Constants.RESET_CLICKED -> handleResetClicked();
             default -> System.err.println("Unexpected event: " + event);
         }
     }
@@ -316,6 +317,12 @@ public class Controller extends Thread {
      */
     private void handleCaveUpdated() {
         view.updateView();
+    }
+
+    private void handleResetClicked() {
+        model.reset();
+        view.updateView();
+        System.out.println("The cave has been reset.");
     }
 
     /**
