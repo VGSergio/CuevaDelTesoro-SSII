@@ -22,11 +22,4 @@ public class Map extends CaveModel {
     public Perceptions[] getPerceptions() {
         return Arrays.stream(squares).map(Square::getPerceptions).toArray(Perceptions[]::new);
     }
-
-    /**
-     * Retrieves all perceptions counters as a 2D array.
-     */
-    public byte[][] getAllPerceptionsCounters() {
-        return Arrays.stream(squares).map(Square::getPerceptionsCounter).toArray(byte[][]::new);
-    }
 }

@@ -1,17 +1,9 @@
 package mvc.model.cave;
 
-import mvc.model.Global.PerceptionType;
 import mvc.model.Global.SquareStatus;
 import mvc.model.Perceptions;
 
 public class Square {
-
-    /**
-     * Counter of how many times this Square instance neighbours have perceived a certain PerceptionType.
-     * Minimum number of neighbours: 2. Maximum number of neighbours: 4.
-     * Minimum counter value: 0. Maximum counter value: 4.
-     */
-    private final byte[] perceptionsCounter;
 
     /**
      * SquareStatus of this square
@@ -25,10 +17,11 @@ public class Square {
 
     private boolean visited;
 
+    private boolean hasTreasure;
+
     public Square(SquareStatus status) {
         this.status = status;
         perceptions = null;
-        perceptionsCounter = new byte[PerceptionType.values().length];
         visited = false;
     }
 
@@ -38,6 +31,17 @@ public class Square {
 
     public void setStatus(SquareStatus status) {
         this.status = status;
+        if (status == SquareStatus.TREASURE) {
+            hasTreasure = true;
+        }
+    }
+
+    public boolean hasTreasure() {
+        return hasTreasure;
+    }
+
+    public void setHasTreasure(boolean hasTreasure) {
+        this.hasTreasure = hasTreasure;
     }
 
     public Perceptions getPerceptions() {
@@ -54,13 +58,5 @@ public class Square {
 
     public void setVisited(boolean value) {
         visited = value;
-    }
-
-    public byte[] getPerceptionsCounter() {
-        return perceptionsCounter;
-    }
-
-    public void adjustPerceptionsCounter(PerceptionType perception, int value) {
-        perceptionsCounter[perception.ordinal()] += (byte) value;
     }
 }

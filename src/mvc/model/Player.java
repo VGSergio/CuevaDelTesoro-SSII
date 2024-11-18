@@ -60,18 +60,6 @@ public class Player {
         actualSquareMap.setVisited(true);
         Perceptions perceptions = actualSquareCave.getPerceptions();
         actualSquareMap.setPerceptions(perceptions);
-
-        // Update actualSquareMap neighbours perceptions counter
-        Square[] neighbours = getNeighbours(actualRow, actualCol);
-        for (Square neighbour : neighbours) {
-            if (neighbour != null) {
-                for (PerceptionType perception : PerceptionType.values()) {
-                    if (perceptions.getPerception(perception)) {
-                        neighbour.adjustPerceptionsCounter(perception, 1);
-                    }
-                }
-            }
-        }
     }
 
     private void updateKnowledge() {
@@ -80,36 +68,81 @@ public class Player {
 
         for (byte row = 0; row < caveSide; row++) {
             for (byte col = 0; col < caveSide; col++) {
+                Square updatingSquare = map.getSquare(row, col);
                 int updatingPosition = map.getSquarePositionInCave(row, col);
                 Perceptions updatingPerceptions = perceptions[updatingPosition];
-
-                // Without perceptions there's no reasoning to do.
-                if (updatingPerceptions == null) {
-                    continue;
-                }
-
                 Square[] neighbours = getNeighbours(row, col);
-                // All perceptions to false mean that the neighbours are clean.
-                if (updatingPerceptions.isClean()) {
-                    for (Square square : neighbours) {
-                        if ((square != null) && (square.getStatus() == SquareStatus.UNKNOWN)) {
-                            square.setStatus(SquareStatus.CLEAN);
+
+                if (updatingPerceptions != null && updatingPerceptions.isClean()) {
+                    for (Square neighbour : neighbours) {
+                        if (neighbour != null && neighbour.getStatus() == SquareStatus.UNKNOWN) {
+                            neighbour.setStatus(SquareStatus.CLEAN);
                         }
                     }
-                } else {
-                    for (Square square : neighbours) {
-                        if (square != null) {
-                            byte[] perceptionsCountNeighbour = getPerceptionsCount(square);
-                            if (perceptionsCountNeighbour != null) {
-                                for (PerceptionType perception : PerceptionType.values()) {
-                                    if (perceptionsCountNeighbour[perception.ordinal()] >= 2) {
-                                        square.setStatus(mapPerceptionToStatus(perception));
-                                    }
+                }
+
+                byte numOfUnknownNeighbours = 0;
+                for (Square neighbour : neighbours) {
+                    if (neighbour != null && neighbour.getStatus() == SquareStatus.UNKNOWN) {
+                        numOfUnknownNeighbours++;
+                    }
+                }
+                if (numOfUnknownNeighbours == 1) {
+                    Square unknownNeighbour = null;
+                    for (Square neighbour : neighbours) {
+                        if (neighbour != null && neighbour.getStatus() == SquareStatus.UNKNOWN) {
+                            unknownNeighbour = neighbour;
+                        }
+                    }
+                    if (unknownNeighbour != null) {
+                        Perceptions perceptionsPlaced = new Perceptions();
+                        for (Square neighbour : neighbours) {
+                            if (neighbour != null) {
+                                PerceptionType perceptionStatus = mapStatusToPerception(neighbour.getStatus());
+                                if (perceptionStatus != null) {
+                                    perceptionsPlaced.setPerception(perceptionStatus, true);
                                 }
+                            }
+                        }
+                        for (PerceptionType perceptionType : PerceptionType.values()) {
+                            if (updatingPerceptions != null && updatingPerceptions.getPerception(perceptionType) != perceptionsPlaced.getPerception(perceptionType)) {
+                                unknownNeighbour.setStatus(mapPerceptionToStatus(perceptionType));
                             }
                         }
                     }
                 }
+
+
+                // infer this square status
+                if (updatingSquare.getStatus() != SquareStatus.UNKNOWN) {
+                    continue;
+                }
+                // If our neighbours perceptions differ we are clean.
+                for (PerceptionType perceptionType : PerceptionType.values()) {
+                    SquareStatus perceptionStatus = mapPerceptionToStatus(perceptionType);
+                    if (perceptionStatus == null) {
+                        continue;
+                    }
+                    byte validPerceptions = 0;
+                    byte count = 0;
+                    for (Square neighbour : neighbours) {
+                        if (neighbour == null) {
+                            continue;
+                        }
+                        Perceptions neighbourPerceptions = neighbour.getPerceptions();
+                        if (neighbourPerceptions == null) {
+                            continue;
+                        }
+                        validPerceptions++;
+                        if (neighbourPerceptions.getPerception(perceptionType)) {
+                            count++;
+                        }
+                    }
+                    if (validPerceptions > 1) {
+                        updatingSquare.setStatus(count == validPerceptions ? perceptionStatus : SquareStatus.CLEAN);
+                    }
+                }
+
             }
         }
     }
@@ -118,15 +151,19 @@ public class Player {
         if (treasureFound) {
             if (canLeave()) {
                 leaveCave();
-            } else if (canTake()) {
-                take();
             } else if (shouldShoot()) {
                 shoot(getMonsterDirection());
             } else {
                 prioritizeMovement(Directions.WEST, Directions.SOUTH, Directions.EAST, Directions.NORTH);
             }
         } else {
-            prioritizeMovement(Directions.NORTH, Directions.EAST, Directions.SOUTH, Directions.WEST);
+            if (canTake()) {
+                take();
+            } else if (shouldShoot()) {
+                shoot(getMonsterDirection());
+            } else {
+                prioritizeMovement(Directions.NORTH, Directions.EAST, Directions.SOUTH, Directions.WEST);
+            }
         }
     }
 
@@ -139,7 +176,7 @@ public class Player {
     }
 
     private boolean canTake() {
-        return map.getSquare(actualRow, actualCol).getStatus() == SquareStatus.TREASURE;
+        return cave.getSquare(actualRow, actualCol).hasTreasure();
     }
 
     private boolean shouldShoot() {
@@ -179,7 +216,8 @@ public class Player {
     private void take() {
         treasureFound = true;
         System.out.println("The player takes the treasure");
-        updateSquareStatus(actualRow, actualCol, SquareStatus.CLEAN);
+        cave.getSquare(actualRow, actualCol).setHasTreasure(false);
+        map.getSquare(actualRow, actualCol).setHasTreasure(false);
         updateNeighborPerceptions(actualRow, actualCol);
     }
 
@@ -189,7 +227,9 @@ public class Player {
      */
     private void shoot(Directions direction) {
         arrows--;
+        System.out.println("The player shoots an arrow to the " + direction);
 
+        boolean monsterHit = false;
         byte[] delta = getDirectionDelta(direction);
         byte newRow = (byte) (actualRow + delta[0]);
         byte newCol = (byte) (actualCol + delta[1]);
@@ -201,14 +241,18 @@ public class Player {
                 System.out.println("Arrow hit a monster!");
                 updateSquareStatus(newRow, newCol, SquareStatus.CLEAN);
                 updateNeighborPerceptions(newRow, newCol);
+                monsterHit = true;
                 break;
             }
             newRow += delta[0];
             newCol += delta[1];
         }
-        // The arrow hits a wall // Should not happen due to shouldShoot
-        System.out.println(PerceptionType.BANG);
-        System.out.println("Arrow hit a wall.");
+
+        if (!monsterHit) {
+            // The arrow hits a wall // Should not happen due to shouldShoot
+            System.out.println(PerceptionType.BANG);
+            System.out.println("Arrow hit a wall.");
+        }
     }
 
     /// ////////////
@@ -247,7 +291,9 @@ public class Player {
     private boolean isPositionSafe(byte row, byte col) {
         if (map.isWithinBounds(row, col)) {
             SquareStatus status = map.getSquare(row, col).getStatus();
-            return (status == SquareStatus.TREASURE || status == SquareStatus.PLAYER || status == SquareStatus.CLEAN);
+            Perceptions perceptions = map.getSquare(actualRow, actualCol).getPerceptions();
+            return (status == SquareStatus.TREASURE || status == SquareStatus.PLAYER || status == SquareStatus.CLEAN ||
+                    (status == SquareStatus.UNKNOWN && !perceptions.getPerception(PerceptionType.STENCH) && !perceptions.getPerception(PerceptionType.BREEZE)));
         } else {
             return false;
         }
@@ -258,30 +304,6 @@ public class Player {
         byte newRow = (byte) (actualRow + delta[0]);
         byte newCol = (byte) (actualCol + delta[1]);
         return isPositionSafe(newRow, newCol);
-    }
-
-    private byte[] getPerceptionsCount(Square square) {
-        byte[] counts = new byte[PerceptionType.values().length];
-        boolean neighbourHasPerceptions = false;
-
-        for (Directions direction : Directions.values()) {
-            byte[] delta = getDirectionDelta(direction);
-            byte newRow = (byte) (actualRow + delta[0]);
-            byte newCol = (byte) (actualCol + delta[1]);
-
-            if (map.isWithinBounds(newRow, newCol)) {
-                Perceptions neighborPerceptions = map.getSquare(newRow, newCol).getPerceptions();
-                if (neighborPerceptions != null) {
-                    neighbourHasPerceptions = true;
-                    for (PerceptionType perception : PerceptionType.values()) {
-                        if (neighborPerceptions.getPerception(perception)) {
-                            counts[perception.ordinal()]++;
-                        }
-                    }
-                }
-            }
-        }
-        return neighbourHasPerceptions ? counts : null;
     }
 
     private Square[] getNeighbours(byte row, byte col) {
@@ -360,7 +382,7 @@ public class Player {
         byte newCol = (byte) (actualCol + delta[1]);
 
         while (map.isWithinBounds(newRow, newCol)) {
-            Square caveSquare = cave.getSquare(newRow, newCol);
+            Square caveSquare = map.getSquare(newRow, newCol);
             squaresInDirection.add(caveSquare);
             newRow += delta[0];
             newCol += delta[1];
