@@ -250,7 +250,7 @@ public class Controller extends Thread {
             System.err.println("Manual steps only allowed at manual speed.");
             return;
         }
-        System.out.println("Next step executed.");
+        update();
     }
 
     /**
@@ -270,8 +270,10 @@ public class Controller extends Thread {
             System.out.println("Cave started.");
             model.setStarted(true);
             while (!model.isCaveExplored()) {
-                model.exploreCave();
-                view.updateView();
+                if (selectedSpeed == Speed_Constants.MANUAL_VALUE) {
+                    return;
+                }
+                update();
                 try {
                     Thread.sleep(selectedSpeed);
                 } catch (InterruptedException e) {
@@ -340,6 +342,11 @@ public class Controller extends Thread {
      */
     private byte castToByte(Object param) {
         return param instanceof Byte ? (Byte) param : 0;
+    }
+
+    private void update() {
+        model.exploreCave();
+        view.updateView();
     }
 
 }
