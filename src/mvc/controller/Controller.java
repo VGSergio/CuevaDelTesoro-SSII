@@ -104,6 +104,7 @@ public class Controller extends Thread {
             return;
         }
 
+        model.reset();
         model.getCave().setCaveSide((byte) side);
 
         view.updateView();
