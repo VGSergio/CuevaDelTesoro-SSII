@@ -271,7 +271,7 @@ public class Controller extends Thread {
             model.setStarted(true);
             while (!model.isCaveExplored()) {
                 if (selectedSpeed == Speed_Constants.MANUAL_VALUE) {
-                    return;
+                    continue;
                 }
                 update();
                 try {
