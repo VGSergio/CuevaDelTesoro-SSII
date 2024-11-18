@@ -97,6 +97,16 @@ public class Model {
     }
 
     /**
+     * Resets all {@link Model} variables to its default values.
+     * The cave keeps its size but its empty.
+     */
+    public void reset() {
+        started = false;
+        players.clear();
+        cave.setCaveSide(cave.getCaveSide());
+    }
+
+    /**
      * Instructs all players in the game to explore the cave.
      *
      * <p>Each {@link Player} will call their respective method for exploring the cave.</p>
