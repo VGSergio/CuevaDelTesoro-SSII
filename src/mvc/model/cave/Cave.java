@@ -1,6 +1,6 @@
 package mvc.model.cave;
 
-import static mvc.model.Global.*;
+import static mvc.model.Global.SquareStatus;
 
 /**
  * Represents a specific implementation of a cave, extending the {@link CaveModel}.
@@ -137,18 +137,5 @@ public class Cave extends CaveModel {
      */
     public void adjustAmountOfPlayers(int delta) {
         this.amountOfPlayers += (byte) delta;
-    }
-
-    /**
-     * Updates perceptions for all squares in the cave.
-     *
-     * <p>This method iterates through every square in the cave grid and recalculates
-     * their perceptions based on the statuses of their neighbors. It is called when the
-     * simulation starts</p>
-     */
-    public void updateAllPerceptions() {
-        for (int position = 0; position < squares.length; position++) {
-            updatePerceptions((byte) (position / caveSide), (byte) (position % caveSide));
-        }
     }
 }

@@ -13,14 +13,9 @@ package mvc.model;
 public class Global {
 
     /**
-     * The possible directions in which a player can move.
+     * The default status for a {@code Square} in the cave.
      */
-    public enum Directions {
-        NORTH,
-        EAST,
-        SOUTH,
-        WEST
-    }
+    public static final SquareStatus SQUARE_STATUS_DEFAULT = SquareStatus.MONSTER;
 
     /**
      * Maps a {@code Directions} to its corresponding deltas.
@@ -36,11 +31,6 @@ public class Global {
             case WEST -> new byte[]{0, -1};
         };
     }
-
-    /**
-     * The default status for a {@code Square} in the cave.
-     */
-    public static final SquareStatus SQUARE_STATUS_DEFAULT = SquareStatus.MONSTER;
 
     /**
      * Maps a {@code SquareStatus} to its corresponding {@code PerceptionType}.
@@ -70,6 +60,16 @@ public class Global {
             case RADIANCE -> SquareStatus.TREASURE;
             case BANG, GROAN -> null;
         };
+    }
+
+    /**
+     * The possible directions in which a player can move.
+     */
+    public enum Directions {
+        NORTH,
+        EAST,
+        SOUTH,
+        WEST
     }
 
     /**

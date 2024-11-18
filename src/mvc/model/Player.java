@@ -75,7 +75,6 @@ public class Player {
     }
 
     private void updateKnowledge() {
-        Square[] squares = map.getSquares();
         byte caveSide = map.getCaveSide();
         Perceptions[] perceptions = map.getPerceptions();
 
@@ -200,8 +199,7 @@ public class Player {
             if (caveSquare.getStatus() == SquareStatus.MONSTER) {
                 System.out.println(PerceptionType.GROAN);
                 System.out.println("Arrow hit a monster!");
-                System.out.println(PerceptionType.GROAN);
-                caveSquare.setStatus(SquareStatus.CLEAN);
+                updateSquareStatus(newRow, newCol, SquareStatus.CLEAN);
                 updateNeighborPerceptions(newRow, newCol);
                 break;
             }
@@ -322,6 +320,7 @@ public class Player {
         for (byte[] neighbor : neighbors) {
             if (neighbor != null) {
                 cave.updatePerceptions(neighbor[0], neighbor[1]);
+                map.updatePerceptions(neighbor[0], neighbor[1]);
             }
         }
     }
@@ -355,7 +354,7 @@ public class Player {
     }
 
     private Square[] getSquaresInDirection(Directions direction) {
-        List<Square> squaresInDirection = new ArrayList<Square>();
+        List<Square> squaresInDirection = new ArrayList<>();
         byte[] delta = getDirectionDelta(direction);
         byte newRow = (byte) (actualRow + delta[0]);
         byte newCol = (byte) (actualCol + delta[1]);

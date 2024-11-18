@@ -1,6 +1,12 @@
 package mvc.model.cave;
 
+import mvc.model.Global.Directions;
+import mvc.model.Global.PerceptionType;
 import mvc.model.Global.SquareStatus;
+import mvc.model.Perceptions;
+
+import static mvc.model.Global.getDirectionDelta;
+import static mvc.model.Global.mapStatusToPerception;
 
 /**
  * Represents an abstract model of a cave, which is organized as a grid of squares.
@@ -148,18 +154,18 @@ public abstract class CaveModel {
      * @param row    The row index of the target square.
      * @param column The column index of the target square.
      */
-    private void updatePerceptions(byte row, byte column) {
+    public void updatePerceptions(byte row, byte column) {
         Square square = getSquare(row, column);
         Perceptions perceptions = new Perceptions();
 
         // Calculate perceptions based on neighbors
-        for (Global.Directions direction : Global.Directions.values()) {
+        for (Directions direction : Directions.values()) {
             byte[] delta = getDirectionDelta(direction);
             byte neighborRow = (byte) (row + delta[0]);
             byte neighborCol = (byte) (column + delta[1]);
 
             if (isWithinBounds(neighborRow, neighborCol)) {
-                Global.PerceptionType perceptionType = mapStatusToPerception(getSquare(neighborRow, neighborCol).getStatus());
+                PerceptionType perceptionType = mapStatusToPerception(getSquare(neighborRow, neighborCol).getStatus());
                 if (perceptionType != null) {
                     perceptions.setPerception(perceptionType, true);
                 }
