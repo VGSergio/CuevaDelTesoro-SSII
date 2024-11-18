@@ -4,6 +4,8 @@ import mvc.model.cave.Cave;
 import mvc.model.cave.Map;
 import mvc.model.cave.Square;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static mvc.model.Global.*;
@@ -12,7 +14,7 @@ public class Player {
 
     private final byte startingRow;
     private final byte startingCol;
-    private final boolean treasureFound;
+    private boolean treasureFound;
     private boolean leftCave;
     private Cave cave;
     private Map map;
@@ -114,14 +116,45 @@ public class Player {
 
     private void makeDecision() {
         if (treasureFound) {
-            if (actualRow == startingRow && actualCol == startingCol) {
+            if (canLeave()) {
                 leaveCave();
+            } else if (canTake()) {
+                take();
+            } else if (shouldShoot()) {
+                shoot(getMonsterDirection());
             } else {
                 prioritizeMovement(Directions.WEST, Directions.SOUTH, Directions.EAST, Directions.NORTH);
             }
         } else {
             prioritizeMovement(Directions.NORTH, Directions.EAST, Directions.SOUTH, Directions.WEST);
         }
+    }
+
+    /// ////////////
+    /// CONDITIONS /
+    /// ////////////
+
+    private boolean canLeave() {
+        return actualRow == startingRow && actualCol == startingCol;
+    }
+
+    private boolean canTake() {
+        return map.getSquare(actualRow, actualCol).getStatus() == SquareStatus.TREASURE;
+    }
+
+    private boolean shouldShoot() {
+        if (arrows <= 0) {
+            return false;
+        }
+        for (Directions direction : Directions.values()) {
+            Square[] squares = getSquaresInDirection(direction);
+            for (Square square : squares) {
+                if (square != null && square.getStatus() == SquareStatus.MONSTER) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /// ////////////
@@ -141,10 +174,13 @@ public class Player {
     }
 
     /**
-     * The player picks up an item on its position, if there's one.
+     * The player picks up the treasure.
      */
     private void take() {
-        // TODO
+        treasureFound = true;
+        System.out.println("The player takes the treasure");
+        updateSquareStatus(actualRow, actualCol, SquareStatus.CLEAN);
+        updateNeighborPerceptions(actualRow, actualCol);
     }
 
     /**
@@ -152,7 +188,7 @@ public class Player {
      * The arrow won't stop until it kills a monster or collides with a wall.
      */
     private void shoot(Directions direction) {
-        arrows -= 1;
+        arrows--;
 
         byte[] delta = getDirectionDelta(direction);
         byte newRow = (byte) (actualRow + delta[0]);
@@ -161,6 +197,7 @@ public class Player {
         while (map.isWithinBounds(newRow, newCol)) {
             Square caveSquare = cave.getSquare(newRow, newCol);
             if (caveSquare.getStatus() == SquareStatus.MONSTER) {
+                System.out.println("Arrow hit a monster!");
                 System.out.println(PerceptionType.GROAN);
                 caveSquare.setStatus(SquareStatus.CLEAN);
                 updateNeighborPerceptions(newRow, newCol);
@@ -169,7 +206,8 @@ public class Player {
             newRow += delta[0];
             newCol += delta[1];
         }
-        // The arrow hits a wall
+        // The arrow hits a wall // Should not happen due to shouldShoot
+        System.out.println("Arrow hit a wall.");
         System.out.println(PerceptionType.BANG);
     }
 
@@ -223,7 +261,6 @@ public class Player {
     }
 
     private byte[] getPerceptionsCount(Square square) {
-
         byte[] counts = new byte[PerceptionType.values().length];
         boolean neighbourHasPerceptions = false;
 
@@ -300,6 +337,35 @@ public class Player {
         }
         return true;
 
+    }
+
+    private Directions getMonsterDirection() {
+        for (Directions direction : Directions.values()) {
+            Square[] squares = getSquaresInDirection(direction);
+            for (Square square : squares) {
+                if (square != null && square.getStatus() == SquareStatus.MONSTER) {
+                    return direction;
+                }
+            }
+        }
+        // Should not occur due to shouldShoot
+        return null;
+    }
+
+    private Square[] getSquaresInDirection(Directions direction) {
+        List<Square> squaresInDirection = new ArrayList<Square>();
+        byte[] delta = getDirectionDelta(direction);
+        byte newRow = (byte) (actualRow + delta[0]);
+        byte newCol = (byte) (actualCol + delta[1]);
+
+        while (map.isWithinBounds(newRow, newCol)) {
+            Square caveSquare = cave.getSquare(newRow, newCol);
+            squaresInDirection.add(caveSquare);
+            newRow += delta[0];
+            newCol += delta[1];
+        }
+
+        return squaresInDirection.toArray(new Square[0]);
     }
 
     @Override
