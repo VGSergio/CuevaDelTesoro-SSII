@@ -137,4 +137,47 @@ public abstract class CaveModel {
     public boolean isWithinBounds(byte row, byte column) {
         return row >= 0 && row < caveSide && column >= 0 && column < caveSide;
     }
+
+    /**
+     * Updates the perceptions for a specific square based on its row and column.
+     *
+     * <p>Perceptions are calculated by examining the statuses of neighboring squares
+     * in all valid directions. Each perception type is mapped from the neighbor's
+     * {@link SquareStatus} and set for the target square.</p>
+     *
+     * @param row    The row index of the target square.
+     * @param column The column index of the target square.
+     */
+    private void updatePerceptions(byte row, byte column) {
+        Square square = getSquare(row, column);
+        Perceptions perceptions = new Perceptions();
+
+        // Calculate perceptions based on neighbors
+        for (Global.Directions direction : Global.Directions.values()) {
+            byte[] delta = getDirectionDelta(direction);
+            byte neighborRow = (byte) (row + delta[0]);
+            byte neighborCol = (byte) (column + delta[1]);
+
+            if (isWithinBounds(neighborRow, neighborCol)) {
+                Global.PerceptionType perceptionType = mapStatusToPerception(getSquare(neighborRow, neighborCol).getStatus());
+                if (perceptionType != null) {
+                    perceptions.setPerception(perceptionType, true);
+                }
+            }
+        }
+        square.setPerceptions(perceptions);
+    }
+
+    /**
+     * Updates perceptions for all squares in the cave.
+     *
+     * <p>This method iterates through every square in the cave grid and recalculates
+     * their perceptions based on the statuses of their neighbors. It is called when the
+     * simulation starts</p>
+     */
+    public void updateAllPerceptions() {
+        for (int position = 0; position < squares.length; position++) {
+            updatePerceptions((byte) (position / caveSide), (byte) (position % caveSide));
+        }
+    }
 }

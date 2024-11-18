@@ -44,7 +44,9 @@ public class Player {
     }
 
     public void exploreCave() {
-        getPerceptions();
+        if (map.getSquare(actualRow, actualCol).notVisited()) {
+            getPerceptions();
+        }
         updateKnowledge();
         makeDecision();
     }
@@ -55,10 +57,9 @@ public class Player {
 
         // Update our map with the cave perceptions
         Square actualSquareMap = map.getSquare(actualRow, actualCol);
+        actualSquareMap.setVisited(true);
         Perceptions perceptions = actualSquareCave.getPerceptions();
         actualSquareMap.setPerceptions(perceptions);
-
-        actualSquareMap.setVisited(true);
 
         // Update actualSquareMap neighbours perceptions counter
         Square[] neighbours = getNeighbours(actualRow, actualCol);
@@ -194,9 +195,10 @@ public class Player {
         byte newRow = (byte) (actualRow + delta[0]);
         byte newCol = (byte) (actualCol + delta[1]);
 
-        while (map.isWithinBounds(newRow, newCol)) {
+        while (cave.isWithinBounds(newRow, newCol)) {
             Square caveSquare = cave.getSquare(newRow, newCol);
             if (caveSquare.getStatus() == SquareStatus.MONSTER) {
+                System.out.println(PerceptionType.GROAN);
                 System.out.println("Arrow hit a monster!");
                 System.out.println(PerceptionType.GROAN);
                 caveSquare.setStatus(SquareStatus.CLEAN);
@@ -207,8 +209,8 @@ public class Player {
             newCol += delta[1];
         }
         // The arrow hits a wall // Should not happen due to shouldShoot
-        System.out.println("Arrow hit a wall.");
         System.out.println(PerceptionType.BANG);
+        System.out.println("Arrow hit a wall.");
     }
 
     /// ////////////

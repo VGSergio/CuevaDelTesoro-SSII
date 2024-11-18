@@ -1,7 +1,5 @@
 package mvc.model.cave;
 
-import mvc.model.Perceptions;
-
 import static mvc.model.Global.*;
 
 /**
@@ -72,36 +70,6 @@ public class Cave extends CaveModel {
         this.amountOfMonsters = 0;
         this.amountOfTreasures = 0;
         this.amountOfPlayers = 0;
-    }
-
-    /**
-     * Updates the perceptions for a specific square based on its row and column.
-     *
-     * <p>Perceptions are calculated by examining the statuses of neighboring squares
-     * in all valid directions. Each perception type is mapped from the neighbor's
-     * {@link SquareStatus} and set for the target square.</p>
-     *
-     * @param row    The row index of the target square.
-     * @param column The column index of the target square.
-     */
-    public void updatePerceptions(byte row, byte column) {
-        Square square = getSquare(row, column);
-        Perceptions perceptions = new Perceptions();
-
-        // Calculate perceptions based on neighbors
-        for (Directions direction : Directions.values()) {
-            byte[] delta = getDirectionDelta(direction);
-            byte neighborRow = (byte) (row + delta[0]);
-            byte neighborCol = (byte) (column + delta[1]);
-
-            if (isWithinBounds(neighborRow, neighborCol)) {
-                PerceptionType perceptionType = mapStatusToPerception(getSquare(neighborRow, neighborCol).getStatus());
-                if (perceptionType != null) {
-                    perceptions.setPerception(perceptionType, true);
-                }
-            }
-        }
-        square.setPerceptions(perceptions);
     }
 
     /**
