@@ -18,6 +18,7 @@ import static mvc.model.Global.*;
  * cave side adjustments, square status changes, and cave exploration initiation.
  *
  * @author Sergio Vega García
+ * @author Marc Roman Colom
  * @see Model
  * @see View
  * @see Cave
