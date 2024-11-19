@@ -44,9 +44,7 @@ public class Player {
     }
 
     public void exploreCave() {
-        if (map.getSquare(actualRow, actualCol).notVisited()) {
-            getPerceptions();
-        }
+        getPerceptions();
         updateKnowledge();
         makeDecision();
     }
@@ -142,7 +140,6 @@ public class Player {
                         updatingSquare.setStatus(count == validPerceptions ? perceptionStatus : SquareStatus.CLEAN);
                     }
                 }
-
             }
         }
     }
@@ -154,7 +151,7 @@ public class Player {
             } else if (shouldShoot()) {
                 shoot(getMonsterDirection());
             } else {
-                prioritizeMovement(Directions.WEST, Directions.SOUTH, Directions.EAST, Directions.NORTH);
+                movement(Directions.WEST, Directions.SOUTH, Directions.EAST, Directions.NORTH);
             }
         } else {
             if (canTake()) {
@@ -162,7 +159,7 @@ public class Player {
             } else if (shouldShoot()) {
                 shoot(getMonsterDirection());
             } else {
-                prioritizeMovement(Directions.NORTH, Directions.EAST, Directions.SOUTH, Directions.WEST);
+                movementWithPriorities(Directions.NORTH, Directions.EAST, Directions.SOUTH, Directions.WEST);
             }
         }
     }
@@ -272,14 +269,17 @@ public class Player {
         map.getSquare(row, col).setStatus(status);
     }
 
-    private void prioritizeMovement(Directions... preferences) {
+    private void movementWithPriorities(Directions... preferences) {
         for (Directions direction : preferences) {
             if (isSafe(direction) && notHasVisited(direction)) {
                 moveInDirection(direction);
                 return;
             }
         }
-        // Fallback to safe moves if all are visited
+        movement(preferences);
+    }
+
+    private void movement(Directions... preferences) {
         for (Directions direction : preferences) {
             if (isSafe(direction)) {
                 moveInDirection(direction);
