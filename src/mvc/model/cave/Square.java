@@ -55,7 +55,7 @@ public class Square {
      */
     public void setStatus(SquareStatus status) {
         this.status = status;
-        this.hasTreasure = (status == SquareStatus.TREASURE);
+        if (status == SquareStatus.TREASURE) hasTreasure = true;
     }
 
     /**
