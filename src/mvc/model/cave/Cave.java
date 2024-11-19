@@ -81,6 +81,8 @@ public class Cave extends CaveModel {
      */
     public void setCaveSide(byte caveSide) {
         this.caveSide = caveSide;
+        squares = new Square[caveSide*caveSide];
+
         initializeSquares();
         initializeItemCounts();
     }
