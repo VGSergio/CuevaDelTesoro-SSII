@@ -160,7 +160,7 @@ public abstract class CaveModel {
             byte neighborCol = (byte) (col + delta[1]);
 
             if (isWithinBounds(neighborRow, neighborCol)) {
-                neighbors[direction.ordinal()] = new byte[] { neighborRow, neighborCol };
+                neighbors[direction.ordinal()] = new byte[]{neighborRow, neighborCol};
             } else {
                 neighbors[direction.ordinal()] = null;
             }
