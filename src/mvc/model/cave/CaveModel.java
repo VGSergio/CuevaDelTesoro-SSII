@@ -105,19 +105,6 @@ public abstract class CaveModel {
     }
 
     /**
-     * Returns the array of all squares in the cave grid.
-     *
-     * <p>This array is a 1D representation of the 2D grid, with rows and columns
-     * flattened into a single dimension. Use {@link #getSquare(byte, byte)} to access
-     * specific squares by their 2D coordinates.</p>
-     *
-     * @return The array of {@link Square} objects in the cave.
-     */
-    public Square[] getSquares() {
-        return squares;
-    }
-
-    /**
      * Returns the side length of the cave grid.
      *
      * @return The number of rows and columns in the cave grid.
@@ -172,18 +159,5 @@ public abstract class CaveModel {
             }
         }
         square.setPerceptions(perceptions);
-    }
-
-    /**
-     * Updates perceptions for all squares in the cave.
-     *
-     * <p>This method iterates through every square in the cave grid and recalculates
-     * their perceptions based on the statuses of their neighbors. It is called when the
-     * simulation starts</p>
-     */
-    public void updateAllPerceptions() {
-        for (int position = 0; position < squares.length; position++) {
-            updatePerceptions((byte) (position / caveSide), (byte) (position % caveSide));
-        }
     }
 }
