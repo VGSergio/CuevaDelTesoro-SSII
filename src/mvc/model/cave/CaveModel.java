@@ -1,5 +1,6 @@
 package mvc.model.cave;
 
+import mvc.model.Global;
 import mvc.model.Global.Directions;
 import mvc.model.Global.PerceptionType;
 import mvc.model.Global.SquareStatus;
@@ -159,5 +160,32 @@ public abstract class CaveModel {
             }
         }
         square.setPerceptions(perceptions);
+    }
+
+    protected byte[][] getNeighborsRowsAndColumns(byte row, byte col) {
+        byte[][] neighborsRowsAndColumns = new byte[Global.Directions.values().length][2];
+        for (Global.Directions direction : Global.Directions.values()) {
+            byte[] directionDelta = getDirectionDelta(direction);
+
+            byte newRow = (byte) (row + directionDelta[0]);
+            byte newCol = (byte) (col + directionDelta[1]);
+
+            if (isWithinBounds(newRow, newCol)) {
+                neighborsRowsAndColumns[direction.ordinal()][0] = newRow;
+                neighborsRowsAndColumns[direction.ordinal()][1] = newCol;
+            } else {
+                neighborsRowsAndColumns[direction.ordinal()] = null;
+            }
+        }
+        return neighborsRowsAndColumns;
+    }
+
+    public void updateNeighborPerceptions(byte row, byte col) {
+        byte[][] neighbors = getNeighborsRowsAndColumns(row, col);
+        for (byte[] neighbor : neighbors) {
+            if (neighbor != null) {
+                updatePerceptions(neighbor[0], neighbor[1]);
+            }
+        }
     }
 }

@@ -67,7 +67,7 @@ public class Player {
             for (byte col = 0; col < caveSide; col++) {
                 Square currentSquare = map.getSquare(row, col);
                 Perceptions currentPerceptions = currentSquare.getPerceptions();
-                Square[] neighbors = getNeighbors(row, col);
+                Square[] neighbors = map.getNeighbors(row, col);
 
                 // Update neighbors of a clean square
                 if (currentPerceptions != null && currentPerceptions.isClean()) {
@@ -314,45 +314,9 @@ public class Player {
         return isPositionSafe(newRow, newCol);
     }
 
-    private Square[] getNeighbors(byte row, byte col) {
-        Square[] neighbors = new Square[Directions.values().length];
-
-        byte[][] neighborsRowsAndColumns = getNeighborsRowsAndColumns(row, col);
-
-        for (Directions direction : Directions.values()) {
-            byte[] neighbourRowAndColumn = neighborsRowsAndColumns[direction.ordinal()];
-            neighbors[direction.ordinal()] = neighbourRowAndColumn == null ? null : map.getSquare(neighbourRowAndColumn[0], neighbourRowAndColumn[1]);
-        }
-
-        return neighbors;
-    }
-
-    private byte[][] getNeighborsRowsAndColumns(byte row, byte col) {
-        byte[][] neighborsRowsAndColumns = new byte[Directions.values().length][2];
-        for (Directions direction : Directions.values()) {
-            byte[] directionDelta = getDirectionDelta(direction);
-
-            byte newRow = (byte) (row + directionDelta[0]);
-            byte newCol = (byte) (col + directionDelta[1]);
-
-            if (map.isWithinBounds(newRow, newCol)) {
-                neighborsRowsAndColumns[direction.ordinal()][0] = newRow;
-                neighborsRowsAndColumns[direction.ordinal()][1] = newCol;
-            } else {
-                neighborsRowsAndColumns[direction.ordinal()] = null;
-            }
-        }
-        return neighborsRowsAndColumns;
-    }
-
     private void updateNeighborPerceptions(byte row, byte col) {
-        byte[][] neighbors = getNeighborsRowsAndColumns(row, col);
-        for (byte[] neighbor : neighbors) {
-            if (neighbor != null) {
-                cave.updatePerceptions(neighbor[0], neighbor[1]);
-                map.updatePerceptions(neighbor[0], neighbor[1]);
-            }
-        }
+        map.updateNeighborPerceptions(row, col);
+        cave.updateNeighborPerceptions(row, col);
     }
 
     public boolean hasFinished() {
