@@ -17,7 +17,7 @@ public class Map extends CaveModel {
     public Square[] getNeighbors(byte row, byte col) {
         Square[] neighbors = new Square[Global.Directions.values().length];
 
-        byte[][] neighborsRowsAndColumns = getNeighborsRowsAndColumns(row, col);
+        byte[][] neighborsRowsAndColumns = getNeighborPositions(row, col);
 
         for (Global.Directions direction : Global.Directions.values()) {
             byte[] neighbourRowAndColumn = neighborsRowsAndColumns[direction.ordinal()];
