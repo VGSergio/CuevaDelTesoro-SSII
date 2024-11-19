@@ -105,6 +105,7 @@ public class Player {
         for (byte row = 0; row < caveSide; row++) {
             for (byte col = 0; col < caveSide; col++) {
                 Square currentSquare = map.getSquare(row, col);
+
                 Perceptions currentPerceptions = currentSquare.getPerceptions();
                 Square[] neighbors = map.getNeighbors(row, col);
 
@@ -374,27 +375,31 @@ public class Player {
      * Infers the status of the current square based on its neighbors.
      */
     private void inferSquareStatus(Square square, Square[] neighbors) {
-        for (PerceptionType perceptionType : PerceptionType.values()) {
-            SquareStatus perceptionStatus = mapPerceptionToStatus(perceptionType);
-            if (perceptionStatus == null) continue;
+        byte[] perceptionCounter = new byte[PerceptionType.values().length];
+        byte neighborsWithPerceptionsCounter = 0;
 
-            int validPerceptions = 0;
-            int matchingPerceptions = 0;
+        for (Square neighbor : neighbors) {
+            if (neighbor == null || neighbor.getPerceptions() == null) continue;
+            neighborsWithPerceptionsCounter++;
 
-            for (Square neighbor : neighbors) {
-                if (neighbor == null) continue;
-
-                Perceptions neighborPerceptions = neighbor.getPerceptions();
-                if (neighborPerceptions == null) continue;
-
-                validPerceptions++;
-                if (neighborPerceptions.getPerception(perceptionType)) {
-                    matchingPerceptions++;
+            for (PerceptionType perceptionType : PerceptionType.values()) {
+                if (neighbor.getPerceptions().getPerception(perceptionType)) {
+                    perceptionCounter[perceptionType.ordinal()]++;
                 }
             }
+        }
 
-            if (validPerceptions > 1) {
-                square.setStatus(matchingPerceptions == validPerceptions ? perceptionStatus : SquareStatus.CLEAN);
+        if (neighborsWithPerceptionsCounter >= 2) {
+            boolean statusSet = false;
+            for (int i = 0; i < perceptionCounter.length; i++) {
+                if (perceptionCounter[i] >= 2) {
+                    square.setStatus(SquareStatus.values()[i]);
+                    statusSet = true;
+                    break;
+                }
+            }
+            if (!statusSet) {
+                square.setStatus(SquareStatus.CLEAN);
             }
         }
     }

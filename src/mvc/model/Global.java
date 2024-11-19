@@ -103,17 +103,17 @@ public class Global {
         /**
          * The maximum number of monsters allowed in the cave.
          */
-        public static final byte MAX_MONSTERS = 1;
+        public static final byte MAX_MONSTERS = 10;
 
         /**
          * The maximum number of treasures allowed in the cave.
          */
-        public static final byte MAX_TREASURES = 1;
+        public static final byte MAX_TREASURES = 10;
 
         /**
          * The maximum number of players allowed in the cave.
          */
-        public static final byte MAX_PLAYERS = 2;
+        public static final byte MAX_PLAYERS = 10;
     }
 
     /**
