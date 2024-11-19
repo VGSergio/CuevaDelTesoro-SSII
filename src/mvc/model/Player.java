@@ -62,83 +62,27 @@ public class Player {
 
     private void updateKnowledge() {
         byte caveSide = map.getCaveSide();
-        Perceptions[] perceptions = map.getPerceptions();
 
         for (byte row = 0; row < caveSide; row++) {
             for (byte col = 0; col < caveSide; col++) {
-                Square updatingSquare = map.getSquare(row, col);
-                int updatingPosition = map.getSquarePositionInCave(row, col);
-                Perceptions updatingPerceptions = perceptions[updatingPosition];
-                Square[] neighbours = getNeighbours(row, col);
+                Square currentSquare = map.getSquare(row, col);
+                Perceptions currentPerceptions = currentSquare.getPerceptions();
+                Square[] neighbors = getNeighbors(row, col);
 
-                if (updatingPerceptions != null && updatingPerceptions.isClean()) {
-                    for (Square neighbour : neighbours) {
-                        if (neighbour != null && neighbour.getStatus() == SquareStatus.UNKNOWN) {
-                            neighbour.setStatus(SquareStatus.CLEAN);
-                        }
-                    }
+                // Update neighbors of a clean square
+                if (currentPerceptions != null && currentPerceptions.isClean()) {
+                    markNeighborsClean(neighbors);
                 }
 
-                byte numOfUnknownNeighbours = 0;
-                for (Square neighbour : neighbours) {
-                    if (neighbour != null && neighbour.getStatus() == SquareStatus.UNKNOWN) {
-                        numOfUnknownNeighbours++;
-                    }
-                }
-                if (numOfUnknownNeighbours == 1) {
-                    Square unknownNeighbour = null;
-                    for (Square neighbour : neighbours) {
-                        if (neighbour != null && neighbour.getStatus() == SquareStatus.UNKNOWN) {
-                            unknownNeighbour = neighbour;
-                        }
-                    }
-                    if (unknownNeighbour != null) {
-                        Perceptions perceptionsPlaced = new Perceptions();
-                        for (Square neighbour : neighbours) {
-                            if (neighbour != null) {
-                                PerceptionType perceptionStatus = mapStatusToPerception(neighbour.getStatus());
-                                if (perceptionStatus != null) {
-                                    perceptionsPlaced.setPerception(perceptionStatus, true);
-                                }
-                            }
-                        }
-                        for (PerceptionType perceptionType : PerceptionType.values()) {
-                            if (updatingPerceptions != null && updatingPerceptions.getPerception(perceptionType) != perceptionsPlaced.getPerception(perceptionType)) {
-                                unknownNeighbour.setStatus(mapPerceptionToStatus(perceptionType));
-                            }
-                        }
-                    }
+                // Handle squares with one unknown neighbor
+                Object[] result = getUnknownNeighbors(neighbors);
+                if ((int) result[0] == 1 && result[1] != null) {
+                    updateUnknownNeighborStatus((Square) result[1], neighbors, currentPerceptions);
                 }
 
-
-                // infer this square status
-                if (updatingSquare.getStatus() != SquareStatus.UNKNOWN) {
-                    continue;
-                }
-                // If our neighbours perceptions differ we are clean.
-                for (PerceptionType perceptionType : PerceptionType.values()) {
-                    SquareStatus perceptionStatus = mapPerceptionToStatus(perceptionType);
-                    if (perceptionStatus == null) {
-                        continue;
-                    }
-                    byte validPerceptions = 0;
-                    byte count = 0;
-                    for (Square neighbour : neighbours) {
-                        if (neighbour == null) {
-                            continue;
-                        }
-                        Perceptions neighbourPerceptions = neighbour.getPerceptions();
-                        if (neighbourPerceptions == null) {
-                            continue;
-                        }
-                        validPerceptions++;
-                        if (neighbourPerceptions.getPerception(perceptionType)) {
-                            count++;
-                        }
-                    }
-                    if (validPerceptions > 1) {
-                        updatingSquare.setStatus(count == validPerceptions ? perceptionStatus : SquareStatus.CLEAN);
-                    }
+                // Infer status of the current square based on neighbors
+                if (currentSquare.getStatus() == SquareStatus.UNKNOWN) {
+                    inferSquareStatus(currentSquare, neighbors);
                 }
             }
         }
@@ -194,6 +138,70 @@ public class Player {
     /// ////////////
     /// ACTIONS ///
     /// ////////////
+
+    private void markNeighborsClean(Square[] neighbors) {
+        for (Square neighbor : neighbors) {
+            if (neighbor != null && neighbor.getStatus() == SquareStatus.UNKNOWN) {
+                neighbor.setStatus(SquareStatus.CLEAN);
+            }
+        }
+    }
+
+    public Object[] getUnknownNeighbors(Square[] neighbors) {
+        int unknownNeighborsCount = 0;
+        Square unknownNeighbor = null;
+        for (Square neighbor : neighbors) {
+            if (neighbor != null && neighbor.getStatus() == SquareStatus.UNKNOWN) {
+                unknownNeighborsCount++;
+                unknownNeighbor = neighbor;
+            }
+        }
+        return new Object[]{unknownNeighborsCount, unknownNeighbor};
+    }
+
+    private void updateUnknownNeighborStatus(Square unknownNeighbor, Square[] neighbors, Perceptions currentPerceptions) {
+        Perceptions inferredPerceptions = new Perceptions();
+        for (Square neighbor : neighbors) {
+            if (neighbor != null) {
+                PerceptionType perceptionType = mapStatusToPerception(neighbor.getStatus());
+                if (perceptionType != null) {
+                    inferredPerceptions.setPerception(perceptionType, true);
+                }
+            }
+        }
+        for (PerceptionType perceptionType : PerceptionType.values()) {
+            if (currentPerceptions != null &&
+                    currentPerceptions.getPerception(perceptionType) != inferredPerceptions.getPerception(perceptionType)) {
+                unknownNeighbor.setStatus(mapPerceptionToStatus(perceptionType));
+            }
+        }
+    }
+
+    private void inferSquareStatus(Square square, Square[] neighbors) {
+        for (PerceptionType perceptionType : PerceptionType.values()) {
+            SquareStatus perceptionStatus = mapPerceptionToStatus(perceptionType);
+            if (perceptionStatus == null) continue;
+
+            int validPerceptions = 0;
+            int matchingPerceptions = 0;
+
+            for (Square neighbor : neighbors) {
+                if (neighbor == null) continue;
+
+                Perceptions neighborPerceptions = neighbor.getPerceptions();
+                if (neighborPerceptions == null) continue;
+
+                validPerceptions++;
+                if (neighborPerceptions.getPerception(perceptionType)) {
+                    matchingPerceptions++;
+                }
+            }
+
+            if (validPerceptions > 1) {
+                square.setStatus(matchingPerceptions == validPerceptions ? perceptionStatus : SquareStatus.CLEAN);
+            }
+        }
+    }
 
     private void moveInDirection(Directions direction) {
         byte[] delta = getDirectionDelta(direction);
@@ -306,21 +314,21 @@ public class Player {
         return isPositionSafe(newRow, newCol);
     }
 
-    private Square[] getNeighbours(byte row, byte col) {
-        Square[] neighbours = new Square[Directions.values().length];
+    private Square[] getNeighbors(byte row, byte col) {
+        Square[] neighbors = new Square[Directions.values().length];
 
-        byte[][] neighboursRowsAndColumns = getNeighboursRowsAndColumns(row, col);
+        byte[][] neighborsRowsAndColumns = getNeighborsRowsAndColumns(row, col);
 
         for (Directions direction : Directions.values()) {
-            byte[] neighbourRowAndColumn = neighboursRowsAndColumns[direction.ordinal()];
-            neighbours[direction.ordinal()] = neighbourRowAndColumn == null ? null : map.getSquare(neighbourRowAndColumn[0], neighbourRowAndColumn[1]);
+            byte[] neighbourRowAndColumn = neighborsRowsAndColumns[direction.ordinal()];
+            neighbors[direction.ordinal()] = neighbourRowAndColumn == null ? null : map.getSquare(neighbourRowAndColumn[0], neighbourRowAndColumn[1]);
         }
 
-        return neighbours;
+        return neighbors;
     }
 
-    private byte[][] getNeighboursRowsAndColumns(byte row, byte col) {
-        byte[][] neighboursRowsAndColumns = new byte[Directions.values().length][2];
+    private byte[][] getNeighborsRowsAndColumns(byte row, byte col) {
+        byte[][] neighborsRowsAndColumns = new byte[Directions.values().length][2];
         for (Directions direction : Directions.values()) {
             byte[] directionDelta = getDirectionDelta(direction);
 
@@ -328,17 +336,17 @@ public class Player {
             byte newCol = (byte) (col + directionDelta[1]);
 
             if (map.isWithinBounds(newRow, newCol)) {
-                neighboursRowsAndColumns[direction.ordinal()][0] = newRow;
-                neighboursRowsAndColumns[direction.ordinal()][1] = newCol;
+                neighborsRowsAndColumns[direction.ordinal()][0] = newRow;
+                neighborsRowsAndColumns[direction.ordinal()][1] = newCol;
             } else {
-                neighboursRowsAndColumns[direction.ordinal()] = null;
+                neighborsRowsAndColumns[direction.ordinal()] = null;
             }
         }
-        return neighboursRowsAndColumns;
+        return neighborsRowsAndColumns;
     }
 
     private void updateNeighborPerceptions(byte row, byte col) {
-        byte[][] neighbors = getNeighboursRowsAndColumns(row, col);
+        byte[][] neighbors = getNeighborsRowsAndColumns(row, col);
         for (byte[] neighbor : neighbors) {
             if (neighbor != null) {
                 cave.updatePerceptions(neighbor[0], neighbor[1]);
