@@ -10,18 +10,33 @@ import java.util.Objects;
 
 import static mvc.model.Global.*;
 
+/**
+ * Represents a player navigating a cave grid.
+ * The player can explore the cave, collect treasure, and safely exit.
+ */
 public class Player {
 
+    // Initial position of the player
     private final byte startingRow;
     private final byte startingCol;
-    private boolean treasureFound;
-    private boolean leftCave;
-    private Cave cave;
-    private Map map;
+
+    // Current state of the player
     private byte actualRow;
     private byte actualCol;
+    private boolean treasureFound;
+    private boolean leftCave;
+
+    // Player's environment
+    private Cave cave;
+    private Map map;
     private int arrows;
 
+    /**
+     * Constructs a player at the given starting position.
+     *
+     * @param row    The starting row of the player.
+     * @param column The starting column of the player.
+     */
     public Player(byte row, byte column) {
         startingRow = row;
         startingCol = column;
@@ -32,120 +47,125 @@ public class Player {
         leftCave = false;
     }
 
+    /**
+     * Links the player to a cave and initializes the map.
+     *
+     * @param cave The cave the player will explore.
+     */
     public void linkCave(Cave cave) {
         this.cave = cave;
         arrows = cave.getAmountOfMonsters();
         initializeMap();
     }
 
+    // --------------
+    // INITIALIZATION
+    // --------------
+
+    /**
+     * Initializes the player's map based on the cave's size.
+     * Marks the player's starting position on the map.
+     */
     private void initializeMap() {
         map = new Map(cave.getCaveSide());
         map.getSquare(startingRow, startingCol).setStatus(SquareStatus.PLAYER);
     }
 
+    // ----------
+    // MAIN LOGIC
+    // ----------
+
+    /**
+     * The player explores the cave by perceiving, updating knowledge,
+     * and making decisions based on the current state.
+     */
     public void exploreCave() {
-        if (map.getSquare(actualRow, actualCol).notVisited()) {
-            getPerceptions();
-        }
+        getPerceptions();
         updateKnowledge();
         makeDecision();
     }
 
+    /**
+     * Retrieves perceptions from the current cave square and updates the map.
+     */
     private void getPerceptions() {
-        // Get the real cave position
-        Square actualSquareCave = cave.getSquare(actualRow, actualCol);
+        Square caveSquare = cave.getSquare(actualRow, actualCol);
+        Square mapSquare = map.getSquare(actualRow, actualCol);
 
-        // Update our map with the cave perceptions
-        Square actualSquareMap = map.getSquare(actualRow, actualCol);
-        actualSquareMap.setVisited(true);
-        Perceptions perceptions = actualSquareCave.getPerceptions();
-        actualSquareMap.setPerceptions(perceptions);
-
-        // Update actualSquareMap neighbours perceptions counter
-        Square[] neighbours = getNeighbours(actualRow, actualCol);
-        for (Square neighbour : neighbours) {
-            if (neighbour != null) {
-                for (PerceptionType perception : PerceptionType.values()) {
-                    if (perceptions.getPerception(perception)) {
-                        neighbour.adjustPerceptionsCounter(perception, 1);
-                    }
-                }
-            }
-        }
+        mapSquare.setVisited(true);
+        mapSquare.setPerceptions(caveSquare.getPerceptions());
     }
 
+    /**
+     * Updates the player's knowledge about the cave based on current perceptions.
+     */
     private void updateKnowledge() {
         byte caveSide = map.getCaveSide();
-        Perceptions[] perceptions = map.getPerceptions();
 
         for (byte row = 0; row < caveSide; row++) {
             for (byte col = 0; col < caveSide; col++) {
-                int updatingPosition = map.getSquarePositionInCave(row, col);
-                Perceptions updatingPerceptions = perceptions[updatingPosition];
+                Square currentSquare = map.getSquare(row, col);
 
-                // Without perceptions there's no reasoning to do.
-                if (updatingPerceptions == null) {
-                    continue;
+                Perceptions currentPerceptions = currentSquare.getPerceptions();
+                Square[] neighbors = map.getNeighbors(row, col);
+
+                // Update neighbors of a clean square
+                if (currentPerceptions != null && currentPerceptions.isClean()) {
+                    markNeighborsClean(neighbors);
                 }
 
-                Square[] neighbours = getNeighbours(row, col);
-                // All perceptions to false mean that the neighbours are clean.
-                if (updatingPerceptions.isClean()) {
-                    for (Square square : neighbours) {
-                        if ((square != null) && (square.getStatus() == SquareStatus.UNKNOWN)) {
-                            square.setStatus(SquareStatus.CLEAN);
-                        }
-                    }
-                } else {
-                    for (Square square : neighbours) {
-                        if (square != null) {
-                            byte[] perceptionsCountNeighbour = getPerceptionsCount(square);
-                            if (perceptionsCountNeighbour != null) {
-                                for (PerceptionType perception : PerceptionType.values()) {
-                                    if (perceptionsCountNeighbour[perception.ordinal()] >= 2) {
-                                        square.setStatus(mapPerceptionToStatus(perception));
-                                    }
-                                }
-                            }
-                        }
-                    }
+                // Handle squares with one unknown neighbor
+                Object[] result = getUnknownNeighbors(neighbors);
+                if ((int) result[0] == 1 && result[1] != null) {
+                    updateUnknownNeighborStatus((Square) result[1], neighbors, currentPerceptions);
+                }
+
+                // Infer status of the current square based on neighbors
+                if (currentSquare.getStatus() == SquareStatus.UNKNOWN) {
+                    inferSquareStatus(currentSquare, neighbors);
                 }
             }
         }
     }
 
+    /**
+     * Makes decisions for the player's next action based on the current state.
+     */
     private void makeDecision() {
         if (treasureFound) {
             if (canLeave()) {
                 leaveCave();
-            } else if (canTake()) {
+            } else if (shouldShoot()) {
+                shoot(getMonsterDirection());
+            } else {
+                movement(Directions.WEST, Directions.SOUTH, Directions.EAST, Directions.NORTH);
+            }
+        } else {
+            if (canTake()) {
                 take();
             } else if (shouldShoot()) {
                 shoot(getMonsterDirection());
             } else {
-                prioritizeMovement(Directions.WEST, Directions.SOUTH, Directions.EAST, Directions.NORTH);
+                movementWithPriorities(Directions.NORTH, Directions.EAST, Directions.SOUTH, Directions.WEST);
             }
-        } else {
-            prioritizeMovement(Directions.NORTH, Directions.EAST, Directions.SOUTH, Directions.WEST);
         }
     }
 
-    /// ////////////
-    /// CONDITIONS /
-    /// ////////////
+    // -----------------
+    // CONDITION METHODS
+    // -----------------
 
     private boolean canLeave() {
         return actualRow == startingRow && actualCol == startingCol;
     }
 
     private boolean canTake() {
-        return map.getSquare(actualRow, actualCol).getStatus() == SquareStatus.TREASURE;
+        return cave.getSquare(actualRow, actualCol).hasTreasure();
     }
 
     private boolean shouldShoot() {
-        if (arrows <= 0) {
-            return false;
-        }
+        if (arrows <= 0) return false;
+
         for (Directions direction : Directions.values()) {
             Square[] squares = getSquaresInDirection(direction);
             for (Square square : squares) {
@@ -157,30 +177,17 @@ public class Player {
         return false;
     }
 
-    /// ////////////
-    /// ACTIONS ///
-    /// ////////////
-
-    private void moveInDirection(Directions direction) {
-        byte[] delta = getDirectionDelta(direction);
-        move((byte) (actualRow + delta[0]), (byte) (actualCol + delta[1]));
-    }
-
-    private void leaveCave() {
-        updateSquareStatus(actualRow, actualCol, SquareStatus.CLEAN);
-
-        // Update the boolean to allow hasFinished to return true.
-        leftCave = true;
-    }
+    // --------------
+    // ACTION METHODS
+    // --------------
 
     /**
-     * The player picks up the treasure.
+     * Allows the player to leave the cave if they are at the starting position.
      */
-    private void take() {
-        treasureFound = true;
-        System.out.println("The player takes the treasure");
+    private void leaveCave() {
         updateSquareStatus(actualRow, actualCol, SquareStatus.CLEAN);
-        updateNeighborPerceptions(actualRow, actualCol);
+        leftCave = true;
+        System.out.println("Player has left the cave.");
     }
 
     /**
@@ -189,6 +196,7 @@ public class Player {
      */
     private void shoot(Directions direction) {
         arrows--;
+        System.out.println("Shooting an arrow to the " + direction);
 
         byte[] delta = getDirectionDelta(direction);
         byte newRow = (byte) (actualRow + delta[0]);
@@ -197,45 +205,30 @@ public class Player {
         while (cave.isWithinBounds(newRow, newCol)) {
             Square caveSquare = cave.getSquare(newRow, newCol);
             if (caveSquare.getStatus() == SquareStatus.MONSTER) {
-                System.out.println(PerceptionType.GROAN);
-                System.out.println("Arrow hit a monster!");
+                System.out.println(PerceptionType.GROAN + ": Monster defeated!");
                 updateSquareStatus(newRow, newCol, SquareStatus.CLEAN);
                 updateNeighborPerceptions(newRow, newCol);
-                break;
+                return;
             }
             newRow += delta[0];
             newCol += delta[1];
         }
-        // The arrow hits a wall // Should not happen due to shouldShoot
-        System.out.println(PerceptionType.BANG);
-        System.out.println("Arrow hit a wall.");
+
+        System.out.println(PerceptionType.BANG + ": Arrow hit a wall!");
     }
 
-    /// ////////////
-    /// HELPERS ///
-    /// ////////////
-
-    private void move(byte nextRow, byte nextCol) {
-        updateSquareStatus(actualRow, actualCol, SquareStatus.CLEAN);
-        updateSquareStatus(nextRow, nextCol, SquareStatus.PLAYER);
-
-        actualRow = nextRow;
-        actualCol = nextCol;
+    /**
+     * The player picks up the treasure.
+     */
+    private void take() {
+        treasureFound = true;
+        cave.getSquare(actualRow, actualCol).setHasTreasure(false);
+        map.getSquare(actualRow, actualCol).setHasTreasure(false);
+        updateNeighborPerceptions(actualRow, actualCol);
+        System.out.println("Treasure collected!");
     }
 
-    private void updateSquareStatus(byte row, byte col, SquareStatus status) {
-        cave.getSquare(row, col).setStatus(status);
-        map.getSquare(row, col).setStatus(status);
-    }
-
-    private void prioritizeMovement(Directions... preferences) {
-        for (Directions direction : preferences) {
-            if (isSafe(direction) && notHasVisited(direction)) {
-                moveInDirection(direction);
-                return;
-            }
-        }
-        // Fallback to safe moves if all are visited
+    private void movement(Directions... preferences) {
         for (Directions direction : preferences) {
             if (isSafe(direction)) {
                 moveInDirection(direction);
@@ -244,101 +237,19 @@ public class Player {
         }
     }
 
-    private boolean isPositionSafe(byte row, byte col) {
-        if (map.isWithinBounds(row, col)) {
-            SquareStatus status = map.getSquare(row, col).getStatus();
-            return (status == SquareStatus.TREASURE || status == SquareStatus.PLAYER || status == SquareStatus.CLEAN);
-        } else {
-            return false;
-        }
-    }
-
-    private boolean isSafe(Directions direction) {
-        byte[] delta = getDirectionDelta(direction);
-        byte newRow = (byte) (actualRow + delta[0]);
-        byte newCol = (byte) (actualCol + delta[1]);
-        return isPositionSafe(newRow, newCol);
-    }
-
-    private byte[] getPerceptionsCount(Square square) {
-        byte[] counts = new byte[PerceptionType.values().length];
-        boolean neighbourHasPerceptions = false;
-
-        for (Directions direction : Directions.values()) {
-            byte[] delta = getDirectionDelta(direction);
-            byte newRow = (byte) (actualRow + delta[0]);
-            byte newCol = (byte) (actualCol + delta[1]);
-
-            if (map.isWithinBounds(newRow, newCol)) {
-                Perceptions neighborPerceptions = map.getSquare(newRow, newCol).getPerceptions();
-                if (neighborPerceptions != null) {
-                    neighbourHasPerceptions = true;
-                    for (PerceptionType perception : PerceptionType.values()) {
-                        if (neighborPerceptions.getPerception(perception)) {
-                            counts[perception.ordinal()]++;
-                        }
-                    }
-                }
+    private void movementWithPriorities(Directions... preferences) {
+        for (Directions direction : preferences) {
+            if (isSafe(direction) && notHasVisited(direction)) {
+                moveInDirection(direction);
+                return;
             }
         }
-        return neighbourHasPerceptions ? counts : null;
+        movement(preferences);
     }
 
-    private Square[] getNeighbours(byte row, byte col) {
-        Square[] neighbours = new Square[Directions.values().length];
-
-        byte[][] neighboursRowsAndColumns = getNeighboursRowsAndColumns(row, col);
-
-        for (Directions direction : Directions.values()) {
-            byte[] neighbourRowAndColumn = neighboursRowsAndColumns[direction.ordinal()];
-            neighbours[direction.ordinal()] = neighbourRowAndColumn == null ? null : map.getSquare(neighbourRowAndColumn[0], neighbourRowAndColumn[1]);
-        }
-
-        return neighbours;
-    }
-
-    private byte[][] getNeighboursRowsAndColumns(byte row, byte col) {
-        byte[][] neighboursRowsAndColumns = new byte[Directions.values().length][2];
-        for (Directions direction : Directions.values()) {
-            byte[] directionDelta = getDirectionDelta(direction);
-
-            byte newRow = (byte) (row + directionDelta[0]);
-            byte newCol = (byte) (col + directionDelta[1]);
-
-            if (map.isWithinBounds(newRow, newCol)) {
-                neighboursRowsAndColumns[direction.ordinal()][0] = newRow;
-                neighboursRowsAndColumns[direction.ordinal()][1] = newCol;
-            } else {
-                neighboursRowsAndColumns[direction.ordinal()] = null;
-            }
-        }
-        return neighboursRowsAndColumns;
-    }
-
-    private void updateNeighborPerceptions(byte row, byte col) {
-        byte[][] neighbors = getNeighboursRowsAndColumns(row, col);
-        for (byte[] neighbor : neighbors) {
-            if (neighbor != null) {
-                cave.updatePerceptions(neighbor[0], neighbor[1]);
-                map.updatePerceptions(neighbor[0], neighbor[1]);
-            }
-        }
-    }
-
-    public boolean hasFinished() {
-        return treasureFound && leftCave;
-    }
-
-    private boolean notHasVisited(Directions direction) {
-        byte[] delta = getDirectionDelta(direction);
-        byte newRow = (byte) (actualRow + delta[0]);
-        byte newCol = (byte) (actualCol + delta[1]);
-        if (map.isWithinBounds(newRow, newCol)) {
-            return map.getSquare(newRow, newCol).notVisited();
-        }
-        return true;
-
-    }
+    // ----------------------
+    // HELPER METHODS - SHOOT
+    // ----------------------
 
     private Directions getMonsterDirection() {
         for (Directions direction : Directions.values()) {
@@ -360,13 +271,155 @@ public class Player {
         byte newCol = (byte) (actualCol + delta[1]);
 
         while (map.isWithinBounds(newRow, newCol)) {
-            Square caveSquare = cave.getSquare(newRow, newCol);
+            Square caveSquare = map.getSquare(newRow, newCol);
             squaresInDirection.add(caveSquare);
             newRow += delta[0];
             newCol += delta[1];
         }
 
         return squaresInDirection.toArray(new Square[0]);
+    }
+
+    // -------------------------
+    // HELPER METHODS - MOVEMENT
+    // -------------------------
+
+    private void move(byte nextRow, byte nextCol) {
+        updateSquareStatus(actualRow, actualCol, SquareStatus.CLEAN);
+        updateSquareStatus(nextRow, nextCol, SquareStatus.PLAYER);
+
+        actualRow = nextRow;
+        actualCol = nextCol;
+    }
+
+    private void moveInDirection(Directions direction) {
+        byte[] delta = getDirectionDelta(direction);
+        move((byte) (actualRow + delta[0]), (byte) (actualCol + delta[1]));
+    }
+
+    private boolean isPositionSafe(byte row, byte col) {
+        if (map.isWithinBounds(row, col)) {
+            SquareStatus status = map.getSquare(row, col).getStatus();
+            Perceptions perceptions = map.getSquare(actualRow, actualCol).getPerceptions();
+            return (status == SquareStatus.TREASURE || status == SquareStatus.PLAYER || status == SquareStatus.CLEAN ||
+                    (status == SquareStatus.UNKNOWN && !perceptions.getPerception(PerceptionType.STENCH) && !perceptions.getPerception(PerceptionType.BREEZE)));
+        } else {
+            return false;
+        }
+    }
+
+    private boolean isSafe(Directions direction) {
+        byte[] delta = getDirectionDelta(direction);
+        byte newRow = (byte) (actualRow + delta[0]);
+        byte newCol = (byte) (actualCol + delta[1]);
+        return isPositionSafe(newRow, newCol);
+    }
+
+    private boolean notHasVisited(Directions direction) {
+        byte[] delta = getDirectionDelta(direction);
+        byte newRow = (byte) (actualRow + delta[0]);
+        byte newCol = (byte) (actualCol + delta[1]);
+        if (map.isWithinBounds(newRow, newCol)) {
+            return map.getSquare(newRow, newCol).notVisited();
+        }
+        return true;
+
+    }
+
+    // -----------------------
+    // HELPER METHODS - STATUS
+    // -----------------------
+
+    /**
+     * Marks all unknown neighbors as clean.
+     */
+    private void markNeighborsClean(Square[] neighbors) {
+        for (Square neighbor : neighbors) {
+            if (neighbor != null && neighbor.getStatus() == SquareStatus.UNKNOWN) {
+                neighbor.setStatus(SquareStatus.CLEAN);
+            }
+        }
+    }
+
+    public Object[] getUnknownNeighbors(Square[] neighbors) {
+        int unknownNeighborsCount = 0;
+        Square unknownNeighbor = null;
+        for (Square neighbor : neighbors) {
+            if (neighbor != null && neighbor.getStatus() == SquareStatus.UNKNOWN) {
+                unknownNeighborsCount++;
+                unknownNeighbor = neighbor;
+            }
+        }
+        return new Object[]{unknownNeighborsCount, unknownNeighbor};
+    }
+
+    private void updateUnknownNeighborStatus(Square unknownNeighbor, Square[] neighbors, Perceptions currentPerceptions) {
+        Perceptions inferredPerceptions = new Perceptions();
+        for (Square neighbor : neighbors) {
+            if (neighbor != null) {
+                PerceptionType perceptionType = mapStatusToPerception(neighbor.getStatus());
+                if (perceptionType != null) {
+                    inferredPerceptions.setPerception(perceptionType, true);
+                }
+            }
+        }
+        for (PerceptionType perceptionType : PerceptionType.values()) {
+            if (currentPerceptions != null &&
+                    currentPerceptions.getPerception(perceptionType) != inferredPerceptions.getPerception(perceptionType)) {
+                unknownNeighbor.setStatus(mapPerceptionToStatus(perceptionType));
+            }
+        }
+    }
+
+    /**
+     * Infers the status of the current square based on its neighbors.
+     */
+    private void inferSquareStatus(Square square, Square[] neighbors) {
+        byte[] perceptionCounter = new byte[PerceptionType.values().length];
+        byte neighborsWithPerceptionsCounter = 0;
+
+        for (Square neighbor : neighbors) {
+            if (neighbor == null || neighbor.getPerceptions() == null) continue;
+            neighborsWithPerceptionsCounter++;
+
+            for (PerceptionType perceptionType : PerceptionType.values()) {
+                if (neighbor.getPerceptions().getPerception(perceptionType)) {
+                    perceptionCounter[perceptionType.ordinal()]++;
+                }
+            }
+        }
+
+        if (neighborsWithPerceptionsCounter >= 2) {
+            boolean statusSet = false;
+            for (int i = 0; i < perceptionCounter.length; i++) {
+                if (perceptionCounter[i] >= 2) {
+                    square.setStatus(SquareStatus.values()[i]);
+                    statusSet = true;
+                    break;
+                }
+            }
+            if (!statusSet) {
+                square.setStatus(SquareStatus.CLEAN);
+            }
+        }
+    }
+
+    private void updateSquareStatus(byte row, byte col, SquareStatus status) {
+        cave.getSquare(row, col).setStatus(status);
+        map.getSquare(row, col).setStatus(status);
+    }
+
+    private void updateNeighborPerceptions(byte row, byte col) {
+        cave.updateNeighborPerceptions(row, col);
+        map.updateNeighborPerceptions(row, col);
+    }
+
+    // --------------
+    // HELPER METHODS
+    // --------------
+
+    public boolean hasFinished() {
+        return treasureFound && leftCave;
     }
 
     @Override

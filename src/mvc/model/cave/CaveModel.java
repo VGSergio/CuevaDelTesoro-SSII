@@ -52,6 +52,7 @@ public abstract class CaveModel {
      */
     public CaveModel(byte caveSide) {
         this.caveSide = caveSide;
+        this.squares = new Square[caveSide * caveSide];
         initializeSquares();
     }
 
@@ -66,30 +67,24 @@ public abstract class CaveModel {
     protected abstract SquareStatus getInitialStatus();
 
     /**
-     * Initializes the {@code squares} array with {@link Square} objects.
-     *
-     * <p>Each square in the grid is created with the default {@link SquareStatus}
-     * provided by {@link #getInitialStatus()}.</p>
+     * Initializes the {@code squares} array with {@link Square} objects, all with
+     * the initial {@link SquareStatus}.
      */
     protected void initializeSquares() {
-        SquareStatus status = getInitialStatus();
-        squares = new Square[caveSide * caveSide];
+        SquareStatus initialStatus = getInitialStatus();
         for (int i = 0; i < squares.length; i++) {
-            squares[i] = new Square(status);
+            squares[i] = new Square(initialStatus);
         }
     }
 
     /**
-     * Calculates the linear index of a square in the cave based on its row and column.
-     *
-     * <p>This method translates 2D grid coordinates into a 1D array index using the formula:
-     * {@code index = row * caveSide + column}.</p>
+     * Converts 2D coordinates (row, column) into a linear index for the squares array.
      *
      * @param row    The row index (0-based).
      * @param column The column index (0-based).
-     * @return The linear index in the {@code squares} array.
+     * @return The linear index.
      */
-    public int getSquarePositionInCave(byte row, byte column) {
+    public int toLinearIndex(byte row, byte column) {
         return row * caveSide + column;
     }
 
@@ -101,58 +96,34 @@ public abstract class CaveModel {
      * @return The {@link Square} object at the specified position.
      */
     public Square getSquare(byte row, byte col) {
-        return squares[getSquarePositionInCave(row, col)];
-    }
-
-    /**
-     * Returns the array of all squares in the cave grid.
-     *
-     * <p>This array is a 1D representation of the 2D grid, with rows and columns
-     * flattened into a single dimension. Use {@link #getSquare(byte, byte)} to access
-     * specific squares by their 2D coordinates.</p>
-     *
-     * @return The array of {@link Square} objects in the cave.
-     */
-    public Square[] getSquares() {
-        return squares;
+        return squares[toLinearIndex(row, col)];
     }
 
     /**
      * Returns the side length of the cave grid.
      *
-     * @return The number of rows and columns in the cave grid.
+     * @return The side length.
      */
     public byte getCaveSide() {
         return caveSide;
     }
 
     /**
-     * Checks if a given row and column are within the bounds of the cave grid.
+     * Checks if the given row and column indices are within the cave grid bounds.
      *
-     * <p>A position is considered valid if:
-     * <ul>
-     *   <li>{@code 0 <= row < caveSide}</li>
-     *   <li>{@code 0 <= column < caveSide}</li>
-     * </ul>
-     * </p>
-     *
-     * @param row    The row index to check.
-     * @param column The column index to check.
-     * @return {@code true} if the position is within bounds, otherwise {@code false}.
+     * @param row    The row index.
+     * @param column The column index.
+     * @return {@code true} if within bounds; {@code false} otherwise.
      */
     public boolean isWithinBounds(byte row, byte column) {
         return row >= 0 && row < caveSide && column >= 0 && column < caveSide;
     }
 
     /**
-     * Updates the perceptions for a specific square based on its row and column.
+     * Updates the perceptions for a specific square based on its neighbors.
      *
-     * <p>Perceptions are calculated by examining the statuses of neighboring squares
-     * in all valid directions. Each perception type is mapped from the neighbor's
-     * {@link SquareStatus} and set for the target square.</p>
-     *
-     * @param row    The row index of the target square.
-     * @param column The column index of the target square.
+     * @param row    The row index of the square.
+     * @param column The column index of the square.
      */
     public void updatePerceptions(byte row, byte column) {
         Square square = getSquare(row, column);
@@ -175,15 +146,40 @@ public abstract class CaveModel {
     }
 
     /**
-     * Updates perceptions for all squares in the cave.
+     * Retrieves the neighbors' positions (row, column) for a given square.
      *
-     * <p>This method iterates through every square in the cave grid and recalculates
-     * their perceptions based on the statuses of their neighbors. It is called when the
-     * simulation starts</p>
+     * @param row The row index of the square.
+     * @param col The column index of the square.
+     * @return A 2D array containing valid neighbors' positions.
      */
-    public void updateAllPerceptions() {
-        for (int position = 0; position < squares.length; position++) {
-            updatePerceptions((byte) (position / caveSide), (byte) (position % caveSide));
+    protected byte[][] getNeighborPositions(byte row, byte col) {
+        byte[][] neighbors = new byte[Directions.values().length][];
+        for (Directions direction : Directions.values()) {
+            byte[] delta = getDirectionDelta(direction);
+            byte neighborRow = (byte) (row + delta[0]);
+            byte neighborCol = (byte) (col + delta[1]);
+
+            if (isWithinBounds(neighborRow, neighborCol)) {
+                neighbors[direction.ordinal()] = new byte[]{neighborRow, neighborCol};
+            } else {
+                neighbors[direction.ordinal()] = null;
+            }
+        }
+        return neighbors;
+    }
+
+    /**
+     * Updates the perceptions for all neighboring squares of a given square.
+     *
+     * @param row The row index of the square.
+     * @param col The column index of the square.
+     */
+    public void updateNeighborPerceptions(byte row, byte col) {
+        byte[][] neighbors = getNeighborPositions(row, col);
+        for (byte[] neighbor : neighbors) {
+            if (neighbor != null) {
+                updatePerceptions(neighbor[0], neighbor[1]);
+            }
         }
     }
 }
