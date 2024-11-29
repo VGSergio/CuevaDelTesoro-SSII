@@ -138,7 +138,7 @@ public class Player {
             } else if (shouldShoot()) {
                 shoot(getMonsterDirection());
             } else {
-                movement(Directions.WEST, Directions.SOUTH, Directions.EAST, Directions.NORTH);
+                movementWithPriorities(Directions.WEST, Directions.SOUTH, Directions.EAST, Directions.NORTH);
             }
         } else {
             if (canTake()) {

@@ -166,17 +166,17 @@ public class Global {
         /**
          * The delay (in milliseconds) for slow speed.
          */
-        public static final int SLOW_VALUE = 3_000;
+        public static final int SLOW_VALUE = 2_000;
 
         /**
          * The delay (in milliseconds) for normal speed.
          */
-        public static final int NORMAL_VALUE = 2_000;
+        public static final int NORMAL_VALUE = 1_000;
 
         /**
          * The delay (in milliseconds) for fast speed.
          */
-        public static final int FAST_VALUE = 1_000;
+        public static final int FAST_VALUE = 500;
 
         /**
          * Special value indicating manual control.
